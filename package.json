@@ -1,0 +1,52 @@
+{
+    "name": "ethereum-side",
+    "version": "1.0.0",
+    "description": "Ethereum related app",
+    "license": "Apache-2.0",
+    "author": {
+        "name": "Bernardo Vieira",
+        "github": "obernardovieira",
+        "email": "bernardo@techhq.io",
+        "url": "https://techhq.io"
+    },
+    "engines": {
+        "node": ">= 10.12.0",
+        "npm": ">= 6.4.0",
+        "yarn": ">= 1.10.0"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "deploy:ganache": "truffle deploy --network development",
+        "start:ganache:dev": "ganache-cli -m \"width whip dream dress captain vessel mix drive oxygen broken soap bone\" -p 8545 -i 201906 --debug",
+        "test": "scripts/test.sh",
+        "test:ci": "CI=true scripts/test.sh",
+        "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
+        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
+        "lint:sol": "solium -d contracts",
+        "lint:js": "eslint *.js .",
+        "lint": "npm run lint:sol && npm run lint:js",
+        "security": "docker run --rm --memory=3g -v $(pwd):/tmp -w \"/tmp/\" mythril/myth --truffle",
+        "docs": "soldoc docs/ contracts"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "2.3.0"
+    },
+    "devDependencies": {
+        "bignumber.js": "9.0.0",
+        "chai": "4.2.0",
+        "eslint": "6.6.0",
+        "eslint-config-airbnb": "17.1.1",
+        "eslint-plugin-import": "2.18.2",
+        "eslint-plugin-jsx-a11y": "6.2.3",
+        "eslint-plugin-react": "7.16.0",
+        "eth-gas-reporter": "0.2.12",
+        "ethlint": "1.2.5",
+        "ganache-cli": "6.7.0",
+        "soldoc": "0.1.1",
+        "solidity-coverage": "0.6.7",
+        "truffle": "5.0.42",
+        "truffle-hdwallet-provider": "1.0.17"
+    }
+}
