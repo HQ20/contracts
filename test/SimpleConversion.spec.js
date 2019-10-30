@@ -4,7 +4,7 @@ const SimpleConversion = artifacts.require('./SimpleConversion.sol');
 chai.should();
 
 /** @test {SimpleConversion} contract */
-contract('SimpleConversion', (accounts) => {
+contract('SimpleConversion', () => {
     /**
      * Test the two contract methods
      * @test {SimpleConversion#bytes32ToString} and {SimpleConversion#stringToBytes32}
