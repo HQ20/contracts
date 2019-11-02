@@ -1,5 +1,5 @@
-const SimpleStorage = artifacts.require('./SimpleStorage.sol');
+const StringConversion = artifacts.require('./StringConversion.sol');
 
 module.exports = (deployer) => {
-    deployer.deploy(SimpleStorage);
+    deployer.deploy(StringConversion);
 };
