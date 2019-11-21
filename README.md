@@ -1,11 +1,8 @@
-# simple-ethereum-dapp
+# string-to-bytes32-to-string
 
-[![Build Status](https://travis-ci.com/HQ20/simple-ethereum-dapp.svg?branch=master)](https://travis-ci.com/HQ20/simple-ethereum-dapp)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=HQ20/simple-ethereum-dapp)](https://dependabot.com)
+This is an Ethereum project with helper functions that help you convert between string and bytes32 types.
 
-:herb: This is the techhq simple ethereum dapp in a github template :octocat: All you need in a nut:shell:
-
-This template is based on a truffle project structure, having the **contracts**, **migrations** and **test** folder as usual, as well as the **truffle-config.js** file. Besides that, this template is packed with an example smart contract with an example of a test including coverage. It also contains linters for javascript and solidity, plus a script to run tests.
+This template is based on a truffle project structure, having the **contracts**, **migrations** and **test** folder as usual, as well as the **truffle-config.js** file. Besides that, this template is packed with an example of a test including coverage. It also contains linters for javascript and solidity, plus a script to run tests.
 
 This template also asumes the developer will use [travis](https://travis-ci.org/), [coveralls](https://coveralls.io/) and [dependabot](https://dependabot.com/).
 
@@ -20,6 +17,10 @@ $ yarn
 ```
 
 ## Usage
+
+In `StringConversion.sol`:
+* function `bytes32ToString(bytes32 _data)`: Converts and returns bytes32 `_data` as a string.
+* function `stringToBytes32(string memory _data)`: Converts and returns the string `_data` as bytes32.
 
 The package.json file contains a set of npm scripts to help on the development phase. Below is a short description for each
 * **"deploy:ganache"** deploy the contracts on development network
