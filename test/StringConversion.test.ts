@@ -1,11 +1,12 @@
-const chai = require('chai');
+import { should } from 'chai';
+import { StringConversionInstance } from '../types/truffle-contracts';
 
-const StringConversion = artifacts.require('./StringConversion.sol');
-chai.should();
+const StringConversion = artifacts.require('./StringConversion.sol')  as Truffle.Contract<StringConversionInstance>;
+should();
 
 /** @test {StringConversion} contract */
 contract('StringConversion', () => {
-    let stringConversion;
+    let stringConversionInstance: StringConversionInstance;
     const originalString = 'test string';
 
     /**
@@ -13,14 +14,14 @@ contract('StringConversion', () => {
      * @test {StringConversion#bytes32ToString} and {StringConversion#stringToBytes32}
      */
     beforeEach(async () => {
-        stringConversion = await StringConversion.deployed();
+        stringConversionInstance = await StringConversion.deployed();
     });
 
     it('Extract characters from bytes32', async () => {
         const convertedBytes32 = web3.utils.fromAscii(originalString);
         for (let i = 0; i < originalString.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop
-            const bytes1Char = await stringConversion.byteAt(convertedBytes32, i);
+            const bytes1Char = await stringConversionInstance.byteAt(convertedBytes32, i);
             const stringChar = web3.utils.toAscii(bytes1Char).replace(/\0/g, '');
             stringChar.should.be.equal(originalString.charAt(i));
         }
@@ -28,12 +29,12 @@ contract('StringConversion', () => {
 
     it('Convert from bytes32 to string', async () => {
         const convertedBytes32 = web3.utils.fromAscii(originalString);
-        const convertedString = await stringConversion.bytes32ToString(convertedBytes32);
+        const convertedString = await stringConversionInstance.bytes32ToString(convertedBytes32);
         convertedString.should.be.equal(originalString);
     });
 
     it('Convert from string to bytes32', async () => {
-        const convertedBytes32 = await stringConversion.stringToBytes32(originalString);
+        const convertedBytes32 = await stringConversionInstance.stringToBytes32(originalString);
         const convertedString = web3.utils.toAscii(convertedBytes32).replace(/\0/g, '');
         convertedString.should.be.equal(originalString);
     });
