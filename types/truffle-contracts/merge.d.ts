@@ -9,6 +9,7 @@ declare global {
   namespace Truffle {
     interface Artifacts {
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
+      require(name: "RBAC"): TruffleContracts.RBACContract;
       require(
         name: "StringConversion"
       ): TruffleContracts.StringConversionContract;

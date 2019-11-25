@@ -1,9 +1,14 @@
-const RBAC = artifacts.require('./access-control/RBAC.sol');
+import { should } from 'chai';
+import { RBACInstance } from '../../types/truffle-contracts';
+
+const RBAC = artifacts.require('./access-control/RBAC.sol') as Truffle.Contract<RBACInstance>;
+should();
+
 
 const { itShouldThrow } = require('./../utils');
 
 contract('RBAC', (accounts) => {
-    let rbac;
+    let rbac: RBACInstance;
     const root = accounts[1];
     const NO_ROLE = 0;
     const ROOT_ROLE = 1;
@@ -50,11 +55,9 @@ contract('RBAC', (accounts) => {
 
     it('hasRole gas test', async () => {
         for (let i = 2; i < 6; i += 1) {
-            // eslint-disable-next-line no-await-in-loop
             await rbac.addMember(accounts[i], ROOT_ROLE, { from: root });
         }
         for (let i = 0; i < 10; i += 1) {
-            // eslint-disable-next-line no-await-in-loop
             await rbac.hasRole(accounts[i], ROOT_ROLE);
         }
     });
@@ -77,7 +80,6 @@ contract('RBAC', (accounts) => {
     );
 
     it('addRole adds a new role.', async () => {
-        // eslint-disable-next-line prefer-destructuring
         const roleId = (
             await rbac.addRole(ROOT_ROLE, { from: root })
         ).logs[0].args.roleId;

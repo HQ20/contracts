@@ -9,6 +9,13 @@ export interface MigrationsContract
   "new"(meta?: Truffle.TransactionDetails): Promise<MigrationsInstance>;
 }
 
+export interface RBACContract extends Truffle.Contract<RBACInstance> {
+  "new"(
+    _root: string | BigNumber,
+    meta?: Truffle.TransactionDetails
+  ): Promise<RBACInstance>;
+}
+
 export interface StringConversionContract
   extends Truffle.Contract<StringConversionInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<StringConversionInstance>;
@@ -55,6 +62,86 @@ export interface MigrationsInstance extends Truffle.ContractInstance {
     ): Promise<string>;
     estimateGas(
       new_address: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+}
+
+export interface RBACInstance extends Truffle.ContractInstance {
+  roleExists(
+    _roleId: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
+  totalRoles(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  hasRole(
+    _member: string | BigNumber,
+    _roleId: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
+  addRole: {
+    (
+      _adminRoleIdId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _adminRoleIdId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _adminRoleIdId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _adminRoleIdId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  addMember: {
+    (
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  removeMember: {
+    (
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _member: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
