@@ -52,6 +52,15 @@ module.exports = {
             network_id: '*', // Any network (default: none)
         },
 
+        // this is necessary for coverage
+        coverage: {
+            host: 'localhost',
+            network_id: '*', // eslint-disable-line camelcase
+            port: 8555,
+            gas: 0xfffffffffff,
+            gasPrice: 0x01,
+        },
+
         // Useful for deploying to a public network.
         // NB: It's important to wrap the provider as a function.
         goerli: {
