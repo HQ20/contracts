@@ -1,52 +1,63 @@
 {
-    "name": "ethereum-side",
-    "version": "1.0.0",
-    "description": "Ethereum related app",
+    "name": "contracts",
+    "version": "0.0.1",
+    "description": "A set of reusable smart contracts from HQ20",
     "license": "Apache-2.0",
     "author": {
-        "name": "Bernardo Vieira",
-        "github": "obernardovieira",
-        "email": "bernardo@techhq.io",
-        "url": "https://techhq.io"
+        "name": "TechHQ",
+        "github": "hq20"
     },
     "engines": {
         "node": ">= 10.12.0",
         "npm": ">= 6.4.0",
         "yarn": ">= 1.10.0"
     },
-    "directories": {
-        "test": "test"
-    },
+    "files": [
+        "/contracts",
+        "/types"
+    ],
     "scripts": {
         "deploy:ganache": "truffle deploy --network development",
-        "start:ganache:dev": "ganache-cli -m \"width whip dream dress captain vessel mix drive oxygen broken soap bone\" -p 8545 -i 201906 --debug",
+        "start:geth:local": "./scripts/local_geth.sh",
+        "start:ganache:local": "./scripts/local_ganache.sh",
         "test": "scripts/test.sh",
         "test:ci": "CI=true scripts/test.sh",
         "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
         "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
         "lint:sol": "solium -d contracts",
-        "lint:js": "eslint *.js .",
-        "lint": "npm run lint:sol && npm run lint:js",
+        "lint:ts": "tslint -c tslint.json 'test/**/*.ts'",
+        "lint": "yarn lint:sol && yarn lint:ts",
         "security": "docker run --rm --memory=3g -v $(pwd):/tmp -w \"/tmp/\" mythril/myth --truffle",
-        "docs": "soldoc docs/ contracts"
+        "docs": "soldoc docs/ contracts",
+        "generate-ts": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "dependencies": {
-        "@openzeppelin/contracts": "2.3.0"
+        "@openzeppelin/cli": "2.6.0",
+        "@openzeppelin/contracts": "2.4.0",
+        "@openzeppelin/contracts-ethereum-package": "2.4.0",
+        "@openzeppelin/upgrades": "2.6.0",
+        "truffle": "5.1.0",
+        "cross-env": "6.0.3"
     },
     "devDependencies": {
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
-        "eslint": "6.6.0",
-        "eslint-config-airbnb": "17.1.1",
-        "eslint-plugin-import": "2.18.2",
-        "eslint-plugin-jsx-a11y": "6.2.3",
-        "eslint-plugin-react": "7.16.0",
         "eth-gas-reporter": "0.2.12",
         "ethlint": "1.2.5",
         "ganache-cli": "6.7.0",
-        "soldoc": "0.1.1",
+        "soldoc": "0.1.2-beta.0",
         "solidity-coverage": "0.6.7",
-        "truffle": "5.0.42",
-        "truffle-hdwallet-provider": "1.0.17"
+        "truffle-typings": "1.0.8",
+        "typechain": "1.0.3",
+        "typechain-target-truffle": "1.0.2",
+        "@types/bignumber.js": "5.0.0",
+        "@types/chai": "4.2.5",
+        "@types/mocha": "5.2.7",
+        "@types/node": "12.12.11",
+        "ts-generator": "0.0.8",
+        "ts-node": "8.5.2",
+        "typescript": "3.7.2",
+        "tslint": "5.20.1",
+        "@truffle/hdwallet-provider": "1.0.25"
     }
 }

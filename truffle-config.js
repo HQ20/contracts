@@ -8,13 +8,9 @@
  *
  * truffleframework.com/docs/advanced/configuration
  *
- * To deploy via Infura you'll need a wallet provider (like truffle-hdwallet-provider)
+ * To deploy via Infura you'll need a wallet provider (like @truffle/hdwallet-provider)
  * to sign your transactions before they're sent to a remote public node. Infura API
  * keys are available for free at: infura.io/register
- *
- *   > > Using Truffle V5 or later? Make sure you install the `web3-one` version.
- *
- *   > > $ npm install truffle-hdwallet-provider@web3-one
  *
  * You'll also need a mnemonic - the twelve word phrase the wallet uses to generate
  * public/private key pairs. If you're publishing your code to GitHub make sure you load this
@@ -24,12 +20,15 @@
 
 // const fs = require('fs');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+// eslint-disable-next-line import/no-extraneous-dependencies
+require('ts-node/register');
 
 const infuraKey = 'fj4jll3k.....';
 const mnemonic = ''; // fs.readFileSync('.secret').toString().trim();
 
 module.exports = {
+    test_file_extension_regexp: /.*\.ts$/,
     /**
      * Networks define how you connect to your ethereum client and let you set the
      * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -53,23 +52,13 @@ module.exports = {
             network_id: '*', // Any network (default: none)
         },
 
-        coverage: {
-            host: 'localhost',
-            network_id: '*', // eslint-disable-line camelcase
-            port: 8555,
-            gas: 0xfffffffffff,
-            gasPrice: 0x01,
-        },
-
         // Useful for deploying to a public network.
         // NB: It's important to wrap the provider as a function.
-        ropsten: {
-            provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraKey}`),
-            network_id: 3, // Ropsten's id
-            gas: 5500000, // Ropsten has a lower block limit than mainnet
+        goerli: {
+            provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraKey}`),
+            network_id: 5, // Ropsten's id
             confirmations: 2, // # of confs to wait between deployments. (default: 0)
             timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
-            skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
         },
     },
 
