@@ -33,9 +33,8 @@ contract LinkedListAsArray {
         view
         returns (bool, uint256)
     {
-        while (_id > tail) {
-            if (objects[_id - 1] != address(0)) return (true, _id - 1);
-            else _id -= 1;
+        for (uint256 i = _id; i > tail; i--) {
+            if (objects[i - 1] != address(0)) return (true, i - 1);
         }
         return (false, 0);
     }
@@ -48,9 +47,8 @@ contract LinkedListAsArray {
         view
         returns (bool, uint256)
     {
-        while (_id < head) {
-            if (objects[_id + 1] != address(0)) return (true, _id + 1);
-            else _id += 1;
+        for (uint256 i = _id; i < head; i++) {
+            if (objects[i + 1] != address(0)) return (true, i + 1);
         }
         return (false, 0);
     }
