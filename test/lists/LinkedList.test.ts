@@ -145,8 +145,7 @@ contract('LinkedList - find', (accounts) => {
     });
 
     it('finds the tail id.', async () => {
-        let resultId = (await linkedList.findTailId());
-        resultId.toNumber().should.be.equal(tailId);
+        (await linkedList.findTailId()).toNumber().should.be.equal(tailId);
     });
 });
 
