@@ -14,6 +14,11 @@ export interface LinkedListContract
   "new"(meta?: Truffle.TransactionDetails): Promise<LinkedListInstance>;
 }
 
+export interface LinkedListAsArrayContract
+  extends Truffle.Contract<LinkedListAsArrayInstance> {
+  "new"(meta?: Truffle.TransactionDetails): Promise<LinkedListAsArrayInstance>;
+}
+
 export interface MigrationsContract
   extends Truffle.Contract<MigrationsInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<MigrationsInstance>;
@@ -283,6 +288,75 @@ export interface LinkedListInstance extends Truffle.ContractInstance {
     estimateGas(
       _nextId: number | BigNumber | string,
       _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+}
+
+export interface LinkedListAsArrayInstance extends Truffle.ContractInstance {
+  tail(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  head(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  objects(
+    arg0: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
+
+  next(
+    _id: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[boolean, BigNumber]>;
+
+  prev(
+    _id: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[boolean, BigNumber]>;
+
+  get(
+    _id: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
+
+  find(
+    _data: string | BigNumber,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[boolean, BigNumber]>;
+
+  addHead: {
+    (
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  remove: {
+    (
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _id: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
