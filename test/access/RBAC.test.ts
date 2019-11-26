@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { RBACInstance } from '../../types/truffle-contracts';
 
-const RBAC = artifacts.require('./access-control/RBAC.sol') as Truffle.Contract<RBACInstance>;
+const RBAC = artifacts.require('./access/RBAC.sol') as Truffle.Contract<RBACInstance>;
 should();
 
 
