@@ -423,3 +423,38 @@ contract('LinkedList - insert', (accounts) => {
         tailObject[2].should.be.equal(tailData);
     });
 });
+
+contract('LinkedList - gas tests', (accounts) => {
+    let linkedList: LinkedListInstance;
+    const dummyData = '0x0000000000000000000000000000000000000001';
+
+    beforeEach(async () => {
+        linkedList = await LinkedList.new();
+        for (let i = 0; i < 100; i++) {
+            await linkedList.addHead(dummyData);
+        }
+    });
+
+    it('Add Head.', async () => {
+        await linkedList.addHead(dummyData);
+    });
+
+    it('Add Tail.', async () => {
+        await linkedList.addTail(dummyData);
+    });
+
+    it('Insert After.', async () => {
+        const tailId = await linkedList.findTailId();
+        await linkedList.insertAfter(tailId, dummyData);
+    });
+
+    it('Insert Before.', async () => {
+        const tailId = await linkedList.findTailId();
+        await linkedList.insertBefore(tailId, dummyData);
+    });
+
+    it('Remove.', async () => {
+        const tailId = await linkedList.findTailId();
+        await linkedList.remove(tailId);
+    });
+});

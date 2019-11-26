@@ -454,3 +454,38 @@ contract('DoubleLinkedList - insert', (accounts) => {
         tailObject[3].should.be.equal(tailData);
     });
 });
+
+contract('DoubleLinkedList - gas tests', (accounts) => {
+    let doubleLinkedList: DoubleLinkedListInstance;
+    const dummyData = '0x0000000000000000000000000000000000000001';
+
+    beforeEach(async () => {
+        doubleLinkedList = await DoubleLinkedList.new();
+        for (let i = 0; i < 100; i++) {
+            await doubleLinkedList.addHead(dummyData);
+        }
+    });
+
+    it('Add Head.', async () => {
+        await doubleLinkedList.addHead(dummyData);
+    });
+
+    it('Add Tail.', async () => {
+        await doubleLinkedList.addTail(dummyData);
+    });
+
+    it('Insert After.', async () => {
+        const tailId = await doubleLinkedList.tail();
+        await doubleLinkedList.insertAfter(tailId, dummyData);
+    });
+
+    it('Insert Before.', async () => {
+        const tailId = await doubleLinkedList.tail();
+        await doubleLinkedList.insertBefore(tailId, dummyData);
+    });
+
+    it('Remove.', async () => {
+        const tailId = await doubleLinkedList.tail();
+        await doubleLinkedList.remove(tailId);
+    });
+});
