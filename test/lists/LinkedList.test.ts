@@ -5,10 +5,10 @@ const LinkedList = artifacts.require('./lists/LinkedList.sol')  as Truffle.Contr
 should();
 
 
-const emptyData = '0x0000000000000000000000000000000000000000'
-const headData = '0x0000000000000000000000000000000000000001'
-const middleData = '0x0000000000000000000000000000000000000002'
-const tailData = '0x0000000000000000000000000000000000000003'
+const emptyData = '0x0000000000000000000000000000000000000000';
+const headData = '0x0000000000000000000000000000000000000001';
+const middleData = '0x0000000000000000000000000000000000000002';
+const tailData = '0x0000000000000000000000000000000000000003';
 
 /** @test {LinkedList} contract */
 contract('LinkedList - add', (accounts) => {
@@ -46,7 +46,7 @@ contract('LinkedList - add', (accounts) => {
         const objectId = (
             await linkedList.addHead(headData)
         ).logs[0].args.id.toNumber();
-        
+
         const result = (await linkedList.get(objectId));
         result[0].toNumber().should.be.equal(objectId);
         result[1].toNumber().should.be.equal(0);
@@ -86,7 +86,7 @@ contract('LinkedList - add', (accounts) => {
         const objectId = (
             await linkedList.addTail(headData)
         ).logs[0].args.id.toNumber();
-        
+
         const result = (await linkedList.get(objectId));
         result[0].toNumber().should.be.equal(objectId);
         result[1].toNumber().should.be.equal(0);
@@ -141,6 +141,11 @@ contract('LinkedList - find', (accounts) => {
         resultId = (await linkedList.findIdForData(middleData));
         resultId.toNumber().should.be.equal(middleId);
         resultId = (await linkedList.findIdForData(tailData));
+        resultId.toNumber().should.be.equal(tailId);
+    });
+
+    it('finds the tail id.', async () => {
+        let resultId = (await linkedList.findTailId());
         resultId.toNumber().should.be.equal(tailId);
     });
 });
@@ -220,12 +225,23 @@ contract('LinkedList - remove', (accounts) => {
         tailObject[1].toNumber().should.be.equal(0);
         tailObject[2].should.be.equal(tailData);
     });
+
+    it('removes all.', async () => {
+        (await linkedList.remove(headId)).logs[1].args.id.toNumber();
+        ((await linkedList.head()).toNumber()).should.be.equal(middleId);
+
+        (await linkedList.remove(tailId)).logs[1].args.id.toNumber();
+        ((await linkedList.head()).toNumber()).should.be.equal(middleId);
+
+        (await linkedList.remove(middleId)).logs[1].args.id.toNumber();
+        ((await linkedList.head()).toNumber()).should.be.equal(0);
+    });
 });
 
 /** @test {LinkedList} contract */
 contract('LinkedList - insert', (accounts) => {
 
-    const insertedData = '0x0000000000000000000000000000000000000004'
+    const insertedData = '0x0000000000000000000000000000000000000004';
 
     let linkedList: LinkedListInstance;
     let headId: number;

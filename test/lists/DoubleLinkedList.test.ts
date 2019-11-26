@@ -1,13 +1,13 @@
 import { should } from 'chai';
 import { DoubleLinkedListInstance } from '../../types/truffle-contracts';
 
-const DoubleLinkedList = artifacts.require('./lists/DoubleLinkedList.sol')  as Truffle.Contract<DoubleLinkedListInstance>;
+const DoubleLinkedList = artifacts.require('./lists/DoubleLinkedList.sol') as Truffle.Contract<DoubleLinkedListInstance>;
 should();
 
-const emptyData = '0x0000000000000000000000000000000000000000'
-const headData = '0x0000000000000000000000000000000000000001'
-const middleData = '0x0000000000000000000000000000000000000002'
-const tailData = '0x0000000000000000000000000000000000000003'
+const emptyData = '0x0000000000000000000000000000000000000000';
+const headData = '0x0000000000000000000000000000000000000001';
+const middleData = '0x0000000000000000000000000000000000000002';
+const tailData = '0x0000000000000000000000000000000000000003';
 
 /** @test {DoubleLinkedList} contract */
 contract('DoubleLinkedList - add', (accounts) => {
@@ -46,7 +46,7 @@ contract('DoubleLinkedList - add', (accounts) => {
         const objectId = (
             await doubleLinkedList.addHead(headData)
         ).logs[0].args.id.toNumber();
-        
+
         const result = (await doubleLinkedList.get(objectId));
         result[0].toNumber().should.be.equal(objectId);
         result[1].toNumber().should.be.equal(0);
@@ -89,7 +89,7 @@ contract('DoubleLinkedList - add', (accounts) => {
         const objectId = (
             await doubleLinkedList.addTail(headData)
         ).logs[0].args.id.toNumber();
-        
+
         const result = (await doubleLinkedList.get(objectId));
         result[0].toNumber().should.be.equal(objectId);
         result[1].toNumber().should.be.equal(0);
@@ -121,7 +121,7 @@ contract('DoubleLinkedList - add', (accounts) => {
     });
 });
 
-contract('doubleLinkedList - find', (accounts) => {
+contract('DoubleLinkedList - find', (accounts) => {
 
     let doubleLinkedList: DoubleLinkedListInstance;
     let headId: number;
@@ -152,7 +152,7 @@ contract('doubleLinkedList - find', (accounts) => {
 });
 
 /** @test {doubleLinkedList} contract */
-contract('doubleLinkedList - remove', (accounts) => {
+contract('DoubleLinkedList - remove', (accounts) => {
 
     let doubleLinkedList: DoubleLinkedListInstance;
     let headId: number;
@@ -229,12 +229,25 @@ contract('doubleLinkedList - remove', (accounts) => {
         tailObject[2].toNumber().should.be.equal(headId);
         tailObject[3].should.be.equal(tailData);
     });
+
+    it('removes all.', async () => {
+        (await doubleLinkedList.remove(headId)).logs[1].args.id.toNumber();
+        ((await doubleLinkedList.head()).toNumber()).should.be.equal(middleId);
+
+        (await doubleLinkedList.remove(tailId)).logs[1].args.id.toNumber();
+        ((await doubleLinkedList.head()).toNumber()).should.be.equal(middleId);
+        ((await doubleLinkedList.tail()).toNumber()).should.be.equal(middleId);
+
+        (await doubleLinkedList.remove(middleId)).logs[1].args.id.toNumber();
+        ((await doubleLinkedList.head()).toNumber()).should.be.equal(0);
+        ((await doubleLinkedList.tail()).toNumber()).should.be.equal(0);
+    });
 });
 
 /** @test {doubleLinkedList} contract */
-contract('doubleLinkedList - insert', (accounts) => {
+contract('DoubleLinkedList - insert', (accounts) => {
 
-    const insertedData = '0x0000000000000000000000000000000000000004'
+    const insertedData = '0x0000000000000000000000000000000000000004';
 
     let doubleLinkedList: DoubleLinkedListInstance;
     let headId: number;

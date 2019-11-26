@@ -23,7 +23,7 @@ The methods are the same for `LinkedList.sol` and `DoubleLinkedList.sol`, with e
 * constructor: Creates an empty list.
 * `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
 * `function findPrevId(uint256 _id)`: Given an Object, denoted by `_id`, returns the id of the Object that points to it, or 0 if `_id` refers to the Head. Method not available for `DoubleLinkedList.sol`, please use `get(_id).prev` instead.
-* `function findTailId()`: Returns the id for the Tail.
+* `function findTailId()`: Returns the id for the Tail. Method not available for `DoubleLinkedList.sol`, please use the `tail` contract variable instead.
 * `function findIdForData(address _data)`: Return the id of the first Object matching `_data` in the data field.
 * `function addHead(address _data)`: Insert a new Object as the new Head with `_data` in the data field.
 * `function addTail(address _data)`: Insert a new Object as the new Tail with `_data` in the data field.

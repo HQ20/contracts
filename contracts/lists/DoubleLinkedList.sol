@@ -27,7 +27,7 @@ contract DoubleLinkedList {
     mapping (uint256 => Object) public objects;
 
     /**
-     * Constructor method
+     * @dev Creates an empty list.
      */
     constructor() public {
         head = 0;
@@ -35,6 +35,9 @@ contract DoubleLinkedList {
         idCounter = 1;
     }
 
+    /**
+     * @dev Retrieves the Object denoted by `_id`.
+     */
     function get(uint256 _id)
         public
         view
@@ -44,6 +47,9 @@ contract DoubleLinkedList {
         return (object.id, object.next, object.prev, object.data);
     }
 
+    /**
+     * @dev Return the id of the first Object matching `_data` in the data field.
+     */
     function findIdForData(address _data)
         public
         view
@@ -56,6 +62,9 @@ contract DoubleLinkedList {
         return object.id;
     }
 
+    /**
+     * @dev Insert a new Object as the new Head with `_data` in the data field.
+     */
     function addHead(address _data)
         public
         returns (bool)
@@ -66,6 +75,9 @@ contract DoubleLinkedList {
         if (tail == 0) _setTail(objectId);
     }
 
+    /**
+     * @dev Insert a new Object as the new Tail with `_data` in the data field.
+     */
     function addTail(address _data)
         public
         returns (bool)
@@ -80,6 +92,9 @@ contract DoubleLinkedList {
         }
     }
 
+    /**
+     * @dev Remove the Object denoted by `_id` from the List.
+     */
     function remove(uint256 _id)
         public
     {
@@ -103,6 +118,9 @@ contract DoubleLinkedList {
         emit ObjectRemoved(_id);
     }
 
+    /**
+     * @dev Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
+     */
     function insertAfter(uint256 _prevId, address _data)
         public
         returns (bool)
@@ -119,6 +137,9 @@ contract DoubleLinkedList {
         }
     }
 
+    /**
+     * @dev Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
+     */
     function insertBefore(uint256 _nextId, address _data)
         public
         returns (bool)
@@ -131,6 +152,9 @@ contract DoubleLinkedList {
         }
     }
 
+    /**
+     * @dev Internal function to update the Head pointer.
+     */
     function _setHead(uint256 _id)
         internal
     {
@@ -138,6 +162,9 @@ contract DoubleLinkedList {
         emit NewHead(_id);
     }
 
+    /**
+     * @dev Internal function to update the Tail pointer.
+     */
     function _setTail(uint256 _id)
         internal
     {
@@ -145,6 +172,9 @@ contract DoubleLinkedList {
         emit NewTail(_id);
     }
 
+    /**
+     * @dev Internal function to create an unlinked Object.
+     */
     function _createObject(address _data)
         internal
         returns (uint256)
@@ -165,6 +195,9 @@ contract DoubleLinkedList {
         return object.id;
     }
 
+    /**
+     * @dev Internal function to link an Object to another.
+     */
     function _link(uint256 _prevId, uint256 _nextId)
         internal
     {

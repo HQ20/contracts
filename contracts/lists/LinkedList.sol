@@ -24,13 +24,16 @@ contract LinkedList {
     mapping (uint256 => Object) public objects;
 
     /**
-     * Constructor method
+     * @dev Creates an empty list.
      */
     constructor() public {
         head = 0;
         idCounter = 1;
     }
 
+    /**
+     * @dev Retrieves the Object denoted by `_id`.
+     */
     function get(uint256 _id)
         public
         view
@@ -40,6 +43,9 @@ contract LinkedList {
         return (object.id, object.next, object.data);
     }
 
+    /**
+     * @dev Given an Object, denoted by `_id`, returns the id of the Object that points to it, or 0 if `_id` refers to the Head.
+     */
     function findPrevId(uint256 _id)
         public
         view
@@ -53,6 +59,9 @@ contract LinkedList {
         return prevObject.id;
     }
 
+    /**
+     * @dev Returns the id for the Tail.
+     */
     function findTailId()
         public
         view
@@ -65,6 +74,9 @@ contract LinkedList {
         return oldTailObject.id;
     }
 
+    /**
+     * @dev Return the id of the first Object matching `_data` in the data field.
+     */
     function findIdForData(address _data)
         public
         view
@@ -77,6 +89,9 @@ contract LinkedList {
         return object.id;
     }
 
+    /**
+     * @dev Insert a new Object as the new Head with `_data` in the data field.
+     */
     function addHead(address _data)
         public
         returns (bool)
@@ -86,6 +101,9 @@ contract LinkedList {
         _setHead(objectId);
     }
 
+    /**
+     * @dev Insert a new Object as the new Tail with `_data` in the data field.
+     */
     function addTail(address _data)
         public
         returns (bool)
@@ -100,6 +118,9 @@ contract LinkedList {
         }
     }
 
+    /**
+     * @dev Remove the Object denoted by `_id` from the List.
+     */
     function remove(uint256 _id)
         public
     {
@@ -115,6 +136,9 @@ contract LinkedList {
         emit ObjectRemoved(_id);
     }
 
+    /**
+     * @dev Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
+     */
     function insertAfter(uint256 _prevId, address _data)
         public
         returns (bool)
@@ -125,6 +149,9 @@ contract LinkedList {
         _link(prevObject.id, newObjectId);
     }
 
+    /**
+     * @dev Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
+     */
     function insertBefore(uint256 _nextId, address _data)
         public
         returns (bool)
@@ -138,6 +165,9 @@ contract LinkedList {
         }
     }
 
+    /**
+     * @dev Internal function to update the Head pointer.
+     */
     function _setHead(uint256 _id)
         internal
     {
@@ -145,6 +175,9 @@ contract LinkedList {
         emit NewHead(_id);
     }
 
+    /**
+     * @dev Internal function to create an unlinked Object.
+     */
     function _createObject(address _data)
         internal
         returns (uint256)
@@ -160,6 +193,9 @@ contract LinkedList {
         return object.id;
     }
 
+    /**
+     * @dev Internal function to link an Object to another.
+     */
     function _link(uint256 _prevId, uint256 _nextId)
         internal
     {
