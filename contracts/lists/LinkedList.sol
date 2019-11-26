@@ -4,6 +4,7 @@ pragma solidity ^0.5.0;
 /**
  * @title LinkedList
  * @dev Data structure
+ * @author Alberto Cuesta Cañada
  */
 contract LinkedList {
 
@@ -44,6 +45,7 @@ contract LinkedList {
         view
         returns (uint256)
     {
+        if (_id == head) return 0;
         Object memory prevObject = objects[head];
         while (prevObject.next != _id) {
             prevObject = objects[prevObject.next];

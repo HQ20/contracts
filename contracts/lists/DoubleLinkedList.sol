@@ -4,6 +4,7 @@ pragma solidity ^0.5.0;
 /**
  * @title LinkedList
  * @dev Data structure
+ * @author Alberto Cuesta Cañada
  */
 contract DoubleLinkedList {
 
