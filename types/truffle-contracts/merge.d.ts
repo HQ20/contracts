@@ -8,8 +8,17 @@ import * as TruffleContracts from ".";
 declare global {
   namespace Truffle {
     interface Artifacts {
+      require(
+        name: "DoubleLinkedList"
+      ): TruffleContracts.DoubleLinkedListContract;
+      require(name: "Gas"): TruffleContracts.GasContract;
+      require(name: "LinkedList"): TruffleContracts.LinkedListContract;
+      require(
+        name: "LinkedListAsArray"
+      ): TruffleContracts.LinkedListAsArrayContract;
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
       require(name: "RBAC"): TruffleContracts.RBACContract;
+      require(name: "RBACExtended"): TruffleContracts.RBACExtendedContract;
       require(
         name: "StringConversion"
       ): TruffleContracts.StringConversionContract;
