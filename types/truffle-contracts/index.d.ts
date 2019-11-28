@@ -9,13 +9,6 @@ export interface DoubleLinkedListContract
   "new"(meta?: Truffle.TransactionDetails): Promise<DoubleLinkedListInstance>;
 }
 
-export interface GasContract extends Truffle.Contract<GasInstance> {
-  "new"(
-    _root: string | BigNumber,
-    meta?: Truffle.TransactionDetails
-  ): Promise<GasInstance>;
-}
-
 export interface LinkedListContract
   extends Truffle.Contract<LinkedListInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<LinkedListInstance>;
@@ -36,14 +29,6 @@ export interface RBACContract extends Truffle.Contract<RBACInstance> {
     _root: string | BigNumber,
     meta?: Truffle.TransactionDetails
   ): Promise<RBACInstance>;
-}
-
-export interface RBACExtendedContract
-  extends Truffle.Contract<RBACExtendedInstance> {
-  "new"(
-    _root: string | BigNumber,
-    meta?: Truffle.TransactionDetails
-  ): Promise<RBACExtendedInstance>;
 }
 
 export interface StringConversionContract
@@ -172,56 +157,6 @@ export interface DoubleLinkedListInstance extends Truffle.ContractInstance {
     estimateGas(
       _nextId: number | BigNumber | string,
       _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-}
-
-export interface GasInstance extends Truffle.ContractInstance {
-  mappingStorage(
-    arg0: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BigNumber>;
-
-  arrayStorage(
-    arg0: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BigNumber>;
-
-  writeData: {
-    (
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  readData: {
-    (
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _times: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -425,29 +360,6 @@ export interface LinkedListAsArrayInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
-
-  gasLimit: {
-    (
-      _size: number | BigNumber | string,
-      _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _size: number | BigNumber | string,
-      _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _size: number | BigNumber | string,
-      _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _size: number | BigNumber | string,
-      _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
 }
 
 export interface MigrationsInstance extends Truffle.ContractInstance {
@@ -497,40 +409,34 @@ export interface MigrationsInstance extends Truffle.ContractInstance {
 }
 
 export interface RBACInstance extends Truffle.ContractInstance {
-  NO_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  ROOT_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
   roleExists(
-    _roleId: string | BigNumber,
+    _roleId: number | BigNumber | string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
+  totalRoles(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
   hasRole(
     _member: string | BigNumber,
-    _roleId: string | BigNumber,
+    _roleId: number | BigNumber | string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
   addRole: {
     (
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
+      _adminRoleIdId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse>;
     call(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
+      _adminRoleIdId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
+      _adminRoleIdId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
+      _adminRoleIdId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -538,22 +444,22 @@ export interface RBACInstance extends Truffle.ContractInstance {
   addMember: {
     (
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse>;
     call(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -561,121 +467,25 @@ export interface RBACInstance extends Truffle.ContractInstance {
   removeMember: {
     (
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse>;
     call(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       _member: string | BigNumber,
-      _roleId: string | BigNumber,
+      _roleId: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
-}
-
-export interface RBACExtendedInstance extends Truffle.ContractInstance {
-  addMember: {
-    (
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  NO_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  ROOT_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  hasRole(
-    _member: string | BigNumber,
-    _roleId: string | BigNumber,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  roleExists(
-    _roleId: string | BigNumber,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  removeMember: {
-    (
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _member: string | BigNumber,
-      _roleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  roleList(
-    arg0: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  addRole: {
-    (
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _roleId: string | BigNumber,
-      _adminRoleId: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  rolesForMember(
-    _member: string | BigNumber,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string[]>;
 }
 
 export interface StringConversionInstance extends Truffle.ContractInstance {
@@ -688,11 +498,6 @@ export interface StringConversionInstance extends Truffle.ContractInstance {
   resizeBytes(
     _bytes: string,
     _length: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  trimEmptyChars(
-    _bytes: string | BigNumber,
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
