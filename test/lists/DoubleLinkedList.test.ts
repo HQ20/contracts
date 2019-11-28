@@ -1,7 +1,8 @@
 import { should } from 'chai';
 import { DoubleLinkedListInstance } from '../../types/truffle-contracts';
 
-const DoubleLinkedList = artifacts.require('./lists/DoubleLinkedList.sol') as Truffle.Contract<DoubleLinkedListInstance>;
+const DoubleLinkedList = artifacts
+    .require('./lists/DoubleLinkedList.sol') as Truffle.Contract<DoubleLinkedListInstance>;
 should();
 
 const emptyData = '0x0000000000000000000000000000000000000000';
