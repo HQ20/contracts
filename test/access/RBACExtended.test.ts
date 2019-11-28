@@ -23,14 +23,25 @@ contract('RBAC', (accounts) => {
 
 
     it('Retrieve role list length.', async () => {
-        // console.log(await rbac.roleList({ from: root }));
+        // console.log(await rbac.roleList());
     });
 
     it('Retrieve list of roles.', async () => {
-        
+        // 
     });
 
-    it('Retrive roles for user.', async () => {
-        
+    it('Retrieve roles for user.', async () => {
+        const ROLE_5 = 'ROLE_5';
+        await rbac.addMember(user1, stringToBytes32(ROLE_5), { from: root });
+        const roles = await rbac.rolesForMember(user1);
+        bytes32ToString(roles[0]).should.be.equal(ROLE_5);
     });
 });
+
+function stringToBytes32(_string: String) {
+    return web3.utils.fromAscii(_string);
+}
+
+function bytes32ToString(_bytes32: String) {
+    return web3.utils.toAscii(_bytes32).replace(/\0/g, '');
+}
