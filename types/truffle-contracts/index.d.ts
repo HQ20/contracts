@@ -691,6 +691,11 @@ export interface StringConversionInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
+  trimEmptyChars(
+    _bytes: string | BigNumber,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
+
   bytes32ToString(
     _data: string | BigNumber,
     txDetails?: Truffle.TransactionDetails
