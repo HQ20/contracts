@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
-import './RBAC.sol';
+import "./RBAC.sol";
+
 
 /**
  * @title RBAC
@@ -16,20 +17,6 @@ contract RBACExtended is RBAC {
         roleList.push(ROOT_ROLE);
     }
 
-    /**
-     * @notice A method to create a new role.
-     * @param _roleId The id for role that is being created
-     * @param _adminRoleId The role that is allowed to add and remove members from
-     * the role being created.
-     * @return The role id.
-     */
-    function addRole(bytes32 _roleId, bytes32 _adminRoleId)
-        public
-    {
-        super.addRole(_roleId, _adminRoleId);
-        roleList.push(_roleId);
-    }
-
     function rolesForMember(address _member)
         external
         view
@@ -43,5 +30,19 @@ contract RBACExtended is RBAC {
             }
         }
         return roleMemberships;
+    }
+
+    /**
+     * @notice A method to create a new role.
+     * @param _roleId The id for role that is being created
+     * @param _adminRoleId The role that is allowed to add and remove members from
+     * the role being created.
+     * @return The role id.
+     */
+    function addRole(bytes32 _roleId, bytes32 _adminRoleId)
+        public
+    {
+        super.addRole(_roleId, _adminRoleId);
+        roleList.push(_roleId);
     }
 }

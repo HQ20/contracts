@@ -40,10 +40,10 @@ contract('StringConversion', () => {
     });
 });
 
-function stringToBytes32(_string: String) {
-    return web3.utils.fromAscii(_string);
+function stringToBytes32(input: string) {
+    return web3.utils.fromAscii(input);
 }
 
-function bytes32ToString(_bytes32: String) {
-    return web3.utils.toAscii(_bytes32).replace(/\0/g, '');
+function bytes32ToString(input: string) {
+    return web3.utils.toAscii(input).replace(/\0/g, '');
 }
