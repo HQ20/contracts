@@ -31,6 +31,16 @@ contract RBACExtended is RBAC {
     }
 
     /**
+     * @dev Return the role list.
+     */
+    function getRoles()
+        external
+        view
+        returns(bytes32[] memory)
+    {
+        return roleList;
+    }
+    /**
      * @dev Return all the roles that a _member belongs to. For scalability reasons, this function is external.
      */
     function rolesForMember(address _member)

@@ -672,6 +672,8 @@ export interface RBACExtendedInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  getRoles(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
+
   rolesForMember(
     _member: string | BigNumber,
     txDetails?: Truffle.TransactionDetails

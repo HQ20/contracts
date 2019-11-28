@@ -14,18 +14,18 @@ contract('RBAC', (accounts) => {
     beforeEach(async () => {
         rbac = await RBAC.new(root);
         for (let i = 0; i < 10; i++) {
-            const ROLE_ID = stringToBytes32('ROLE_' + i);
-            await rbac.addRole(ROLE_ID, ROOT_ROLE, { from: root });
+            const roleId = stringToBytes32('ROLE_' + i);
+            await rbac.addRole(roleId, ROOT_ROLE, { from: root });
         }
     });
 
-
-    it('Retrieve role list length.', async () => {
-        // console.log(await rbac.roleList());
-    });
-
     it('Retrieve list of roles.', async () => {
-        // 
+        const roles = await rbac.getRoles();
+        roles.length.should.be.equal(11);
+        bytes32ToString(roles[0]).should.be.equal('ROOT');
+        for (let i = 0; i < 10; i++) {
+            bytes32ToString(roles[i + 1]).should.be.equal('ROLE_' + i);
+        }
     });
 
     it('Retrieve no roles for user.', async () => {
