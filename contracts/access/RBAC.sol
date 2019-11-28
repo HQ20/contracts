@@ -13,6 +13,7 @@ contract RBAC {
 
     uint256 constant NO_ROLE = 0;
     uint256 constant ROOT_ROLE = 1;
+    uint256 public totalRoles = 0;
 
     /**
      * @notice A role, which will be used to group users.
@@ -29,18 +30,18 @@ contract RBAC {
     /**
      * @notice All roles ever created.
      */
-    Role[] internal roles;
+    mapping (uint256 => Role) internal roles;
 
     /**
      * @notice The contract initializer. It adds NO_ROLE as with role id 0, and ROOT_ROLE with role id 1.
      */
     constructor(address _root) public {
-        uint256 role = roles.push(Role({ adminRoleId: NO_ROLE })) - 1;
+        roles[totalRoles++] = Role({ adminRoleId: NO_ROLE });
+        roles[totalRoles++] = Role({ adminRoleId: ROOT_ROLE });
 
-        role = roles.push(Role({ adminRoleId: ROOT_ROLE })) - 1;
-        emit RoleCreated(role);
-        roles[role].members[_root] = true;
-        emit MemberAdded(_root, role);
+        emit RoleCreated(ROOT_ROLE);
+        roles[ROOT_ROLE].members[_root] = true;
+        emit MemberAdded(_root, ROOT_ROLE);
     }
 
     /**
@@ -54,20 +55,7 @@ contract RBAC {
         view
         returns(bool)
     {
-        return (_roleId != 0) && (_roleId < roles.length);
-    }
-
-    /**
-     * @notice A method to retrieve the number of roles in the contract.
-     * @dev The zero position in the roles array is reserved for NO_ROLE and doesn't count towards
-     * this total.
-     */
-    function totalRoles()
-        public
-        view
-        returns(uint256)
-    {
-        return roles.length - 1;
+        return (roles[_roleId].adminRoleId != 0); // Not great
     }
 
     /**
@@ -87,21 +75,18 @@ contract RBAC {
 
     /**
      * @notice A method to create a new role.
-     * @param _adminRoleIdId The role that is allowed to add and remove members from
+     * @param _adminRoleId The role that is allowed to add and remove members from
      * the role being created.
      * @return The role id.
      */
-    function addRole(uint256 _adminRoleIdId)
+    function addRole(uint256 _adminRoleId)
         public
     {
-        require(roleExists(_adminRoleIdId), "Admin role doesn't exist.");
-        require(hasRole(msg.sender, _adminRoleIdId), "Not admin of role.");
-        uint256 role = roles.push(
-            Role({
-                adminRoleId: _adminRoleIdId
-            })
-        ) - 1;
-        emit RoleCreated(role);
+        require(roleExists(_adminRoleId), "Admin role doesn't exist.");
+        require(hasRole(msg.sender, _adminRoleId), "Not admin of role.");
+
+        roles[totalRoles++] = Role({ adminRoleId: _adminRoleId });
+        emit RoleCreated(totalRoles - 1);
     }
 
     /**
