@@ -19,6 +19,9 @@ contract('RBAC', (accounts) => {
         }
     });
 
+    /**
+     * @test {RBACExtended#getRoles}
+     */
     it('Retrieve list of roles.', async () => {
         const roles = await rbac.getRoles();
         roles.length.should.be.equal(11);
@@ -28,11 +31,17 @@ contract('RBAC', (accounts) => {
         }
     });
 
+    /**
+     * @test {RBACExtended#rolesForMember}
+     */
     it('Retrieve no roles for user.', async () => {
         const roles = await rbac.rolesForMember(user1);
         roles.length.should.be.equal(0);
     });
 
+    /**
+     * @test {RBACExtended#rolesForMember}
+     */
     it('Retrieve roles for user.', async () => {
         const role5 = 'ROLE_5';
         await rbac.addMember(user1, stringToBytes32(role5), { from: root });
@@ -40,6 +49,9 @@ contract('RBAC', (accounts) => {
         bytes32ToString(roles[0]).should.be.equal(role5);
     });
 
+    /**
+     * @test {RBACExtended#rolesForMember}
+     */
     it('Retrieve many roles for user.', async () => {
         for (let i = 0; i < 10; i++) {
             const roleId = stringToBytes32('ROLE_' + i);
