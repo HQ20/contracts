@@ -4,7 +4,7 @@ import { RBACInstance } from '../../types/truffle-contracts';
 const RBAC = artifacts.require('./access/RBAC.sol') as Truffle.Contract<RBACInstance>;
 should();
 
-
+// tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
 contract('RBAC', (accounts) => {
