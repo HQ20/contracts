@@ -15,6 +15,7 @@ library StringConversion {
         pure
         returns (bytes1)
     {
+        require(_at < 32 );
         return bytes1(bytes32(uint256(_data) * 2 ** (8 * _at)));
     }
 
