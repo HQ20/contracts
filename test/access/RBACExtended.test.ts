@@ -4,7 +4,7 @@ import { RBACExtendedInstance } from '../../types/truffle-contracts';
 const RBAC = artifacts.require('./access/RBACExtended.sol') as Truffle.Contract<RBACExtendedInstance>;
 should();
 
-contract('RBAC', (accounts) => {
+contract('RBACExtended', (accounts) => {
     let rbac: RBACExtendedInstance;
     const root = accounts[1];
     const user1 = accounts[2];
