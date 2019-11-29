@@ -5,18 +5,32 @@ import "./RBAC.sol";
 /**
  * @title RBAC
  * @author Alberto Cuesta Canada
- * @notice Implements runtime configurable Role Based Access Control.
+ * @dev Implements runtime configurable Role Based Access Control.
  */
 contract RBACExtended is RBAC {
     bytes32[] public roleList;
 
     /**
-     * @notice The contract initializer. It adds NO_ROLE as with role id 0x0, and ROOT_ROLE with role id 'ROOT'.
+     * @dev The contract initializer. It adds NO_ROLE as with role id 0x0, and ROOT_ROLE with role id 'ROOT'.
      */
     constructor(address _root) public RBAC(_root) {
         roleList.push(ROOT_ROLE);
     }
 
+    /**
+     * @dev Return the role list.
+     */
+    function getRoles()
+        external
+        view
+        returns(bytes32[] memory)
+    {
+        return roleList;
+    }
+
+    /**
+     * @dev Return all the roles that a _member belongs to. For scalability reasons, this function is external.
+     */
     function rolesForMember(address _member)
         external
         view
@@ -29,7 +43,11 @@ contract RBACExtended is RBAC {
                 roleMemberships[rolesReturned++] = roleList[i];
             }
         }
-        return roleMemberships;
+        bytes32[] memory roleMembershipsTrimmed = new bytes32[](rolesReturned);
+        for (uint256 i = 0; i < rolesReturned; i++) {
+            roleMembershipsTrimmed[i] = roleMemberships[i];
+        }
+        return roleMembershipsTrimmed;
     }
 
     /**

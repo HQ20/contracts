@@ -4,6 +4,21 @@ This is an Ethereum project that implements runtime configurable access control.
 
 ## Usage
 
+The role ids in the contract are kept as bytes32 for two reasons:
+1. Possibility of returning several bytes32 in an array, as oppossed to strings.
+2. Possibility of encoding a role id as recognizable text.
+
+To interact with bytes32 from javascript you can use these two functions:
+```
+function stringToBytes32(_string: String) {
+    return web3.utils.fromAscii(_string);
+}
+
+function bytes32ToString(_bytes32: String) {
+    return web3.utils.toAscii(_bytes32).replace(/\0/g, '');
+}
+```
+
 In `RBAC.sol`:
 * constant NO_ROLE: Reserved value representing NULL
 * constant ROOT_ROLE: Reserved value of the seed role.
@@ -17,5 +32,5 @@ In `RBAC.sol`:
 * function `hasRole(address _member, bytes32 _roleId)`: Returns `true` if `_member` is a member of the role denoted by `_roleId`, and `false` otherwise. Reverts if a role denoted by `_roleId` doesn't exist.
 
 In `RBACExtended.sol`:
-* bytes32[] public roleList: An iterable array with all the roles ever created.
-* function `rolesForMember(address _member)`: Returns an array with all the roles held by the `_member`. The array is padded with NO_ROLE at the end.
+* function `getRoles()`: Returns an array with all the roles in the contract.
+* function `rolesForMember(address _member)`: Returns an array with all the roles held by the `_member`.

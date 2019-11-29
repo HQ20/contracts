@@ -11,6 +11,7 @@ declare global {
       require(
         name: "DoubleLinkedList"
       ): TruffleContracts.DoubleLinkedListContract;
+      require(name: "Gas"): TruffleContracts.GasContract;
       require(name: "LinkedList"): TruffleContracts.LinkedListContract;
       require(
         name: "LinkedListAsArray"
