@@ -13,7 +13,7 @@ contract RBAC {
     event MemberRemoved(address member, bytes32 roleId);
 
     bytes32 public constant NO_ROLE = 0x0;
-    bytes32 public constant ROOT_ROLE = 'ROOT';
+    bytes32 public constant ROOT_ROLE = "ROOT";
 
     /**
      * @notice A role, which will be used to group users.

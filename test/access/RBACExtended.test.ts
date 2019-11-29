@@ -59,17 +59,17 @@ contract('RBAC', (accounts) => {
         }
 
         const roles = await rbac.rolesForMember(user1);
-        
+
         for (let i = 0; i < 10; i++) {
             bytes32ToString(roles[i]).should.be.equal('ROLE_' + i);
         }
     });
 });
 
-function stringToBytes32(_string: String) {
-    return web3.utils.fromAscii(_string);
+function stringToBytes32(text: string) {
+    return web3.utils.fromAscii(text);
 }
 
-function bytes32ToString(_bytes32: String) {
-    return web3.utils.toAscii(_bytes32).replace(/\0/g, '');
+function bytes32ToString(text: string) {
+    return web3.utils.toAscii(text).replace(/\0/g, '');
 }
