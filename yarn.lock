@@ -693,14 +693,6 @@ abbrev@1.0.x:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
   integrity sha1-kbR5JYinc4wl813W9jdSovh3YTU=
 
-abi-decoder@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/abi-decoder/-/abi-decoder-2.2.0.tgz#04b3c18e330e7b031d3b91f70ceba8fef3e6a47f"
-  integrity sha512-FVgkAvPRNa08E85Q+t52KlGto8XZeQITmCYdRIWHHth/t/pgdpAzZijy3LKUCBqmJjXnrosj4c6WGOB1q+KJ9w==
-  dependencies:
-    web3-eth-abi "^1.2.1"
-    web3-utils "^1.2.1"
-
 abstract-leveldown@~2.6.0:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/abstract-leveldown/-/abstract-leveldown-2.6.3.tgz#1c5e8c6a5ef965ae8c35dfb3a8770c476b82c4b8"
@@ -3142,12 +3134,11 @@ eth-ens-namehash@2.0.8:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@0.2.12:
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.12.tgz#e89ab977eb43e5102a948b2cb1dc0e0a988f3a1a"
-  integrity sha512-CKHisR92TyGv70r95eDc+mEythEzb57y0RCq9LWzDFpieR3Uat+FliPmJ6ni3cGp07IfU2gECb7AfXuYEoUWWQ==
+eth-gas-reporter@0.2.13:
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.13.tgz#a679fd8fc5bbd1c7b1ab77d175e6b497d4147378"
+  integrity sha512-XHYtGBQchnDgvoMBebgvhgQXxFMKOrz83n/WBmBc/BX+EizDtwxMc4mNp+glav7umOQ+ACptaj+xw+MrO2MSrg==
   dependencies:
-    abi-decoder "^2.2.0"
     cli-table3 "^0.5.0"
     colors "^1.1.2"
     ethers "^4.0.28"
@@ -3431,7 +3422,7 @@ ethers@4.0.0-beta.3:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^4.0.20, ethers@^4.0.32:
+ethers@^4.0.20, ethers@^4.0.27, ethers@^4.0.28, ethers@^4.0.32:
   version "4.0.40"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.40.tgz#6e1963d10b5d336a13cd81b519c230cc17624653"
   integrity sha512-MC9BtV7Hpq4dgFONEfanx9aU9GhhoWU270F+/wegHZXA7FR+2KXFdt36YIQYLmVY5ykUWswDxd+f9EVkIa7JOA==
@@ -3439,22 +3430,6 @@ ethers@^4.0.20, ethers@^4.0.32:
     aes-js "3.0.0"
     bn.js "^4.4.0"
     elliptic "6.5.2"
-    hash.js "1.1.3"
-    js-sha3 "0.5.7"
-    scrypt-js "2.0.4"
-    setimmediate "1.0.4"
-    uuid "2.0.1"
-    xmlhttprequest "1.8.0"
-
-ethers@^4.0.27, ethers@^4.0.28:
-  version "4.0.32"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.32.tgz#46378864cb3bf29b57c2effd17508b560743abf6"
-  integrity sha512-r0k2tBNF6MYEsvwmINeP3VPppD/7eAZyiOk/ifDDawXGCKqr3iEQkPq6OZSDVD+4Jie38WPteS9thXzpn2+A5Q==
-  dependencies:
-    "@types/node" "^10.3.2"
-    aes-js "3.0.0"
-    bn.js "^4.4.0"
-    elliptic "6.3.3"
     hash.js "1.1.3"
     js-sha3 "0.5.7"
     scrypt-js "2.0.4"
@@ -9307,7 +9282,7 @@ web3-eth-abi@1.0.0-beta.55:
     lodash "^4.17.11"
     web3-utils "1.0.0-beta.55"
 
-web3-eth-abi@1.2.1, web3-eth-abi@^1.2.1:
+web3-eth-abi@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-1.2.1.tgz#9b915b1c9ebf82f70cca631147035d5419064689"
   integrity sha512-jI/KhU2a/DQPZXHjo2GW0myEljzfiKOn+h1qxK1+Y9OQfTcBMxrQJyH5AP89O6l6NZ1QvNdq99ThAxBFoy5L+g==
@@ -9765,7 +9740,7 @@ web3-utils@1.0.0-beta.55:
     randombytes "^2.1.0"
     utf8 "2.1.1"
 
-web3-utils@1.2.1, web3-utils@^1.2.1:
+web3-utils@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.2.1.tgz#21466e38291551de0ab34558de21512ac4274534"
   integrity sha512-Mrcn3l58L+yCKz3zBryM6JZpNruWuT0OCbag8w+reeNROSGVlXzUQkU+gtAwc9JCZ7tKUyg67+2YUGqUjVcyBA==
