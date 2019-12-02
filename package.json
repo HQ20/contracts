@@ -23,7 +23,7 @@
         "test": "scripts/test.sh",
         "test:ci": "CI=true scripts/test.sh",
         "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
-        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
+        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh | coveralls",
         "lint:sol": "solium -d contracts",
         "lint:ts": "tslint -c tslint.json 'test/**/*.ts'",
         "lint": "yarn lint:sol && yarn lint:ts",
@@ -32,14 +32,11 @@
         "generate-ts": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "dependencies": {
-        "@openzeppelin/cli": "2.6.0",
-        "@openzeppelin/contracts": "2.4.0",
-        "@openzeppelin/contracts-ethereum-package": "2.4.0",
-        "@openzeppelin/upgrades": "2.6.0",
         "truffle": "5.1.0",
         "cross-env": "6.0.3"
     },
     "devDependencies": {
+        "coveralls": "3.0.9",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "eth-gas-reporter": "0.2.12",
