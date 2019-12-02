@@ -23,7 +23,7 @@
         "test": "scripts/test.sh",
         "test:ci": "CI=true scripts/test.sh",
         "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
-        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh & cat coverage/lcov.info | coveralls",
+        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
         "lint:sol": "solium -d contracts",
         "lint:ts": "tslint -c tslint.json 'test/**/*.ts'",
         "lint": "yarn lint:sol && yarn lint:ts",
