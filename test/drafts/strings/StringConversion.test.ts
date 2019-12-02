@@ -1,5 +1,5 @@
 import { should } from 'chai';
-import { StringConversionInstance } from '../../types/truffle-contracts';
+import { StringConversionInstance } from '../../../types/truffle-contracts';
 
 const StringConversion = artifacts.require('./StringConversion.sol')  as Truffle.Contract<StringConversionInstance>;
 should();

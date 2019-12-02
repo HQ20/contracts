@@ -5,7 +5,7 @@ pragma solidity ^0.5.0;
  * @title String Conversion
  * @dev Functions to convert between string and bytes32
  */
-library StringConversion {
+contract StringConversion {
 
     /**
      * @dev Extract byte at position _at from _data.
