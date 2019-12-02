@@ -36,7 +36,7 @@
         "@openzeppelin/contracts": "2.4.0",
         "@openzeppelin/contracts-ethereum-package": "2.4.0",
         "@openzeppelin/upgrades": "2.6.0",
-        "truffle": "5.1.0",
+        "truffle": "5.1.2",
         "cross-env": "6.0.3"
     },
     "devDependencies": {
