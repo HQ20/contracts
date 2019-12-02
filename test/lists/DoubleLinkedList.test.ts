@@ -456,7 +456,7 @@ contract('DoubleLinkedList - insert', (accounts) => {
     });
 });
 
-/* contract('DoubleLinkedList - gas tests', (accounts) => {
+contract('DoubleLinkedList - gas tests', (accounts) => {
     let doubleLinkedList: DoubleLinkedListInstance;
     const dummyData = '0x0000000000000000000000000000000000000001';
 
@@ -489,4 +489,4 @@ contract('DoubleLinkedList - insert', (accounts) => {
         const tailId = await doubleLinkedList.tail();
         await doubleLinkedList.remove(tailId);
     });
-}); */
+});

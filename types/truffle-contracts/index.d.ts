@@ -9,13 +9,6 @@ export interface DoubleLinkedListContract
   "new"(meta?: Truffle.TransactionDetails): Promise<DoubleLinkedListInstance>;
 }
 
-export interface GasContract extends Truffle.Contract<GasInstance> {
-  "new"(
-    _root: string | BigNumber,
-    meta?: Truffle.TransactionDetails
-  ): Promise<GasInstance>;
-}
-
 export interface LinkedListContract
   extends Truffle.Contract<LinkedListInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<LinkedListInstance>;
@@ -172,56 +165,6 @@ export interface DoubleLinkedListInstance extends Truffle.ContractInstance {
     estimateGas(
       _nextId: number | BigNumber | string,
       _data: string | BigNumber,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-}
-
-export interface GasInstance extends Truffle.ContractInstance {
-  mappingStorage(
-    arg0: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BigNumber>;
-
-  arrayStorage(
-    arg0: number | BigNumber | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BigNumber>;
-
-  writeData: {
-    (
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  readData: {
-    (
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse>;
-    call(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _times: number | BigNumber | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _times: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -626,13 +569,6 @@ export interface RBACExtendedInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
-  getRoles(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
-
-  rolesForMember(
-    _member: string | BigNumber,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string[]>;
-
   addRole: {
     (
       _roleId: string | BigNumber,
@@ -655,6 +591,11 @@ export interface RBACExtendedInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
+
+  rolesForMember(
+    _member: string | BigNumber,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string[]>;
 }
 
 export interface StringConversionInstance extends Truffle.ContractInstance {

@@ -423,7 +423,7 @@ contract('LinkedList - insert', (accounts) => {
     });
 });
 
-/* contract('LinkedList - gas tests', (accounts) => {
+contract('LinkedList - gas tests', (accounts) => {
     let linkedList: LinkedListInstance;
     const dummyData = '0x0000000000000000000000000000000000000001';
 
@@ -456,4 +456,4 @@ contract('LinkedList - insert', (accounts) => {
         const tailId = await linkedList.findTailId();
         await linkedList.remove(tailId);
     });
-}); */
+});
