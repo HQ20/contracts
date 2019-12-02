@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 
 /**
- * @title LinkedList
+ * @title OrderedList
  * @dev Data structure
  * @author Alberto Cuesta Cañada
  */
@@ -105,8 +105,8 @@ contract OrderedList {
     /**
      * @dev Insert a new Object as the new Head with `_data` in the data field.
      */
-    function addHead(uint256 _rank, address _data)
-        public
+    function _addHead(uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         uint256 objectId = _createObject(_rank, _data);
@@ -118,12 +118,12 @@ contract OrderedList {
     /**
      * @dev Insert a new Object as the new Tail with `_data` in the data field.
      */
-    function addTail(uint256 _rank, address _data)
-        public
+    function _addTail(uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         if (head == 0) {
-            addHead(_rank, _data);
+            _addHead(_rank, _data);
         }
         else {
             uint256 objectId = _createObject(_rank, _data);
@@ -135,12 +135,12 @@ contract OrderedList {
     /**
      * @dev Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
      */
-    function insertAfter(uint256 _prevId, uint256 _rank, address _data)
-        public
+    function _insertAfter(uint256 _prevId, uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         if (_prevId == tail) {
-            addTail(_rank, _data);
+            _addTail(_rank, _data);
         }
         else {
             Object memory prevObject = objects[_prevId];
@@ -154,15 +154,15 @@ contract OrderedList {
     /**
      * @dev Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
      */
-    function insertBefore(uint256 _nextId, uint256 _rank, address _data)
-        public
+    function _insertBefore(uint256 _nextId, uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         if (_nextId == head) {
-            addHead(_rank, _data);
+            _addHead(_rank, _data);
         }
         else {
-            insertAfter(objects[_nextId].prev, _rank, _data);
+            _insertAfter(objects[_nextId].prev, _rank, _data);
         }
     }
 

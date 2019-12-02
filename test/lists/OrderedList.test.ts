@@ -1,8 +1,8 @@
 import { should } from 'chai';
-import { OrderedListInstance } from '../../types/truffle-contracts';
+import { OrderedListMockInstance } from '../../types/truffle-contracts';
 
 const OrderedList = artifacts
-    .require('./lists/OrderedList.sol') as Truffle.Contract<OrderedListInstance>;
+    .require('./lists/mocks/OrderedListMock.sol') as Truffle.Contract<OrderedListMockInstance>;
 should();
 
 const emptyData = '0x0000000000000000000000000000000000000000';
@@ -17,7 +17,7 @@ const tailRank = 10;
 /** @test {OrderedList} contract */
 contract('OrderedList - add', (accounts) => {
 
-    let orderedList: OrderedListInstance;
+    let orderedList: OrderedListMockInstance;
 
     beforeEach(async () => {
         orderedList = await OrderedList.new();
@@ -165,7 +165,7 @@ contract('OrderedList - add', (accounts) => {
 /** @test {orderedList} contract */
 contract('OrderedList - remove', (accounts) => {
 
-    let orderedList: OrderedListInstance;
+    let orderedList: OrderedListMockInstance;
     let headId: number;
     let middleId: number;
     let tailId: number;
@@ -255,7 +255,7 @@ contract('OrderedList - insert', (accounts) => {
     const insertedData = '0x0000000000000000000000000000000000000004';
     const insertedRank = 4;
 
-    let orderedList: OrderedListInstance;
+    let orderedList: OrderedListMockInstance;
     let headId: number;
     let middleId: number;
     let tailId: number;
