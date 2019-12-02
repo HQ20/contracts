@@ -17,6 +17,7 @@ declare global {
       ): TruffleContracts.LinkedListAsArrayContract;
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
       require(name: "RBAC"): TruffleContracts.RBACContract;
+      require(name: "RBACExtended"): TruffleContracts.RBACExtendedContract;
       require(
         name: "StringConversion"
       ): TruffleContracts.StringConversionContract;

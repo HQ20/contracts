@@ -10,8 +10,9 @@ const { itShouldThrow } = require('./../utils');
 contract('RBAC', (accounts) => {
     let rbac: RBACInstance;
     const root = accounts[1];
-    const NO_ROLE = 0;
-    const ROOT_ROLE = 1;
+    const NO_ROLE = '0x0';
+    const ROOT_ROLE = web3.utils.fromAscii('ROOT');
+    const ADDED_ROLE = web3.utils.fromAscii('ADDED');
     const user1 = accounts[2];
     const user2 = accounts[3];
 
@@ -20,8 +21,7 @@ contract('RBAC', (accounts) => {
     });
 
     it('roleExists returns false for non existing roles', async () => {
-        const roleId = (await rbac.totalRoles()).toNumber() + 1;
-        assert.isFalse(await rbac.roleExists(roleId));
+        assert.isFalse(await rbac.roleExists(ADDED_ROLE));
     });
 
     it('roleExists returns false for NO_ROLE', async () => {
@@ -43,8 +43,7 @@ contract('RBAC', (accounts) => {
     itShouldThrow(
         'hasRole throws for non existing roles.',
         async () => {
-            const roleId = (await rbac.totalRoles()).toNumber() + 1;
-            await rbac.hasRole(user1, roleId);
+            await rbac.hasRole(user1, ADDED_ROLE);
         },
         'Role doesn\'t exist.',
     );
@@ -65,8 +64,7 @@ contract('RBAC', (accounts) => {
     itShouldThrow(
         'addRole requires an existing admin role.',
         async () => {
-            const roleId = (await rbac.totalRoles()).toNumber() + 1;
-            await rbac.addRole(roleId, { from: user1 });
+            await rbac.addRole(ADDED_ROLE, ADDED_ROLE, { from: user1 });
         },
         'Admin role doesn\'t exist.',
     );
@@ -74,14 +72,14 @@ contract('RBAC', (accounts) => {
     itShouldThrow(
         'addRole requires msg.sender bearing the admin role.',
         async () => {
-            await rbac.addRole(ROOT_ROLE, { from: user1 });
+            await rbac.addRole(ADDED_ROLE, ROOT_ROLE, { from: user1 });
         },
         'Not admin of role.',
     );
 
     it('addRole adds a new role.', async () => {
         const roleId = (
-            await rbac.addRole(ROOT_ROLE, { from: root })
+            await rbac.addRole(ADDED_ROLE, ROOT_ROLE, { from: root })
         ).logs[0].args.roleId;
         assert.isTrue(await rbac.roleExists(roleId));
     });
@@ -89,8 +87,7 @@ contract('RBAC', (accounts) => {
     itShouldThrow(
         'addMember throws on non existing roles',
         async () => {
-            const roleId = (await rbac.totalRoles()).toNumber() + 1;
-            await rbac.addMember(user1, roleId, { from: user1 });
+            await rbac.addMember(user1, ADDED_ROLE, { from: user1 });
         },
         'Role doesn\'t exist.',
     );
@@ -119,8 +116,7 @@ contract('RBAC', (accounts) => {
     itShouldThrow(
         'removeMember throws on non existing roles',
         async () => {
-            const roleId = (await rbac.totalRoles()).toNumber() + 1;
-            await rbac.removeMember(user1, roleId, { from: user1 });
+            await rbac.removeMember(user1, ADDED_ROLE, { from: user1 });
         },
         'Role doesn\'t exist.',
     );

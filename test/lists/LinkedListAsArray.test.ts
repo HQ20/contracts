@@ -185,7 +185,7 @@ contract('LinkedListAsArray', (accounts) => {
     });
 });
 
-contract('LinkedListAsArray - gas tests', (accounts) => {
+/* contract('LinkedListAsArray - gas tests', (accounts) => {
     let linkedList: LinkedListAsArrayInstance;
     const dummyData = '0x0000000000000000000000000000000000000001';
 
@@ -203,4 +203,4 @@ contract('LinkedListAsArray - gas tests', (accounts) => {
     it('Remove.', async () => {
         await linkedList.remove(0);
     });
-});
+}); */
