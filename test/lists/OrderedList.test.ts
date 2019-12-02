@@ -35,11 +35,7 @@ contract('OrderedList - add', (accounts) => {
      */
     it('get on a non existing object returns (0,0,0,0,0).', async () => {
         const result = (await orderedList.get(0));
-        result[0].toNumber().should.be.equal(0);
-        result[1].toNumber().should.be.equal(0);
-        result[2].toNumber().should.be.equal(0);
-        result[3].toNumber().should.be.equal(0);
-        result[4].should.be.equal(emptyData);
+        assertEqualObjects(result, [0, 0, 0, 0, emptyData]);
     });
 
     /**
@@ -68,11 +64,7 @@ contract('OrderedList - add', (accounts) => {
         ).logs[0].args.id.toNumber();
 
         const result = (await orderedList.get(objectId));
-        result[0].toNumber().should.be.equal(objectId);
-        result[1].toNumber().should.be.equal(0);
-        result[2].toNumber().should.be.equal(0);
-        result[3].toNumber().should.be.equal(headRank);
-        result[4].should.be.equal(headData);
+        assertEqualObjects(result, [objectId, 0, 0, headRank, headData]);
     });
 
     /**
@@ -87,18 +79,10 @@ contract('OrderedList - add', (accounts) => {
         ).logs[0].args.id.toNumber();
 
         const objectOne = (await orderedList.get(objectOneId));
-        objectOne[0].toNumber().should.be.equal(objectOneId);
-        objectOne[1].toNumber().should.be.equal(0);
-        objectOne[2].toNumber().should.be.equal(objectTwoId);
-        objectOne[3].toNumber().should.be.equal(middleRank);
-        objectOne[4].should.be.equal(middleData);
+        assertEqualObjects(objectOne, [objectOneId, 0, objectTwoId, middleRank, middleData]);
 
         const objectTwo = (await orderedList.get(objectTwoId));
-        objectTwo[0].toNumber().should.be.equal(objectTwoId);
-        objectTwo[1].toNumber().should.be.equal(objectOneId);
-        objectTwo[2].toNumber().should.be.equal(0);
-        objectTwo[3].toNumber().should.be.equal(headRank);
-        objectTwo[4].should.be.equal(headData);
+        assertEqualObjects(objectTwo, [objectTwoId, objectOneId, 0, headRank, headData]);
 
         ((await orderedList.head()).toNumber()).should.be.equal(objectTwoId);
     });
@@ -124,11 +108,7 @@ contract('OrderedList - add', (accounts) => {
         ).logs[0].args.id.toNumber();
 
         const result = (await orderedList.get(objectId));
-        result[0].toNumber().should.be.equal(objectId);
-        result[1].toNumber().should.be.equal(0);
-        result[2].toNumber().should.be.equal(0);
-        result[3].toNumber().should.be.equal(headRank);
-        result[4].should.be.equal(headData);
+        assertEqualObjects(result, [objectId, 0, 0, headRank, headData]);
     });
 
     /**
@@ -143,18 +123,10 @@ contract('OrderedList - add', (accounts) => {
         ).logs[0].args.id.toNumber();
 
         const objectOne = (await orderedList.get(objectOneId));
-        objectOne[0].toNumber().should.be.equal(objectOneId);
-        objectOne[1].toNumber().should.be.equal(objectTwoId);
-        objectOne[2].toNumber().should.be.equal(0);
-        objectOne[3].toNumber().should.be.equal(middleRank);
-        objectOne[4].should.be.equal(middleData);
+        assertEqualObjects(objectOne, [objectOneId, objectTwoId, 0, middleRank, middleData]);
 
         const objectTwo = (await orderedList.get(objectTwoId));
-        objectTwo[0].toNumber().should.be.equal(objectTwoId);
-        objectTwo[1].toNumber().should.be.equal(0);
-        objectTwo[2].toNumber().should.be.equal(objectOneId);
-        objectTwo[3].toNumber().should.be.equal(headRank);
-        objectTwo[4].should.be.equal(headData);
+        assertEqualObjects(objectTwo, [objectTwoId, 0, objectOneId, headRank, headData]);
 
         ((await orderedList.head()).toNumber()).should.be.equal(objectOneId);
     });
@@ -222,18 +194,10 @@ contract('OrderedList - remove', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(middleId);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(tailId);
-        middleObject[2].toNumber().should.be.equal(0);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, tailId, 0, middleRank, middleData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(middleId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
     });
 
     /**
@@ -246,18 +210,10 @@ contract('OrderedList - remove', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(middleId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, middleId, 0, headRank, headData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(0);
-        middleObject[2].toNumber().should.be.equal(headId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, 0, headId, middleRank, middleData]);
     });
 
     /**
@@ -270,18 +226,10 @@ contract('OrderedList - remove', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(tailId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, tailId, 0, headRank, headData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(headId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, headId, tailRank, tailData]);
     });
 
     /**
@@ -333,32 +281,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(insertedId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, insertedId, 0, headRank, headData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(middleId);
-        insertedObject[2].toNumber().should.be.equal(headId);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, middleId, headId, insertedRank, insertedData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(tailId);
-        middleObject[2].toNumber().should.be.equal(insertedId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, tailId, insertedId, middleRank, middleData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(middleId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
     });
 
     it('inserts after the tail.', async () => {
@@ -368,32 +300,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(middleId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, middleId, 0, headRank, headData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(tailId);
-        middleObject[2].toNumber().should.be.equal(headId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, tailId, headId, middleRank, middleData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(insertedId);
-        tailObject[2].toNumber().should.be.equal(middleId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, insertedId, middleId, tailRank, tailData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(0);
-        insertedObject[2].toNumber().should.be.equal(tailId);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, 0, tailId, insertedRank, insertedData]);
     });
 
     it('inserts after the middle.', async () => {
@@ -403,32 +319,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(middleId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, middleId, 0, headRank, headData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(insertedId);
-        middleObject[2].toNumber().should.be.equal(headId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, insertedId, headId, middleRank, middleData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(tailId);
-        insertedObject[2].toNumber().should.be.equal(middleId);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, tailId, middleId, insertedRank, insertedData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(insertedId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, insertedId, tailRank, tailData]);
     });
 
     it('inserts before the head.', async () => {
@@ -438,32 +338,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(insertedId);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(headId);
-        insertedObject[2].toNumber().should.be.equal(0);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, headId, 0, insertedRank, insertedData]);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(middleId);
-        headObject[2].toNumber().should.be.equal(insertedId);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, middleId, insertedId, headRank, headData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(tailId);
-        middleObject[2].toNumber().should.be.equal(headId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, tailId, headId, middleRank, middleData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(middleId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
     });
 
     it('inserts before the tail.', async () => {
@@ -473,32 +357,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(middleId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, middleId, 0, headRank, headData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(insertedId);
-        middleObject[2].toNumber().should.be.equal(headId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, insertedId, headId, middleRank, middleData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(tailId);
-        insertedObject[2].toNumber().should.be.equal(middleId);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, tailId, middleId, insertedRank, insertedData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(insertedId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, insertedId, tailRank, tailData]);
     });
 
     it('inserts before the middle.', async () => {
@@ -508,32 +376,16 @@ contract('OrderedList - insert', (accounts) => {
         ((await orderedList.head()).toNumber()).should.be.equal(headId);
 
         const headObject = (await orderedList.get(headId));
-        headObject[0].toNumber().should.be.equal(headId);
-        headObject[1].toNumber().should.be.equal(insertedId);
-        headObject[2].toNumber().should.be.equal(0);
-        headObject[3].toNumber().should.be.equal(headRank);
-        headObject[4].should.be.equal(headData);
+        assertEqualObjects(headObject, [headId, insertedId, 0, headRank, headData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        insertedObject[0].toNumber().should.be.equal(insertedId);
-        insertedObject[1].toNumber().should.be.equal(middleId);
-        insertedObject[2].toNumber().should.be.equal(headId);
-        insertedObject[3].toNumber().should.be.equal(insertedRank);
-        insertedObject[4].should.be.equal(insertedData);
+        assertEqualObjects(insertedObject, [insertedId, middleId, headId, insertedRank, insertedData]);
 
         const middleObject = (await orderedList.get(middleId));
-        middleObject[0].toNumber().should.be.equal(middleId);
-        middleObject[1].toNumber().should.be.equal(tailId);
-        middleObject[2].toNumber().should.be.equal(insertedId);
-        middleObject[3].toNumber().should.be.equal(middleRank);
-        middleObject[4].should.be.equal(middleData);
+        assertEqualObjects(middleObject, [middleId, tailId, insertedId, middleRank, middleData]);
 
         const tailObject = (await orderedList.get(tailId));
-        tailObject[0].toNumber().should.be.equal(tailId);
-        tailObject[1].toNumber().should.be.equal(0);
-        tailObject[2].toNumber().should.be.equal(middleId);
-        tailObject[3].toNumber().should.be.equal(tailRank);
-        tailObject[4].should.be.equal(tailData);
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
     });
 });
 
@@ -571,3 +423,14 @@ contract('OrderedList - insert', (accounts) => {
         await orderedList.remove(tailId);
     });
 }); */
+
+function assertEqualObjects(
+    object1: [any, any, any, any, any],
+    object2: [any, any, any, any, any],
+) {
+    object1[0].toNumber().should.be.equal(object2[0]);
+    object1[1].toNumber().should.be.equal(object2[1]);
+    object1[2].toNumber().should.be.equal(object2[2]);
+    object1[3].toNumber().should.be.equal(object2[3]);
+    object1[4].should.be.equal(object2[4]);
+}
