@@ -11,6 +11,9 @@ declare global {
       require(
         name: "DoubleLinkedList"
       ): TruffleContracts.DoubleLinkedListContract;
+      require(name: "Gas"): TruffleContracts.GasContract;
+      require(name: "ICondition"): TruffleContracts.IConditionContract;
+      require(name: "IStateMachine"): TruffleContracts.IStateMachineContract;
       require(name: "LinkedList"): TruffleContracts.LinkedListContract;
       require(
         name: "LinkedListAsArray"
@@ -18,9 +21,11 @@ declare global {
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
       require(name: "RBAC"): TruffleContracts.RBACContract;
       require(name: "RBACExtended"): TruffleContracts.RBACExtendedContract;
+      require(name: "StateMachine"): TruffleContracts.StateMachineContract;
       require(
         name: "StringConversion"
       ): TruffleContracts.StringConversionContract;
+      require(name: "Transition"): TruffleContracts.TransitionContract;
     }
   }
 }
