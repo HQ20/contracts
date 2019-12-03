@@ -43,7 +43,7 @@
     "devDependencies": {
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
-        "eth-gas-reporter": "0.2.13",
+        "eth-gas-reporter": "0.2.14",
         "ethlint": "1.2.5",
         "ganache-cli": "6.7.0",
         "soldoc": "0.1.2-beta.0",
