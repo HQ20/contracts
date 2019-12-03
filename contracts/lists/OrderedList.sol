@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 
 /**
  * @title OrderedList
- * @dev Data structure
+ * @dev Doubly linked list of ranked objects. The tail will always have the highest rank and elements will be ordered down to the head.
  * @author Alberto Cuesta Cañada
  */
 contract OrderedList {
@@ -49,18 +49,34 @@ contract OrderedList {
     }
 
     /**
-     * @dev Return the id of the first Object with a greater rank, starting from the head.
+     * @dev Return the id of the first Object with a lower or equal rank, starting from the tail.
      */
-    function findGreaterRank(uint256 _rank)
+    function findRank(uint256 _rank)
         public
         view
         returns (uint256)
     {
-        Object memory object = objects[head];
+        Object memory object = objects[tail];
         while (object.rank > _rank) {
-            object = objects[object.next];
+            object = objects[object.prev];
         }
         return object.id;
+    }
+
+    /**
+     * @dev Insert the object immediately after the one with the closest lower rank.
+     */
+    function insert(uint256 _rank, address _data)
+        public
+        returns (bool)
+    {
+        uint256 prevId = findRank(_rank);
+        if (prevId == 0) {
+            _addHead(_rank, _data);
+        }
+        else {
+            _insertAfter(prevId, _rank, _data);
+        }
     }
 
     /**
@@ -87,19 +103,6 @@ contract OrderedList {
         }
         delete objects[removeObject.id];
         emit ObjectRemoved(_id);
-    }
-
-    /**
-     * @dev Remove the Object denoted by `_id` from the List.
-     */
-    function insert(uint256 _rank, address _data)
-        public
-        returns (bool)
-    {
-        uint256 objectId = _createObject(_rank, _data);
-        _link(objectId, head);
-        _setHead(objectId);
-        if (tail == 0) _setTail(objectId);
     }
 
     /**
