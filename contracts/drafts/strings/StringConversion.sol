@@ -15,6 +15,7 @@ contract StringConversion {
         pure
         returns (bytes1)
     {
+        require(_at < 32);
         return bytes1(bytes32(uint256(_data) * 2 ** (8 * _at)));
     }
 
@@ -37,17 +38,18 @@ contract StringConversion {
     }
 
     /**
-     * @dev Convert _data from bytes32 to a string.
+     * @dev Resize a bytes32 containing ascii characters, padded by 0, to a
+     * bytes variable of the right size with no padding.
      */
-    function bytes32ToString(bytes32 _data)
+    function trimEmptyChars(bytes32 _bytes)
         public
         pure
-        returns (string memory)
+        returns (bytes memory)
     {
         bytes memory result = new bytes(32);
         uint256 charCount = 0;
         for (uint256 byteCount = 0; byteCount < 32; byteCount++) {
-            bytes1 char = byteAt(_data, byteCount);
+            bytes1 char = byteAt(_bytes, byteCount);
             if (char == 0) {
                 break;
             }
@@ -55,7 +57,18 @@ contract StringConversion {
             charCount++;
         }
 
-        return string(resizeBytes(result, charCount));
+        return resizeBytes(result, charCount);
+    }
+
+    /**
+     * @dev Convert _data from bytes32 to a string.
+     */
+    function bytes32ToString(bytes32 _data)
+        public
+        pure
+        returns (string memory)
+    {
+        return string(trimEmptyChars(_data));
     }
 
     /**

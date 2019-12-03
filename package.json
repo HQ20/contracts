@@ -20,6 +20,7 @@
         "deploy:ganache": "truffle deploy --network development",
         "start:geth:local": "./scripts/local_geth.sh",
         "start:ganache:local": "./scripts/local_ganache.sh",
+        "pretest": "yarn generate-ts",
         "test": "scripts/test.sh",
         "test:ci": "CI=true scripts/test.sh",
         "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
