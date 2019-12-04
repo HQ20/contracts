@@ -29,10 +29,6 @@ contract Issuance is Ownable, StateMachine {
     using SafeMath for uint256;
 
     event IssuanceCreated();
-    event IssuanceOpened();
-    event IssuanceDistributing();
-    event IssuanceLive();
-    event IssuanceFailed();
 
     event IssuePriceSet();
     event OpeningDateSet();
@@ -40,8 +36,7 @@ contract Issuance is Ownable, StateMachine {
     event MinIssueSizeSet();
     event MinTicketSizeSet();
 
-    event InvestmentProcessed(address investor, uint256 amount);
-    event SentTokensToInvestor(address investor, uint256 amount);
+    event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
     IERC20 public acceptedToken;
@@ -111,7 +106,7 @@ contract Issuance is Ownable, StateMachine {
 
         issueSize = issueSize.add(_amount);
 
-        emit InvestmentProcessed(msg.sender, _amount);
+        emit InvestmentAdded(msg.sender, _amount);
     }
 
     /**
@@ -128,7 +123,6 @@ contract Issuance is Ownable, StateMachine {
             "Issuance address not set."
         );
         transition("OPEN");
-        emit IssuanceOpened();
     }
 
     /**
@@ -142,7 +136,6 @@ contract Issuance is Ownable, StateMachine {
         );
         require(issueSize >= minIssueSize, "Not enough funds collected yet.");
         transition("DISTRIBUTING");
-        emit IssuanceDistributing();
     }
 
     /**
@@ -152,13 +145,8 @@ contract Issuance is Ownable, StateMachine {
         require(currentState == "DISTRIBUTING", "Cannot send tokens now.");
         if (nextInvestor >= investors.length) {
             transition("LIVE");
-            emit IssuanceLive();
         } else {
             issuanceToken.mint(
-                investors[nextInvestor],
-                investments[investors[nextInvestor]].div(issuePrice)
-            );
-            emit SentTokensToInvestor(
                 investors[nextInvestor],
                 investments[investors[nextInvestor]].div(issuePrice)
             );
@@ -185,7 +173,6 @@ contract Issuance is Ownable, StateMachine {
             acceptedToken.transfer(investors[i], investments[investors[i]]);
         }
         transition("FAILED");
-        emit IssuanceFailed();
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
