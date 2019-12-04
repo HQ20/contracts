@@ -34,6 +34,7 @@ contract Issuance is Ownable, StateMachine {
     event IssuanceLive();
     event IssuanceFailed();
 
+    event IssuePriceSet();
     event OpeningDateSet();
     event ClosingDateSet();
     event MinIssueSizeSet();
@@ -63,18 +64,19 @@ contract Issuance is Ownable, StateMachine {
         string memory _issuanceName,
         string memory _issuanceSymbol,
         uint8 _issuanceDecimals,
-        IERC20 _acceptedToken
+        address _acceptedToken
     ) public Ownable() StateMachine() {
         issuanceToken = new IssuanceToken(
             _issuanceName,
             _issuanceSymbol,
             _issuanceDecimals
         );
-        acceptedToken = _acceptedToken;
+        acceptedToken = IssuanceToken(_acceptedToken);
         createState("OPEN");
         createState("DISTRIBUTING");
         createState("LIVE");
         createState("FAILED");
+        createTransition("SETUP", "OPEN");
         createTransition("OPEN", "DISTRIBUTING");
         createTransition("DISTRIBUTING", "LIVE");
         createTransition("OPEN", "FAILED");
@@ -92,7 +94,7 @@ contract Issuance is Ownable, StateMachine {
             "Not open for investments."
         );
         require(
-            _amount % issuePrice == 0,
+            _amount.mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
         require(
@@ -151,16 +153,17 @@ contract Issuance is Ownable, StateMachine {
         if (nextInvestor >= investors.length) {
             transition("LIVE");
             emit IssuanceLive();
+        } else {
+            issuanceToken.mint(
+                investors[nextInvestor],
+                investments[investors[nextInvestor]].div(issuePrice)
+            );
+            emit SentTokensToInvestor(
+                investors[nextInvestor],
+                investments[investors[nextInvestor]].div(issuePrice)
+            );
+            nextInvestor = nextInvestor.add(1);
         }
-        issuanceToken.mint(
-            investors[nextInvestor],
-            investments[investors[nextInvestor]].div(issuePrice)
-        );
-        emit SentTokensToInvestor(
-            investors[nextInvestor],
-            investments[investors[nextInvestor]].div(issuePrice)
-        );
-        nextInvestor = nextInvestor.add(1);
     }
 
     /**
@@ -185,22 +188,32 @@ contract Issuance is Ownable, StateMachine {
         emit IssuanceFailed();
     }
 
+    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
+        require(currentState == "SETUP", "Cannot setup now.");
+        issuePrice = _issuePrice;
+        emit IssuePriceSet();
+    }
+
     function setOpeningDate(uint256 _openingDate) public onlyOwner {
+        require(currentState == "SETUP", "Cannot setup now.");
         openingDate = _openingDate;
         emit OpeningDateSet();
     }
 
     function setClosingDate(uint256 _closingDate) public onlyOwner {
+        require(currentState == "SETUP", "Cannot setup now.");
         closingDate = _closingDate;
         emit ClosingDateSet();
     }
 
     function setMinIssueSize(uint256 _minIssueSize) public onlyOwner {
+        require(currentState == "SETUP", "Cannot setup now.");
         minIssueSize = _minIssueSize;
         emit MinIssueSizeSet();
     }
 
     function setMinTicketSize(uint256 _minTicketSize) public onlyOwner {
+        require(currentState == "SETUP", "Cannot setup now.");
         minTicketSize = _minTicketSize;
         emit MinTicketSizeSet();
     }

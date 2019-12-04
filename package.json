@@ -36,8 +36,9 @@
         "@openzeppelin/contracts": "2.4.0",
         "@openzeppelin/contracts-ethereum-package": "2.4.0",
         "@openzeppelin/upgrades": "2.6.0",
-        "truffle": "5.1.2",
-        "cross-env": "6.0.3"
+        "cross-env": "6.0.3",
+        "ganache-time-traveler": "^1.0.10",
+        "truffle": "5.1.2"
     },
     "devDependencies": {
         "bignumber.js": "9.0.0",
