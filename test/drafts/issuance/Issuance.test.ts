@@ -85,7 +85,7 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await helper.advanceTimeAndBlock(4000);
         await issuance.startDistribution();
-        bytes32ToString(await issuance.currentState()).should.be.equal('DISTRIBUTING');
+        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
     });
 
     /**
@@ -101,9 +101,9 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await helper.advanceTimeAndBlock(4000);
         await issuance.startDistribution();
+        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         await issuance.withdraw({ from: investor1 });
         await issuance.withdraw({ from: investor2 });
-        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         const issuanceToken = await IssuanceToken.at(await issuance.issuanceToken());
         web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('5');
         web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('1');
@@ -136,25 +136,9 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await issuance.cancelAllInvestments();
-        bytes32ToString(await issuance.currentState()).should.be.equal('REFUNDING');
-    });
-
-    /**
-     * @test {Issuance#refundNextInvestor}
-     */
-    it('refundNextInvestor refunds the investors', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await helper.advanceTimeAndBlock(4000);
-        await issuance.cancelAllInvestments();
-        await issuance.refundNextInvestor();
-        await issuance.refundNextInvestor();
         bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
+        await issuance.cancelInvestment({ from: investor1 });
+        await issuance.cancelInvestment({ from: investor2 });
         web3.utils.fromWei(await acceptedToken.balanceOf(investor1), 'ether').should.be.equal('100');
         web3.utils.fromWei(await acceptedToken.balanceOf(investor2), 'ether').should.be.equal('50');
     });

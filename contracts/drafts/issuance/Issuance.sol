@@ -69,15 +69,11 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         acceptedToken = IssuanceToken(_acceptedToken);
         createState("OPEN");
-        createState("DISTRIBUTING");
         createState("LIVE");
-        createState("REFUNDING");
         createState("FAILED");
         createTransition("SETUP", "OPEN");
-        createTransition("OPEN", "DISTRIBUTING");
-        createTransition("DISTRIBUTING", "LIVE");
-        createTransition("OPEN", "REFUNDING");
-        createTransition("REFUNDING", "FAILED");
+        createTransition("OPEN", "LIVE");
+        createTransition("OPEN", "FAILED");
         emit IssuanceCreated();
     }
 
@@ -117,17 +113,11 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     }
 
     function withdraw() external nonReentrant {
-        require(currentState == "DISTRIBUTING", "Cannot withdraw now.");
+        require(currentState == "LIVE", "Cannot withdraw now.");
         require(investments[msg.sender] > 0, "No investments found.");
-        if (nextInvestor < investors.length) {
-            uint256 amount = investments[msg.sender];
-            investments[msg.sender] = 0;
-            issuanceToken.mint(msg.sender, amount.div(issuePrice));
-            nextInvestor = nextInvestor.add(1);
-        }
-        if (nextInvestor == investors.length) {
-            transition("LIVE");
-        }
+        uint256 amount = investments[msg.sender];
+        investments[msg.sender] = 0;
+        issuanceToken.mint(msg.sender, amount.div(issuePrice));
     }
 
     /**
@@ -135,7 +125,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      */
     function cancelInvestment() external nonReentrant {
         require (
-            currentState == "OPEN",
+            currentState == "OPEN" || currentState == "FAILED",
             "Cannot cancel now."
         );
         uint256 amount = investments[msg.sender];
@@ -173,7 +163,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             amountRaised >= softCap,
             "Not enough funds collected."
         );
-        transition("DISTRIBUTING");
+        transition("LIVE");
     }
 
     /**
@@ -184,30 +174,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN",
             "Cannot cancel now."
         );
-        transition("REFUNDING");
-    }
-
-    /**
-     * @dev Function to call repeatedly from frontend, until all investors are refunded
-     */
-    function refundNextInvestor() public onlyOwner nonReentrant {
-        require(
-            currentState == "REFUNDING",
-            "Cannot send tokens now."
-        );
-        if (nextInvestor < investors.length) {
-            uint256 amount = investments[investors[nextInvestor]];
-            investments[investors[nextInvestor]] = 0;
-            acceptedToken.transfer(
-                investors[nextInvestor],
-                amount
-            );
-            emit InvestmentCancelled(msg.sender, amount);
-            nextInvestor = nextInvestor.add(1);
-        }
-        if (nextInvestor == investors.length) {
-            transition("FAILED");
-        }
+        transition("FAILED");
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
