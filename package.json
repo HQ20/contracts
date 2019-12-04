@@ -20,6 +20,7 @@
         "deploy:ganache": "truffle deploy --network development",
         "start:geth:local": "./scripts/local_geth.sh",
         "start:ganache:local": "./scripts/local_ganache.sh",
+        "pretest": "yarn generate-ts",
         "test": "scripts/test.sh",
         "test:ci": "CI=true scripts/test.sh",
         "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
@@ -36,13 +37,13 @@
         "@openzeppelin/contracts": "2.4.0",
         "@openzeppelin/contracts-ethereum-package": "2.4.0",
         "@openzeppelin/upgrades": "2.6.0",
-        "truffle": "5.1.0",
+        "truffle": "5.1.2",
         "cross-env": "6.0.3"
     },
     "devDependencies": {
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
-        "eth-gas-reporter": "0.2.12",
+        "eth-gas-reporter": "0.2.14",
         "ethlint": "1.2.5",
         "ganache-cli": "6.7.0",
         "soldoc": "0.1.2-beta.0",
@@ -51,13 +52,13 @@
         "typechain": "1.0.3",
         "typechain-target-truffle": "1.0.2",
         "@types/bignumber.js": "5.0.0",
-        "@types/chai": "4.2.5",
+        "@types/chai": "4.2.6",
         "@types/mocha": "5.2.7",
-        "@types/node": "12.12.11",
+        "@types/node": "12.12.14",
         "ts-generator": "0.0.8",
-        "ts-node": "8.5.2",
+        "ts-node": "8.5.4",
         "typescript": "3.7.2",
         "tslint": "5.20.1",
-        "@truffle/hdwallet-provider": "1.0.25"
+        "@truffle/hdwallet-provider": "1.0.26"
     }
 }
