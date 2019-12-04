@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./../state/StateMachine.sol";
 
 
@@ -24,7 +25,7 @@ contract IssuanceToken is ERC20Mintable, ERC20Detailed {
  * @title Issuance
  * @notice Implements the investment round procedure for issuances
  */
-contract Issuance is Ownable, StateMachine {
+contract Issuance is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 
@@ -70,11 +71,13 @@ contract Issuance is Ownable, StateMachine {
         createState("OPEN");
         createState("DISTRIBUTING");
         createState("LIVE");
+        createState("REFUNDING");
         createState("FAILED");
         createTransition("SETUP", "OPEN");
         createTransition("OPEN", "DISTRIBUTING");
         createTransition("DISTRIBUTING", "LIVE");
-        createTransition("OPEN", "FAILED");
+        createTransition("OPEN", "REFUNDING");
+        createTransition("REFUNDING", "FAILED");
         emit IssuanceCreated();
     }
 
@@ -113,6 +116,34 @@ contract Issuance is Ownable, StateMachine {
         emit InvestmentAdded(msg.sender, _amount);
     }
 
+    function withdraw() external nonReentrant {
+        require(currentState == "DISTRIBUTING", "Cannot withdraw now.");
+        require(investments[msg.sender] > 0, "No investments found.");
+        if (nextInvestor < investors.length) {
+            uint256 amount = investments[msg.sender];
+            investments[msg.sender] = 0;
+            issuanceToken.mint(msg.sender, amount.div(issuePrice));
+            nextInvestor = nextInvestor.add(1);
+        }
+        if (nextInvestor == investors.length) {
+            transition("LIVE");
+        }
+    }
+
+    /**
+     * @dev Function for an investor to cancel his investment
+     */
+    function cancelInvestment() external nonReentrant {
+        require (
+            currentState == "OPEN",
+            "Cannot cancel now."
+        );
+        uint256 amount = investments[msg.sender];
+        investments[msg.sender] = 0;
+        acceptedToken.transfer(msg.sender, amount);
+        emit InvestmentCancelled(msg.sender, amount);
+    }
+
     /**
      * @dev Function to open the issuance to investors
      */
@@ -146,49 +177,37 @@ contract Issuance is Ownable, StateMachine {
     }
 
     /**
-     * @dev Function to call repeatedly from frontend, until all investors receive their tokens
-     */
-    function sendToNextInvestor() public onlyOwner {
-        require(
-            currentState == "DISTRIBUTING",
-            "Cannot send tokens now."
-        );
-        if (nextInvestor >= investors.length) {
-            transition("LIVE");
-        } else {
-            issuanceToken.mint(
-                investors[nextInvestor],
-                investments[investors[nextInvestor]].div(issuePrice)
-            );
-            nextInvestor = nextInvestor.add(1);
-        }
-    }
-
-    /**
-     * @dev Function to cancel the investment of a certain investor
-     */
-    function cancelInvestment() public {
-        require (
-            currentState == "OPEN",
-            "Cannot cancel now."
-        );
-        acceptedToken.transfer(msg.sender, investments[msg.sender]);
-        emit InvestmentCancelled(msg.sender, investments[msg.sender]);
-        investments[msg.sender] = 0;
-    }
-
-    /**
-     * @dev Function to cancel all investments and close the issuance
+     * @dev Function to cancel all investments
      */
     function cancelAllInvestments() public onlyOwner{
         require (
             currentState == "OPEN",
             "Cannot cancel now."
         );
-        for (uint256 i = 0; i < investors.length; i++){
-            acceptedToken.transfer(investors[i], investments[investors[i]]);
+        transition("REFUNDING");
+    }
+
+    /**
+     * @dev Function to call repeatedly from frontend, until all investors are refunded
+     */
+    function refundNextInvestor() public onlyOwner nonReentrant {
+        require(
+            currentState == "REFUNDING",
+            "Cannot send tokens now."
+        );
+        if (nextInvestor < investors.length) {
+            uint256 amount = investments[investors[nextInvestor]];
+            investments[investors[nextInvestor]] = 0;
+            acceptedToken.transfer(
+                investors[nextInvestor],
+                amount
+            );
+            emit InvestmentCancelled(msg.sender, amount);
+            nextInvestor = nextInvestor.add(1);
         }
-        transition("FAILED");
+        if (nextInvestor == investors.length) {
+            transition("FAILED");
+        }
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {

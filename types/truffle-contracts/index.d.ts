@@ -345,11 +345,15 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  amountRaised(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  minInvestment(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
   owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
-  minInvestment(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+  softCap(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
 
   investments(
     arg0: string | BigNumber,
@@ -362,10 +366,6 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     _state: string | BigNumber,
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
-
-  softCap(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
-
-  amountRaised(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
 
   createState: {
     (
@@ -463,7 +463,7 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
-  sendToNextInvestor: {
+  withdraw: {
     (txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse
     >;
@@ -482,6 +482,15 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
   };
 
   cancelAllInvestments: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  refundNextInvestor: {
     (txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse
     >;

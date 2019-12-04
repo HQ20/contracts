@@ -1,7 +1,7 @@
+import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 import { IssuanceInstance } from '../../../types/truffle-contracts';
 import { IssuanceTokenInstance } from '../../../types/truffle-contracts';
-import { BigNumber } from 'bignumber.js';
 
 const Issuance = artifacts.require('./state/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
 const IssuanceToken = artifacts.require('./issuance/IssuanceToken.sol') as Truffle.Contract<IssuanceTokenInstance>;
@@ -30,11 +30,16 @@ contract('Issuance', (accounts) => {
     const issuanceTokenDecimals = 18;
 
     beforeEach(async () => {
-        let snapShot = await helper.takeSnapshot();
-        snapshotId = snapShot['result'];
+        const snapShot = await helper.takeSnapshot();
+        snapshotId = snapShot.result;
         // We are using IssuanceToken also as a test instantiator for the accepted token
         acceptedToken = await IssuanceToken.new(acceptedTokenName, acceptedTokenSymbol, acceptedTokenDecimals);
-        issuance = await Issuance.new(issuanceTokenName, issuanceTokenSymbol, issuanceTokenDecimals, acceptedToken.address);
+        issuance = await Issuance.new(
+            issuanceTokenName,
+            issuanceTokenSymbol,
+            issuanceTokenDecimals,
+            acceptedToken.address,
+        );
         await issuance.setIssuePrice(10);
         await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
         await issuance.setClosingDate(Math.floor((new Date()).getTime() / 1000) + 3600);
@@ -42,7 +47,7 @@ contract('Issuance', (accounts) => {
         await issuance.setMinInvestment(new BigNumber(5e18));
     });
 
-    afterEach(async() => {
+    afterEach(async  () => {
         await helper.revertToSnapshot(snapshotId);
     });
 
@@ -84,9 +89,9 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#sendToNextInvestor}
+     * @test {Issuance#withdraw}
      */
-    it('sendToNextInvestor sends tokens to investors', async () => {
+    it('withdraw sends tokens to investors', async () => {
         await acceptedToken.mint(investor1, new BigNumber(100e18));
         await acceptedToken.mint(investor2, new BigNumber(50e18));
         await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -96,9 +101,9 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await helper.advanceTimeAndBlock(4000);
         await issuance.startDistribution();
-        while (bytes32ToString(await issuance.currentState()) === 'DISTRIBUTING') {
-            await issuance.sendToNextInvestor();
-        }
+        await issuance.withdraw({ from: investor1 });
+        await issuance.withdraw({ from: investor2 });
+        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         const issuanceToken = await IssuanceToken.at(await issuance.issuanceToken());
         web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('5');
         web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('1');
@@ -116,13 +121,13 @@ contract('Issuance', (accounts) => {
         const event = (await issuance.cancelInvestment({ from: investor1 })).logs[0];
         event.event.should.be.equal('InvestmentCancelled');
         event.args.investor.should.be.equal(investor1);
-        web3.utils.fromWei(event.args.amount, 'ether').should.be.equal('60')
+        web3.utils.fromWei(event.args.amount, 'ether').should.be.equal('60');
     });
 
     /**
      * @test {Issuance#cancelAllInvestments}
      */
-    it('cancelAllInvestments should cancel all investor investments', async () => {
+    it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
         await acceptedToken.mint(investor1, new BigNumber(100e18));
         await acceptedToken.mint(investor2, new BigNumber(50e18));
         await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -131,6 +136,24 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await issuance.cancelAllInvestments();
+        bytes32ToString(await issuance.currentState()).should.be.equal('REFUNDING');
+    });
+
+    /**
+     * @test {Issuance#refundNextInvestor}
+     */
+    it('refundNextInvestor refunds the investors', async () => {
+        await acceptedToken.mint(investor1, new BigNumber(100e18));
+        await acceptedToken.mint(investor2, new BigNumber(50e18));
+        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await issuance.openIssuance();
+        await issuance.invest(new BigNumber(50e18), { from: investor1 });
+        await issuance.invest(new BigNumber(10e18), { from: investor2 });
+        await helper.advanceTimeAndBlock(4000);
+        await issuance.cancelAllInvestments();
+        await issuance.refundNextInvestor();
+        await issuance.refundNextInvestor();
         bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
         web3.utils.fromWei(await acceptedToken.balanceOf(investor1), 'ether').should.be.equal('100');
         web3.utils.fromWei(await acceptedToken.balanceOf(investor2), 'ether').should.be.equal('50');
