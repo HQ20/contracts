@@ -349,7 +349,7 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
 
   isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
-  minTicketSize(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+  minInvestment(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
 
   investments(
     arg0: string | BigNumber,
@@ -363,9 +363,9 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
-  minIssueSize(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+  softCap(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
 
-  issueSize(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+  amountRaised(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
 
   createState: {
     (
@@ -454,7 +454,7 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
-  closeInvestments: {
+  startDistribution: {
     (txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse
     >;
@@ -547,40 +547,40 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  setMinIssueSize: {
+  setSoftCap: {
     (
-      _minIssueSize: number | BigNumber | string,
+      _softCap: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse>;
     call(
-      _minIssueSize: number | BigNumber | string,
+      _softCap: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _minIssueSize: number | BigNumber | string,
+      _softCap: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _minIssueSize: number | BigNumber | string,
+      _softCap: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
-  setMinTicketSize: {
+  setMinInvestment: {
     (
-      _minTicketSize: number | BigNumber | string,
+      _minInvestment: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse>;
     call(
-      _minTicketSize: number | BigNumber | string,
+      _minInvestment: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _minTicketSize: number | BigNumber | string,
+      _minInvestment: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _minTicketSize: number | BigNumber | string,
+      _minInvestment: number | BigNumber | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };

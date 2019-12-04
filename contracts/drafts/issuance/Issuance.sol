@@ -33,8 +33,8 @@ contract Issuance is Ownable, StateMachine {
     event IssuePriceSet();
     event OpeningDateSet();
     event ClosingDateSet();
-    event MinIssueSizeSet();
-    event MinTicketSizeSet();
+    event SoftCapSet();
+    event MinInvestmentSet();
 
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
@@ -45,10 +45,10 @@ contract Issuance is Ownable, StateMachine {
     address[] public investors;
     mapping(address => uint256) public investments;
 
-    uint256 public issueSize;
+    uint256 public amountRaised;
     uint256 public issuePrice;
-    uint256 public minIssueSize;
-    uint256 public minTicketSize;
+    uint256 public softCap;
+    uint256 public minInvestment;
 
     uint256 public openingDate;
     uint256 public closingDate;
@@ -84,16 +84,20 @@ contract Issuance is Ownable, StateMachine {
      */
     function invest(uint256 _amount) external {
         require(
-            // solium-disable-next-line security/no-block-members
-            now >= openingDate && now <= closingDate && currentState == "OPEN",
+            currentState == "OPEN",
             "Not open for investments."
+        );
+        require(
+            // solium-disable-next-line security/no-block-members
+            now >= openingDate && now <= closingDate,
+            "Not the right time."
         );
         require(
             _amount.mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
         require(
-            _amount >= minTicketSize,
+            _amount >= minInvestment,
             "Investment below minimum threshold."
         );
 
@@ -104,7 +108,7 @@ contract Issuance is Ownable, StateMachine {
         }
         investments[msg.sender] = investments[msg.sender].add(_amount);
 
-        issueSize = issueSize.add(_amount);
+        amountRaised = amountRaised.add(_amount);
 
         emit InvestmentAdded(msg.sender, _amount);
     }
@@ -115,8 +119,8 @@ contract Issuance is Ownable, StateMachine {
     function openIssuance() public onlyOwner {
         require(
             // solium-disable-next-line security/no-block-members
-            now >= openingDate && now <= closingDate && currentState == "SETUP",
-            "Cannot open now."
+            now >= openingDate && now <= closingDate,
+            "Not the right time."
         );
         require(
             address(issuanceToken) != address(0),
@@ -128,13 +132,16 @@ contract Issuance is Ownable, StateMachine {
     /**
      * @dev Function to move to the distributing phase
      */
-    function closeInvestments() public onlyOwner {
+    function startDistribution() public onlyOwner {
         require(
             // solium-disable-next-line security/no-block-members
-            now >= closingDate && currentState == "OPEN",
-            "Cannot send tokens now."
+            now >= closingDate,
+            "Not the right time yet."
         );
-        require(issueSize >= minIssueSize, "Not enough funds collected yet.");
+        require(
+            amountRaised >= softCap,
+            "Not enough funds collected."
+        );
         transition("DISTRIBUTING");
     }
 
@@ -142,7 +149,10 @@ contract Issuance is Ownable, StateMachine {
      * @dev Function to call repeatedly from frontend, until all investors receive their tokens
      */
     function sendToNextInvestor() public onlyOwner {
-        require(currentState == "DISTRIBUTING", "Cannot send tokens now.");
+        require(
+            currentState == "DISTRIBUTING",
+            "Cannot send tokens now."
+        );
         if (nextInvestor >= investors.length) {
             transition("LIVE");
         } else {
@@ -158,7 +168,10 @@ contract Issuance is Ownable, StateMachine {
      * @dev Function to cancel the investment of a certain investor
      */
     function cancelInvestment() public {
-        require (currentState == "OPEN", "Cannot cancel now.");
+        require (
+            currentState == "OPEN",
+            "Cannot cancel now."
+        );
         acceptedToken.transfer(msg.sender, investments[msg.sender]);
         emit InvestmentCancelled(msg.sender, investments[msg.sender]);
         investments[msg.sender] = 0;
@@ -168,7 +181,10 @@ contract Issuance is Ownable, StateMachine {
      * @dev Function to cancel all investments and close the issuance
      */
     function cancelAllInvestments() public onlyOwner{
-        require (currentState == "OPEN", "Cannot cancel now.");
+        require (
+            currentState == "OPEN",
+            "Cannot cancel now."
+        );
         for (uint256 i = 0; i < investors.length; i++){
             acceptedToken.transfer(investors[i], investments[investors[i]]);
         }
@@ -193,16 +209,16 @@ contract Issuance is Ownable, StateMachine {
         emit ClosingDateSet();
     }
 
-    function setMinIssueSize(uint256 _minIssueSize) public onlyOwner {
+    function setSoftCap(uint256 _softCap) public onlyOwner {
         require(currentState == "SETUP", "Cannot setup now.");
-        minIssueSize = _minIssueSize;
-        emit MinIssueSizeSet();
+        softCap = _softCap;
+        emit SoftCapSet();
     }
 
-    function setMinTicketSize(uint256 _minTicketSize) public onlyOwner {
+    function setMinInvestment(uint256 _minInvestment) public onlyOwner {
         require(currentState == "SETUP", "Cannot setup now.");
-        minTicketSize = _minTicketSize;
-        emit MinTicketSizeSet();
+        minInvestment = _minInvestment;
+        emit MinInvestmentSet();
     }
 
 }

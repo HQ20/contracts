@@ -38,8 +38,8 @@ contract('Issuance', (accounts) => {
         await issuance.setIssuePrice(10);
         await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
         await issuance.setClosingDate(Math.floor((new Date()).getTime() / 1000) + 3600);
-        await issuance.setMinIssueSize(new BigNumber(50e18));
-        await issuance.setMinTicketSize(new BigNumber(5e18));
+        await issuance.setSoftCap(new BigNumber(50e18));
+        await issuance.setMinInvestment(new BigNumber(5e18));
     });
 
     afterEach(async() => {
@@ -68,9 +68,9 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#closeInvestments}
+     * @test {Issuance#startDistribution}
      */
-    it('closeInvestments can succesfully close the Issuance', async () => {
+    it('startDistribution can succesfully close the Issuance', async () => {
         await acceptedToken.mint(investor1, new BigNumber(100e18));
         await acceptedToken.mint(investor2, new BigNumber(50e18));
         await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -79,7 +79,7 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await helper.advanceTimeAndBlock(4000);
-        await issuance.closeInvestments();
+        await issuance.startDistribution();
         bytes32ToString(await issuance.currentState()).should.be.equal('DISTRIBUTING');
     });
 
@@ -95,7 +95,7 @@ contract('Issuance', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await helper.advanceTimeAndBlock(4000);
-        await issuance.closeInvestments();
+        await issuance.startDistribution();
         while (bytes32ToString(await issuance.currentState()) === 'DISTRIBUTING') {
             await issuance.sendToNextInvestor();
         }
