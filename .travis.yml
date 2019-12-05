@@ -9,6 +9,6 @@ install:
     - yarn
 
 script:
-    - yarn test
-    - yarn coverage
+    - yarn test:ci
+    - yarn coverage:ci
     - yarn lint
