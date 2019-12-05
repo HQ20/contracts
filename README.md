@@ -1,4 +1,6 @@
 # techhq-contracts
+[![Netlify Status](https://api.netlify.com/api/v1/badges/13cb75c8-7d47-4cb9-808d-1657b46091c4/deploy-status)](https://app.netlify.com/sites/hq20-contracts/deploys)&emsp;[![Travis Status](https://travis-ci.com/HQ20/contracts.svg?branch=dev)](https://travis-ci.com/HQ20/contracts)&emsp;[![Coverage Status](https://coveralls.io/repos/github/HQ20/contracts/badge.svg?branch=dev)](https://coveralls.io/github/HQ20/contracts?branch=dev)&emsp;[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=HQ20/contracts)](https://dependabot.com)
+
 
 This is an Ethereum project with contracts and libraries to help you build fully featured dapps.
 
