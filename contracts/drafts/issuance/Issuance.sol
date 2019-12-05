@@ -92,7 +92,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             "Not the right time."
         );
         require(
-            _amount.mod(issuePrice) == 0,
+            _amount.div(10 ** uint256(issuanceToken.decimals())).mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
         require(
@@ -128,6 +128,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN" || currentState == "FAILED",
             "Cannot cancel now."
         );
+        require(investments[msg.sender] > 0, "No investments found.");
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
         acceptedToken.transfer(msg.sender, amount);
@@ -142,10 +143,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             // solium-disable-next-line security/no-block-members
             now >= openingDate && now <= closingDate,
             "Not the right time."
-        );
-        require(
-            address(issuanceToken) != address(0),
-            "Issuance address not set."
         );
         transition("OPEN");
     }
@@ -170,10 +167,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      * @dev Function to cancel all investments
      */
     function cancelAllInvestments() public onlyOwner{
-        require (
-            currentState == "OPEN",
-            "Cannot cancel now."
-        );
         transition("FAILED");
     }
 
