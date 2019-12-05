@@ -4,10 +4,31 @@ This is an Ethereum project that implements a simple Issuance that can be used f
 
 ## Description
 
-To open the `Issuance`, the owner must call `openIssuance()`.
-The `Issuance` will mint `IssuanceToken`s (which inherit from `ERC20Mintable` and `ERCDetailed`, hence they are ERC20 tokens) to all investors who `participated` in the ICO (having `invest()`ed more than `minInvestment` and their investment being a multiple of `issuePrice`) during `openingDate` and `closingDate`.
-If the `softcap` has been reach, investors are free to `withdraw()` their alloted tokens after the owner of the `Issuance` proceeds to `startDistribution()`.
+This issuance contract accepts investments using an accepted ERC20 token, and it will return to the investor a different ERC20 token if certain conditions are met.
+
+The issuance is governed by the following parameters:
+`currencyToken`: The token that is accepted in payment for investments.
+`issuanceToken`: The token that will be issued if conditions are met.
+`openingDate`: The time at which investments start being accepted.
+`closingDate`: The time at which investments stop being accepted, and distribution of issued tokens is possible.
+`issuePrice`:  The amount of currency tokens that are required to buy one issued token.
+`softCap`: The minimum mount of currency that needs to be raised for tokens to be distributed.
+`minInvestment`: The minimum amount of currency that can be invested in one go.
+
+               ,-> LIVE
+SETUP -> OPEN -
+               `-> FAILED
+
+First set the issuance parameters using the `set*` functions.
+
+To open the issuance to investors, the owner must call `openIssuance()`.
+
+The `Issuance` will mint `IssuanceToken`s (which inherit from `ERC20Mintable` and `ERCDetailed`, hence they are ERC20 tokens) to all investors who participated in the ICO (having `invest()`ed more than `minInvestment` and their investment being a multiple of `issuePrice`) during `openingDate` and `closingDate`.
+
+If the `softcap` has been reached, investors are free to `withdraw()` their alloted tokens after the owner of the `Issuance` proceeds to `startDistribution()`.
+
 Otherwise, investors are invited to reclaim their investemnts using `cancelInvestment()` after the owner of the `Issuance` does `cancelAllInvestments()`.
+
 At any time during which the `Issuance` is in `OPEN` state, the investors can change their minds and reclaim their investments with `cancelInvestment()`.
 
 ## Usage
