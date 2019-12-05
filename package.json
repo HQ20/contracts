@@ -20,17 +20,16 @@
         "deploy:ganache": "truffle deploy --network development",
         "start:geth:local": "./scripts/local_geth.sh",
         "start:ganache:local": "./scripts/local_ganache.sh",
-        "pretest": "yarn generate-ts",
-        "test": "scripts/test.sh",
-        "test:ci": "CI=true scripts/test.sh",
-        "coverage": "SOLIDITY_COVERAGE=true scripts/test.sh",
-        "coverage:ci": "CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
+        "test": "yarn build && scripts/test.sh",
+        "test:ci": "yarn build && CI=true scripts/test.sh",
+        "coverage": "yarn build && SOLIDITY_COVERAGE=true scripts/test.sh",
+        "coverage:ci": "yarn build && CI=true SOLIDITY_COVERAGE=true scripts/test.sh",
         "lint:sol": "solium -d contracts",
         "lint:ts": "tslint -c tslint.json 'test/**/*.ts'",
         "lint": "yarn lint:sol && yarn lint:ts",
         "security": "docker run --rm --memory=3g -v $(pwd):/tmp -w \"/tmp/\" mythril/myth --truffle",
         "docs": "soldoc docs/ contracts",
-        "generate-ts": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
+        "build": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "dependencies": {
         "truffle": "5.1.0",
