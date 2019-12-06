@@ -27,6 +27,9 @@ declare global {
       require(
         name: "StringConversion"
       ): TruffleContracts.StringConversionContract;
+      require(
+        name: "TestStateMachine"
+      ): TruffleContracts.TestStateMachineContract;
     }
   }
 }

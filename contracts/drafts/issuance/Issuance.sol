@@ -57,16 +57,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     uint256 nextInvestor;
 
     constructor(
-        string memory _issuanceName,
-        string memory _issuanceSymbol,
-        uint8 _issuanceDecimals,
+        address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
-        issuanceToken = new IssuanceToken(
-            _issuanceName,
-            _issuanceSymbol,
-            _issuanceDecimals
-        );
+        issuanceToken = IssuanceToken(_issuanceToken);
         currencyToken = IssuanceToken(_currencyToken);
         createState("OPEN");
         createState("LIVE");

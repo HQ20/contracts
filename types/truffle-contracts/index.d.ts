@@ -19,22 +19,15 @@ export interface IERC20Contract extends Truffle.Contract<IERC20Instance> {
 
 export interface IssuanceContract extends Truffle.Contract<IssuanceInstance> {
   "new"(
-    _issuanceName: string,
-    _issuanceSymbol: string,
-    _issuanceDecimals: number | BigNumber | string,
-    _acceptedToken: string | BigNumber,
+    _issuanceToken: string | BigNumber,
+    _currencyToken: string | BigNumber,
     meta?: Truffle.TransactionDetails
   ): Promise<IssuanceInstance>;
 }
 
 export interface IssuanceTokenContract
   extends Truffle.Contract<IssuanceTokenInstance> {
-  "new"(
-    name: string,
-    symbol: string,
-    decimals: number | BigNumber | string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<IssuanceTokenInstance>;
+  "new"(meta?: Truffle.TransactionDetails): Promise<IssuanceTokenInstance>;
 }
 
 export interface LinkedListContract
@@ -79,6 +72,11 @@ export interface StateMachineContract
 export interface StringConversionContract
   extends Truffle.Contract<StringConversionInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<StringConversionInstance>;
+}
+
+export interface TestStateMachineContract
+  extends Truffle.Contract<TestStateMachineInstance> {
+  "new"(meta?: Truffle.TransactionDetails): Promise<TestStateMachineInstance>;
 }
 
 export interface ContextInstance extends Truffle.ContractInstance {}
@@ -309,9 +307,9 @@ export interface IssuanceInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
-  acceptedToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
   issuePrice(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  currencyToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   createTransition: {
     (
@@ -1340,4 +1338,76 @@ export interface StringConversionInstance extends Truffle.ContractInstance {
     _data: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
+}
+
+export interface TestStateMachineInstance extends Truffle.ContractInstance {
+  currentState(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  stateExists(
+    _state: string | BigNumber,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
+  SETUP_STATE(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  testCreateState: {
+    (
+      _state: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _state: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _state: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _state: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  testCreateTransition: {
+    (
+      _originState: string | BigNumber,
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _originState: string | BigNumber,
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _originState: string | BigNumber,
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _originState: string | BigNumber,
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  testTransition: {
+    (
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _targetState: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
 }

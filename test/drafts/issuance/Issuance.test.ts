@@ -20,6 +20,7 @@ contract('Issuance', (accounts) => {
 
     let issuance: IssuanceInstance;
     let currencyToken: IssuanceTokenInstance;
+    let issuanceToken: IssuanceTokenInstance;
 
     const currencyTokenName = 'CurrencyToken';
     const currencyTokenSymbol = 'CRT';
@@ -34,12 +35,12 @@ contract('Issuance', (accounts) => {
         snapshotId = snapShot.result;
         // We are using IssuanceToken also as a test instantiator for the accepted token
         currencyToken = await IssuanceToken.new(currencyTokenName, currencyTokenSymbol, currencyTokenDecimals);
+        issuanceToken = await IssuanceToken.new(issuanceTokenName, issuanceTokenSymbol, issuanceTokenDecimals);
         issuance = await Issuance.new(
-            issuanceTokenName,
-            issuanceTokenSymbol,
-            issuanceTokenDecimals,
+            issuanceToken.address,
             currencyToken.address,
         );
+        await issuanceToken.addMinter(issuance.address);
         await issuance.setIssuePrice(5);
         await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
         await issuance.setClosingDate(Math.floor((new Date()).getTime() / 1000) + 3600);
