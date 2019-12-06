@@ -19,11 +19,11 @@ contract('Issuance', (accounts) => {
     const investor2 = accounts[2];
 
     let issuance: IssuanceInstance;
-    let acceptedToken: IssuanceTokenInstance;
+    let currencyToken: IssuanceTokenInstance;
 
-    const acceptedTokenName = 'AcceptedToken';
-    const acceptedTokenSymbol = 'ACT';
-    const acceptedTokenDecimals = 18;
+    const currencyTokenName = 'CurrencyToken';
+    const currencyTokenSymbol = 'CRT';
+    const currencyTokenDecimals = 18;
 
     const issuanceTokenName = 'IssuanceToken';
     const issuanceTokenSymbol = 'IST';
@@ -33,12 +33,12 @@ contract('Issuance', (accounts) => {
         const snapShot = await helper.takeSnapshot();
         snapshotId = snapShot.result;
         // We are using IssuanceToken also as a test instantiator for the accepted token
-        acceptedToken = await IssuanceToken.new(acceptedTokenName, acceptedTokenSymbol, acceptedTokenDecimals);
+        currencyToken = await IssuanceToken.new(currencyTokenName, currencyTokenSymbol, currencyTokenDecimals);
         issuance = await Issuance.new(
             issuanceTokenName,
             issuanceTokenSymbol,
             issuanceTokenDecimals,
-            acceptedToken.address,
+            currencyToken.address,
         );
         await issuance.setIssuePrice(5);
         await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
@@ -71,8 +71,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#invest}
      */
     it('invest should succesfully invest', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
         const event = (await issuance.invest(new BigNumber(50e18), { from: investor1 })).logs[0];
         event.event.should.be.equal('InvestmentAdded');
@@ -84,8 +84,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#invest}
      */
     itShouldThrow('cannot invest if state is not "OPEN"', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
     }, 'Not open for investments.');
 
@@ -93,8 +93,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#invest}
      */
     itShouldThrow('cannot invest outisde allotted timespan', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
         await helper.advanceTimeAndBlock(4000);
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
@@ -104,8 +104,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#invest}
      */
     itShouldThrow('cannot invest with fractional investments', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(13e18), { from: investor1 });
     }, 'Fractional investments not allowed.');
@@ -114,8 +114,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#invest}
      */
     itShouldThrow('cannot invest with investment below minimum threshold', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(5e18), { from: investor1 });
     }, 'Investment below minimum threshold.');
@@ -124,10 +124,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#startDistribution}
      */
     it('startDistribution can succesfully close the Issuance', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -140,10 +140,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#startDistribution}
      */
     itShouldThrow('cannot start distribution before closing time', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -154,10 +154,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#startDistribution}
      */
     itShouldThrow('cannot start distribution when soft cap not reached', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(10e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -169,10 +169,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#withdraw}
      */
     it('withdraw sends tokens to investors', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -190,10 +190,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#withdraw}
      */
     itShouldThrow('cannot withdraw when state is not "LIVE"', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -205,10 +205,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#withdraw}
      */
     itShouldThrow('cannot withdraw when not invested', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await helper.advanceTimeAndBlock(4000);
@@ -220,8 +220,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     it('cancelInvestment should cancel an investor investments', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor1 });
@@ -235,8 +235,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     itShouldThrow('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor1 });
@@ -249,8 +249,8 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     itShouldThrow('cannot cancel investment when not invested', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
         await issuance.openIssuance();
         await issuance.cancelInvestment({ from: investor1 });
     }, 'No investments found.');
@@ -259,10 +259,10 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#cancelAllInvestments}
      */
     it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
-        await acceptedToken.mint(investor1, new BigNumber(100e18));
-        await acceptedToken.mint(investor2, new BigNumber(50e18));
-        await acceptedToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await acceptedToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
@@ -270,8 +270,8 @@ contract('Issuance', (accounts) => {
         bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
         await issuance.cancelInvestment({ from: investor1 });
         await issuance.cancelInvestment({ from: investor2 });
-        web3.utils.fromWei(await acceptedToken.balanceOf(investor1), 'ether').should.be.equal('100');
-        web3.utils.fromWei(await acceptedToken.balanceOf(investor2), 'ether').should.be.equal('50');
+        web3.utils.fromWei(await currencyToken.balanceOf(investor1), 'ether').should.be.equal('100');
+        web3.utils.fromWei(await currencyToken.balanceOf(investor2), 'ether').should.be.equal('50');
     });
 
     it('setIssuePrice sets the issue price', async () => {

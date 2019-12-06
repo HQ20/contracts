@@ -40,7 +40,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    IERC20 public acceptedToken;
+    IERC20 public currencyToken;
     IssuanceToken public issuanceToken;
 
     address[] public investors;
@@ -60,14 +60,14 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         string memory _issuanceName,
         string memory _issuanceSymbol,
         uint8 _issuanceDecimals,
-        address _acceptedToken
+        address _currencyToken
     ) public Ownable() StateMachine() {
         issuanceToken = new IssuanceToken(
             _issuanceName,
             _issuanceSymbol,
             _issuanceDecimals
         );
-        acceptedToken = IssuanceToken(_acceptedToken);
+        currencyToken = IssuanceToken(_currencyToken);
         createState("OPEN");
         createState("LIVE");
         createState("FAILED");
@@ -78,8 +78,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     }
 
     /**
-     * @dev Use this function to invest. Must have approved this contract (from the frontend) to spend _amount of acceptedToken tokens.
-     * @param _amount The amount of acceptedToken tokens that will be invested.
+     * @dev Use this function to invest. Must have approved this contract (from the frontend) to spend _amount of currencyToken tokens.
+     * @param _amount The amount of currencyToken tokens that will be invested.
      */
     function invest(uint256 _amount) external {
         require(
@@ -100,7 +100,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             "Investment below minimum threshold."
         );
 
-        acceptedToken.transferFrom(msg.sender, address(this), _amount);
+        currencyToken.transferFrom(msg.sender, address(this), _amount);
 
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
@@ -131,7 +131,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         require(investments[msg.sender] > 0, "No investments found.");
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        acceptedToken.transfer(msg.sender, amount);
+        currencyToken.transfer(msg.sender, amount);
         emit InvestmentCancelled(msg.sender, amount);
     }
 
