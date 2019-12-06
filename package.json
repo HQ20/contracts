@@ -37,27 +37,27 @@
         "@openzeppelin/contracts-ethereum-package": "2.4.0",
         "@openzeppelin/upgrades": "2.6.0",
         "cross-env": "6.0.3",
-        "ganache-time-traveler": "^1.0.10",
         "truffle": "5.1.2"
     },
     "devDependencies": {
+        "@truffle/hdwallet-provider": "1.0.26",
+        "@types/chai": "4.2.5",
+        "@types/mocha": "5.2.7",
+        "@types/node": "12.12.14",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "eth-gas-reporter": "0.2.13",
         "ethlint": "1.2.5",
         "ganache-cli": "6.7.0",
+        "ganache-time-traveler": "1.0.10",
         "soldoc": "0.1.2-beta.3",
         "solidity-coverage": "0.6.7",
         "truffle-typings": "1.0.8",
-        "typechain": "1.0.3",
-        "typechain-target-truffle": "1.0.2",
-        "@types/chai": "4.2.5",
-        "@types/mocha": "5.2.7",
-        "@types/node": "12.12.14",
         "ts-generator": "0.0.8",
         "ts-node": "8.5.4",
-        "typescript": "3.7.2",
         "tslint": "5.20.1",
-        "@truffle/hdwallet-provider": "1.0.26"
+        "typechain": "1.0.3",
+        "typechain-target-truffle": "1.0.2",
+        "typescript": "3.7.2"
     }
 }

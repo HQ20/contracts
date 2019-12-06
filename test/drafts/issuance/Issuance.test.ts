@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
+const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
 import { IssuanceInstance } from '../../../types/truffle-contracts';
 import { IssuanceTokenInstance } from '../../../types/truffle-contracts';
 
@@ -8,7 +9,6 @@ const IssuanceToken = artifacts.require('./issuance/IssuanceToken.sol') as Truff
 
 should();
 
-import helper = require('ganache-time-traveler');
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../../utils');
 
@@ -31,7 +31,7 @@ contract('Issuance', (accounts) => {
     const issuanceTokenDecimals = 18;
 
     beforeEach(async () => {
-        const snapShot = await helper.takeSnapshot();
+        const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
         // We are using IssuanceToken also as a test instantiator for the accepted token
         currencyToken = await IssuanceToken.new(currencyTokenName, currencyTokenSymbol, currencyTokenDecimals);
@@ -49,7 +49,7 @@ contract('Issuance', (accounts) => {
     });
 
     afterEach(async  () => {
-        await helper.revertToSnapshot(snapshotId);
+        await revertToSnapshot(snapshotId);
     });
 
     /**
@@ -64,7 +64,7 @@ contract('Issuance', (accounts) => {
      * @test {Issuance#openIssuance}
      */
     itShouldThrow('cannot open issuance outside allotted timeframe', async () => {
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.openIssuance();
     }, 'Not the right time.');
 
@@ -97,7 +97,7 @@ contract('Issuance', (accounts) => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
     }, 'Not the right time.');
 
@@ -132,7 +132,7 @@ contract('Issuance', (accounts) => {
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
         bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
     });
@@ -162,7 +162,7 @@ contract('Issuance', (accounts) => {
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(10e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
     }, 'Not enough funds collected.');
 
@@ -177,7 +177,7 @@ contract('Issuance', (accounts) => {
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
         bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         await issuance.withdraw({ from: investor1 });
@@ -198,7 +198,7 @@ contract('Issuance', (accounts) => {
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.withdraw({ from: investor1 });
     }, 'Cannot withdraw now.');
 
@@ -212,7 +212,7 @@ contract('Issuance', (accounts) => {
         await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
         await issuance.withdraw({ from: investor2 });
     }, 'No investments found.');
@@ -241,7 +241,7 @@ contract('Issuance', (accounts) => {
         await issuance.openIssuance();
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor1 });
-        await helper.advanceTimeAndBlock(4000);
+        await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
         await issuance.cancelInvestment({ from: investor1 });
     }, 'Cannot cancel now.');
