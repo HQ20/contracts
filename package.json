@@ -32,7 +32,7 @@
         "build": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "dependencies": {
-        "truffle": "5.1.0",
+        "truffle": "5.1.2",
         "cross-env": "6.0.3"
     },
     "devDependencies": {
