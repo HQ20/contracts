@@ -1,14 +1,14 @@
 import { should } from 'chai';
-import { StateMachineInstance } from '../../../types/truffle-contracts';
+import { TestStateMachineInstance } from '../../types/truffle-contracts';
 
-const StateMachine = artifacts.require('./state/StateMachine.sol') as Truffle.Contract<StateMachineInstance>;
+const StateMachine = artifacts.require('./state/TestStateMachine.sol') as Truffle.Contract<TestStateMachineInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../utils');
 
-contract('StateMachine', (accounts) => {
-    let stateMachine: StateMachineInstance;
+contract('TestStateMachine', (accounts) => {
+    let stateMachine: TestStateMachineInstance;
     const SETUP_STATE = 'SETUP';
     const NEW_STATE = 'NEW';
 
