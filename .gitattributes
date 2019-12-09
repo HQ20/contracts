@@ -1,2 +1,1 @@
 *.sol linguist-language=Solidity
-*.svg filter=lfs diff=lfs merge=lfs -text
