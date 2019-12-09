@@ -5,7 +5,7 @@ const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache
 import { IssuanceInstance } from '../../../types/truffle-contracts';
 import { IssuanceTokenInstance } from '../../../types/truffle-contracts';
 
-const Issuance = artifacts.require('./state/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
+const Issuance = artifacts.require('./drafts/issuance/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
 const IssuanceToken = artifacts.require('./issuance/IssuanceToken.sol') as Truffle.Contract<IssuanceTokenInstance>;
 
 should();
