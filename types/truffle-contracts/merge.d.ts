@@ -20,6 +20,10 @@ declare global {
         name: "LinkedListAsArray"
       ): TruffleContracts.LinkedListAsArrayContract;
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
+      require(name: "OrderedList"): TruffleContracts.OrderedListContract;
+      require(
+        name: "OrderedListMock"
+      ): TruffleContracts.OrderedListMockContract;
       require(name: "Ownable"): TruffleContracts.OwnableContract;
       require(name: "RBAC"): TruffleContracts.RBACContract;
       require(name: "RBACExtended"): TruffleContracts.RBACExtendedContract;

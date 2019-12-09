@@ -2,13 +2,13 @@ pragma solidity ^0.5.10;
 
 
 /**
- * @title LinkedList
- * @dev Data structure
+ * @title OrderedList
+ * @dev Doubly linked list of ranked objects. The tail will always have the highest rank and elements will be ordered down to the head.
  * @author Alberto Cuesta Cañada
  */
-contract DoubleLinkedList {
+contract OrderedList {
 
-    event ObjectCreated(uint256 id, address data);
+    event ObjectCreated(uint256 id, uint256 rank, address data);
     event ObjectsLinked(uint256 prev, uint256 next);
     event ObjectRemoved(uint256 id);
     event NewHead(uint256 id);
@@ -18,6 +18,7 @@ contract DoubleLinkedList {
         uint256 id;
         uint256 next;
         uint256 prev;
+        uint256 rank;
         address data;
     }
 
@@ -41,54 +42,40 @@ contract DoubleLinkedList {
     function get(uint256 _id)
         public
         view
-        returns (uint256, uint256, uint256, address)
+        returns (uint256, uint256, uint256, uint256, address)
     {
         Object memory object = objects[_id];
-        return (object.id, object.next, object.prev, object.data);
+        return (object.id, object.next, object.prev, object.rank, object.data);
     }
 
     /**
-     * @dev Return the id of the first Object matching `_data` in the data field.
+     * @dev Return the id of the first Object with a lower or equal rank, starting from the tail.
      */
-    function findIdForData(address _data)
+    function findRank(uint256 _rank)
         public
         view
         returns (uint256)
     {
-        Object memory object = objects[head];
-        while (object.data != _data) {
-            object = objects[object.next];
+        Object memory object = objects[tail];
+        while (object.rank > _rank) {
+            object = objects[object.prev];
         }
         return object.id;
     }
 
     /**
-     * @dev Insert a new Object as the new Head with `_data` in the data field.
+     * @dev Insert the object immediately after the one with the closest lower rank.
      */
-    function addHead(address _data)
+    function insert(uint256 _rank, address _data)
         public
         returns (bool)
     {
-        uint256 objectId = _createObject(_data);
-        _link(objectId, head);
-        _setHead(objectId);
-        if (tail == 0) _setTail(objectId);
-    }
-
-    /**
-     * @dev Insert a new Object as the new Tail with `_data` in the data field.
-     */
-    function addTail(address _data)
-        public
-        returns (bool)
-    {
-        if (head == 0) {
-            addHead(_data);
+        uint256 prevId = findRank(_rank);
+        if (prevId == 0) {
+            _addHead(_rank, _data);
         }
         else {
-            uint256 objectId = _createObject(_data);
-            _link(tail, objectId);
-            _setTail(objectId);
+            _insertAfter(prevId, _rank, _data);
         }
     }
 
@@ -119,19 +106,49 @@ contract DoubleLinkedList {
     }
 
     /**
+     * @dev Insert a new Object as the new Head with `_data` in the data field.
+     */
+    function _addHead(uint256 _rank, address _data)
+        internal
+        returns (bool)
+    {
+        uint256 objectId = _createObject(_rank, _data);
+        _link(objectId, head);
+        _setHead(objectId);
+        if (tail == 0) _setTail(objectId);
+    }
+
+    /**
+     * @dev Insert a new Object as the new Tail with `_data` in the data field.
+     */
+    function _addTail(uint256 _rank, address _data)
+        internal
+        returns (bool)
+    {
+        if (head == 0) {
+            _addHead(_rank, _data);
+        }
+        else {
+            uint256 objectId = _createObject(_rank, _data);
+            _link(tail, objectId);
+            _setTail(objectId);
+        }
+    }
+
+    /**
      * @dev Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
      */
-    function insertAfter(uint256 _prevId, address _data)
-        public
+    function _insertAfter(uint256 _prevId, uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         if (_prevId == tail) {
-            addTail(_data);
+            _addTail(_rank, _data);
         }
         else {
             Object memory prevObject = objects[_prevId];
             Object memory nextObject = objects[prevObject.next];
-            uint256 newObjectId = _createObject(_data);
+            uint256 newObjectId = _createObject(_rank, _data);
             _link(newObjectId, nextObject.id);
             _link(prevObject.id, newObjectId);
         }
@@ -140,15 +157,15 @@ contract DoubleLinkedList {
     /**
      * @dev Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
      */
-    function insertBefore(uint256 _nextId, address _data)
-        public
+    function _insertBefore(uint256 _nextId, uint256 _rank, address _data)
+        internal
         returns (bool)
     {
         if (_nextId == head) {
-            addHead(_data);
+            _addHead(_rank, _data);
         }
         else {
-            insertAfter(objects[_nextId].prev, _data);
+            _insertAfter(objects[_nextId].prev, _rank, _data);
         }
     }
 
@@ -175,7 +192,7 @@ contract DoubleLinkedList {
     /**
      * @dev Internal function to create an unlinked Object.
      */
-    function _createObject(address _data)
+    function _createObject(uint256 _rank, address _data)
         internal
         returns (uint256)
     {
@@ -185,11 +202,13 @@ contract DoubleLinkedList {
             newId,
             0,
             0,
+            _rank,
             _data
         );
         objects[object.id] = object;
         emit ObjectCreated(
             object.id,
+            object.rank,
             object.data
         );
         return object.id;
@@ -201,8 +220,10 @@ contract DoubleLinkedList {
     function _link(uint256 _prevId, uint256 _nextId)
         internal
     {
-        objects[_prevId].next = _nextId;
-        objects[_nextId].prev = _prevId;
-        emit ObjectsLinked(_prevId, _nextId);
+        if (_prevId != 0 && _nextId != 0) {
+            objects[_prevId].next = _nextId;
+            objects[_nextId].prev = _prevId;
+            emit ObjectsLinked(_prevId, _nextId);
+        }
     }
 }

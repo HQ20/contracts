@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
+// tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
 import { IssuanceInstance } from '../../../types/truffle-contracts';
 import { IssuanceTokenInstance } from '../../../types/truffle-contracts';
@@ -182,7 +183,6 @@ contract('Issuance', (accounts) => {
         bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         await issuance.withdraw({ from: investor1 });
         await issuance.withdraw({ from: investor2 });
-        const issuanceToken = await IssuanceToken.at(await issuance.issuanceToken());
         web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('10');
         web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('2');
     });

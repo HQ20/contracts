@@ -27,7 +27,12 @@ export interface IssuanceContract extends Truffle.Contract<IssuanceInstance> {
 
 export interface IssuanceTokenContract
   extends Truffle.Contract<IssuanceTokenInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<IssuanceTokenInstance>;
+  "new"(
+    name: string,
+    symbol: string,
+    decimals: number | BigNumber | string,
+    meta?: Truffle.TransactionDetails
+  ): Promise<IssuanceTokenInstance>;
 }
 
 export interface LinkedListContract
@@ -43,6 +48,16 @@ export interface LinkedListAsArrayContract
 export interface MigrationsContract
   extends Truffle.Contract<MigrationsInstance> {
   "new"(meta?: Truffle.TransactionDetails): Promise<MigrationsInstance>;
+}
+
+export interface OrderedListContract
+  extends Truffle.Contract<OrderedListInstance> {
+  "new"(meta?: Truffle.TransactionDetails): Promise<OrderedListInstance>;
+}
+
+export interface OrderedListMockContract
+  extends Truffle.Contract<OrderedListMockInstance> {
+  "new"(meta?: Truffle.TransactionDetails): Promise<OrderedListMockInstance>;
 }
 
 export interface OwnableContract extends Truffle.Contract<OwnableInstance> {
@@ -1026,6 +1041,236 @@ export interface MigrationsInstance extends Truffle.ContractInstance {
   };
 }
 
+export interface OrderedListInstance extends Truffle.ContractInstance {
+  tail(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  head(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  idCounter(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  objects(
+    arg0: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber, string]>;
+
+  get(
+    _id: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber, string]>;
+
+  findRank(
+    _rank: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BigNumber>;
+
+  insert: {
+    (
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  remove: {
+    (
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+}
+
+export interface OrderedListMockInstance extends Truffle.ContractInstance {
+  insert: {
+    (
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  tail(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  remove: {
+    (
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _id: number | BigNumber | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  head(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  get(
+    _id: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber, string]>;
+
+  findRank(
+    _rank: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BigNumber>;
+
+  idCounter(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  objects(
+    arg0: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber, string]>;
+
+  addHead: {
+    (
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  addTail: {
+    (
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  insertAfter: {
+    (
+      _prevId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _prevId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _prevId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _prevId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  insertBefore: {
+    (
+      _nextId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _nextId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      _nextId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _nextId: number | BigNumber | string,
+      _rank: number | BigNumber | string,
+      _data: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+}
+
 export interface OwnableInstance extends Truffle.ContractInstance {
   owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
@@ -1326,6 +1571,11 @@ export interface StringConversionInstance extends Truffle.ContractInstance {
   resizeBytes(
     _bytes: string,
     _length: number | BigNumber | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
+
+  trimEmptyChars(
+    _bytes: string | BigNumber,
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
