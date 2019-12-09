@@ -26,6 +26,6 @@ In `StateMachine.sol`:
 * constructor: Creates the setup state and updates currentState to it.
 
 * function `stateExists(bytes32 _state)`: Returns `true` if `_state` exists.
-* function `createState(bytes32 _state`: Adds a new state with id `_state` to the contract. There is no function to remove states.
-* function `createTransition(bytes32 _originState, bytes32 _targetState)`: Adds a transition from `_originState` to `_targetState`.
-* function `transition(bytes32 _targetState)`: Transitions the machine from `currentState` to `_targetState`.
+* function `_createState(bytes32 _state`: Adds a new state with id `_state` to the contract. There is no function to remove states.
+* function `_createTransition(bytes32 _originState, bytes32 _targetState)`: Adds a transition from `_originState` to `_targetState`.
+* function `_transition(bytes32 _targetState)`: Transitions the machine from `currentState` to `_targetState`.
