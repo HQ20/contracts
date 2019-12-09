@@ -8842,10 +8842,10 @@ truffle-typings@1.0.8:
     "@types/mocha" "^5.2.5"
     "@types/web3" "^1.0.18"
 
-truffle@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.0.tgz#670d6791a2a97c6bf852d28a978e6635fe3c883a"
-  integrity sha512-RKij9cFhHeAb8HuP8D/llpcbe+k40fg8Q2SAeR+mkvlz9tid/opYkrWs9XN8eRQKCC0SSygrKBZLG3CMsNbXwQ==
+truffle@5.1.3:
+  version "5.1.3"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.3.tgz#e3e44ca7c0fe25708c421993f993a3de4883411f"
+  integrity sha512-fCL0pGCvBWPboyl3dzgAZFSgpBsgb5NdaaIXbouuqGxFjfgq5+JK2PZLEgN/GYBF+uEzcYg83hFOHCHlZJZINw==
   dependencies:
     app-module-path "^2.2.0"
     mocha "5.2.0"
@@ -9042,15 +9042,15 @@ underscore@1.9.1, underscore@^1.9.1:
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
   integrity sha512-5/4etnCkd9c8gwgowi5/om/mYO5ajCaOgdzj/oW+0eQV9WxKBDZw5+ycmKmeaTXjInS/W0BzpGLo2xR2aBwZdg==
 
-union-value@^2.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/union-value/-/union-value-1.0.0.tgz#5c71c34cb5bad5dcebe3ea0cd08207ba5aa1aea4"
-  integrity sha1-XHHDTLW61dzr4+oM0IIHulqhrqQ=
+union-value@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/union-value/-/union-value-1.0.1.tgz#0b6fe7b835aecda61c6ea4d4f02c14221e109847"
+  integrity sha512-tJfXmxMeWYnczCVs7XAEvIV7ieppALdyepWMkHkwciRpZraG/xwT+s2JN8+pr1+8jCRf80FFzvr+MpQeeoF4Xg==
   dependencies:
     arr-union "^3.1.0"
     get-value "^2.0.6"
     is-extendable "^0.1.1"
-    set-value "^0.4.3"
+    set-value "^2.0.1"
 
 unique-filename@^1.1.1:
   version "1.1.1"
