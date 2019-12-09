@@ -23,9 +23,6 @@ contract StateMachine {
         bytes32[] transitions;
     }
 
-    /**
-     * @dev All states ever created.
-     */
     mapping (bytes32 => State) internal states;
 
     /**

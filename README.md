@@ -32,6 +32,7 @@ The package.json file contains a set of npm scripts to help on the development p
 * **"lint"** lint solidity and javascript code
 * **"security"** run security validation using mythril
 * **"docs"** generates documentation based in your comments in solidity code
+* **"generate-ts"** generates TS type files for your contracts, necessary in testing
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
