@@ -23,9 +23,6 @@ contract StateMachine {
         bytes32[] transitions;
     }
 
-    /**
-     * @dev All states ever created.
-     */
     mapping (bytes32 => State) internal states;
 
     /**
@@ -55,8 +52,8 @@ contract StateMachine {
     /**
      * @dev Create a new state.
      */
-    function createState(bytes32 _state)
-        public
+    function _createState(bytes32 _state)
+        internal
     {
         require(currentState == SETUP_STATE, "State machine not in SETUP.");
         require(!stateExists(_state), "State already exists.");
@@ -71,8 +68,8 @@ contract StateMachine {
     /**
      * @dev Create a transition between two states.
      */
-    function createTransition(bytes32 _originState, bytes32 _targetState)
-        public
+    function _createTransition(bytes32 _originState, bytes32 _targetState)
+        internal
     {
         require(currentState == SETUP_STATE, "State machine not in SETUP.");
         require(stateExists(_originState), "Origin state doesn't exist.");
@@ -85,8 +82,8 @@ contract StateMachine {
     /**
      * @dev Transition the state machine between states
      */
-    function transition(bytes32 _targetState)
-        public
+    function _transition(bytes32 _targetState)
+        internal
     {
         require(stateExists(_targetState), "Target state doesn't exist.");
         State memory originState = states[currentState];

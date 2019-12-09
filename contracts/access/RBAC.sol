@@ -27,9 +27,6 @@ contract RBAC {
         mapping (address => bool) members;
     }
 
-    /**
-     * @notice All roles ever created.
-     */
     mapping (bytes32 => Role) internal roles;
 
     /**
