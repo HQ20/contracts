@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./../state/StateMachine.sol";
+import "./../../state/StateMachine.sol";
 
 
 /**
@@ -62,12 +62,12 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     ) public Ownable() StateMachine() {
         issuanceToken = IssuanceToken(_issuanceToken);
         currencyToken = IssuanceToken(_currencyToken);
-        createState("OPEN");
-        createState("LIVE");
-        createState("FAILED");
-        createTransition("SETUP", "OPEN");
-        createTransition("OPEN", "LIVE");
-        createTransition("OPEN", "FAILED");
+        _createState("OPEN");
+        _createState("LIVE");
+        _createState("FAILED");
+        _createTransition("SETUP", "OPEN");
+        _createTransition("OPEN", "LIVE");
+        _createTransition("OPEN", "FAILED");
         emit IssuanceCreated();
     }
 
@@ -138,7 +138,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             now >= openingDate && now <= closingDate,
             "Not the right time."
         );
-        transition("OPEN");
+        _transition("OPEN");
     }
 
     /**
@@ -154,14 +154,14 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             amountRaised >= softCap,
             "Not enough funds collected."
         );
-        transition("LIVE");
+        _transition("LIVE");
     }
 
     /**
      * @dev Function to cancel all investments
      */
     function cancelAllInvestments() public onlyOwner{
-        transition("FAILED");
+        _transition("FAILED");
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
