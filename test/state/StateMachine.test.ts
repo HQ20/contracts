@@ -1,11 +1,11 @@
 import { should } from 'chai';
-import { TestStateMachineInstance } from '../../../types/truffle-contracts';
+import { TestStateMachineInstance } from '../../types/truffle-contracts';
 
 const StateMachine = artifacts.require('./state/TestStateMachine.sol') as Truffle.Contract<TestStateMachineInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../utils');
 
 contract('TestStateMachine', (accounts) => {
     let stateMachine: TestStateMachineInstance;
@@ -36,7 +36,7 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'createState reverts with existing states.',
         async () => {
-            await stateMachine.testCreateState(stringToBytes32(SETUP_STATE));
+            await stateMachine.createState(stringToBytes32(SETUP_STATE));
         },
         'State already exists.',
     );
@@ -46,7 +46,7 @@ contract('TestStateMachine', (accounts) => {
      */
     it('createState adds a new state.', async () => {
         const event = (
-            await stateMachine.testCreateState(stringToBytes32(NEW_STATE))
+            await stateMachine.createState(stringToBytes32(NEW_STATE))
         ).logs[0];
         event.event.should.be.equal('StateCreated');
         bytes32ToString(event.args.state).should.be.equal(NEW_STATE);
@@ -58,7 +58,7 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'createTransition reverts with not existing states as the origin state.',
         async () => {
-            await stateMachine.testCreateTransition(stringToBytes32(NEW_STATE), stringToBytes32(SETUP_STATE));
+            await stateMachine.createTransition(stringToBytes32(NEW_STATE), stringToBytes32(SETUP_STATE));
         },
         'Origin state doesn\'t exist.',
     );
@@ -69,7 +69,7 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'createTransition reverts with not existing states as the target state.',
         async () => {
-            await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
         },
         'Target state doesn\'t exist.',
     );
@@ -78,9 +78,9 @@ contract('TestStateMachine', (accounts) => {
      * @test {StateMachine#createTransition}
      */
     it('createTransition adds a new transition.', async () => {
-        await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
+        await stateMachine.createState(stringToBytes32(NEW_STATE));
         const event = (
-            await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE))
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE))
         ).logs[0];
         event.event.should.be.equal('TransitionCreated');
         bytes32ToString(event.args.originState).should.be.equal(SETUP_STATE);
@@ -93,7 +93,7 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'transition reverts for non existing target states.',
         async () => {
-            await stateMachine.testTransition(stringToBytes32(NEW_STATE));
+            await stateMachine.transition(stringToBytes32(NEW_STATE));
         },
         'Target state doesn\'t exist.',
     );
@@ -104,8 +104,8 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'transition reverts for non existing transitions.',
         async () => {
-            await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
-            await stateMachine.testTransition(stringToBytes32(NEW_STATE));
+            await stateMachine.createState(stringToBytes32(NEW_STATE));
+            await stateMachine.transition(stringToBytes32(NEW_STATE));
         },
         'Transition doesn\'t exist.',
     );
@@ -114,10 +114,10 @@ contract('TestStateMachine', (accounts) => {
      * @test {StateMachine#transition}
      */
     it('transition follows a transition between states.', async () => {
-        await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
-        await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+        await stateMachine.createState(stringToBytes32(NEW_STATE));
+        await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
         const event = (
-            await stateMachine.testTransition(stringToBytes32(NEW_STATE))
+            await stateMachine.transition(stringToBytes32(NEW_STATE))
         ).logs[0];
         event.event.should.be.equal('CurrentState');
         bytes32ToString(event.args.state).should.be.equal(NEW_STATE);
@@ -129,10 +129,10 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'createState reverts if not in SETUP state.',
         async () => {
-            await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
-            await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-            await stateMachine.testTransition(stringToBytes32(NEW_STATE));
-            await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
+            await stateMachine.createState(stringToBytes32(NEW_STATE));
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+            await stateMachine.transition(stringToBytes32(NEW_STATE));
+            await stateMachine.createState(stringToBytes32(NEW_STATE));
         },
         'State machine not in SETUP.',
     );
@@ -143,10 +143,10 @@ contract('TestStateMachine', (accounts) => {
     itShouldThrow(
         'createTransition reverts if not in SETUP state.',
         async () => {
-            await stateMachine.testCreateState(stringToBytes32(NEW_STATE));
-            await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-            await stateMachine.testTransition(stringToBytes32(NEW_STATE));
-            await stateMachine.testCreateTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+            await stateMachine.createState(stringToBytes32(NEW_STATE));
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+            await stateMachine.transition(stringToBytes32(NEW_STATE));
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
         },
         'State machine not in SETUP.',
     );
