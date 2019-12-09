@@ -7,6 +7,7 @@ should();
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../../utils');
 
+/** @test {Whitelist} contract */
 contract('Whitelist', (accounts) => {
     let whitelist: WhitelistInstance;
     const root = accounts[0];
@@ -16,16 +17,24 @@ contract('Whitelist', (accounts) => {
         whitelist = await Whitelist.new();
     });
 
+    /**
+     * @test {Whitelist#isMember}
+     */
     it('isMember returns false for non existing memberships', async () => {
         assert.isFalse(await whitelist.isMember(user1));
     });
 
-
+    /**
+     * @test {Whitelist#addMember}
+     */
     it('addMember adds a member to the whitelist.', async () => {
         await whitelist.addMember(user1, { from: root });
         assert.isTrue(await whitelist.isMember(user1));
     });
 
+    /**
+     * @test {Whitelist#addMember}
+     */
     itShouldThrow(
         'addMember throws if the member already belongs to the whitelist.',
         async () => {
@@ -35,6 +44,9 @@ contract('Whitelist', (accounts) => {
         'Address is member already.',
     );
 
+    /**
+     * @test {Whitelist#removeMember}
+     */
     itShouldThrow(
         'removeMember throws if the member doesn\'t belong to the whitelist.',
         async () => {
@@ -43,6 +55,9 @@ contract('Whitelist', (accounts) => {
         'Not member of whitelist.',
     );
 
+    /**
+     * @test {Whitelist#removeMember}
+     */
     it('removeMember removes a member from a role.', async () => {
         await whitelist.addMember(user1, { from: root });
         assert.isTrue(await whitelist.isMember(user1));
