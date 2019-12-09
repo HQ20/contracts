@@ -1,5 +1,5 @@
 pragma solidity ^0.5.10;
-import "../lists/OrderedList.sol";
+import "../OrderedList.sol";
 
 
 /**

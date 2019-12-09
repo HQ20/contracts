@@ -2,7 +2,7 @@ import { should } from 'chai';
 import { OrderedListMockInstance } from '../../types/truffle-contracts';
 
 const OrderedList = artifacts
-    .require('./mocks/OrderedListMock.sol') as Truffle.Contract<OrderedListMockInstance>;
+    .require('./lists/mocks/OrderedListMock.sol') as Truffle.Contract<OrderedListMockInstance>;
 should();
 
 const emptyData = '0x0000000000000000000000000000000000000000';
