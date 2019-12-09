@@ -275,6 +275,34 @@ contract('Issuance', (accounts) => {
         web3.utils.fromWei(await currencyToken.balanceOf(investor2), 'ether').should.be.equal('50');
     });
 
+    /**
+     * @test {Issuance#transferFunds}
+     */
+    it('transferFunds should transfer all collected tokens to the wallet of the owner', async () => {
+        await currencyToken.mint(investor1, new BigNumber(100e18));
+        await currencyToken.mint(investor2, new BigNumber(50e18));
+        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
+        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
+        await issuance.openIssuance();
+        await issuance.invest(new BigNumber(50e18), { from: investor1 });
+        await issuance.invest(new BigNumber(10e18), { from: investor2 });
+        await advanceTimeAndBlock(4000);
+        await issuance.startDistribution();
+        await issuance.withdraw({ from: investor1 });
+        await issuance.withdraw({ from: investor2 });
+        await issuance.transferFunds();
+        web3.utils.fromWei(await currencyToken.balanceOf(await issuance.wallet()), 'ether').should.be.equal('60');
+    });
+
+    /**
+     * @test {Issuance#transferFunds}
+     */
+    itShouldThrow('cannot transfer funds when issuance state is not "LIVE"', async () => {
+        await issuance.openIssuance();
+        await issuance.transferFunds();
+    }, 'Cannot transfer funds now.');
+
+
     it('setIssuePrice sets the issue price', async () => {
         await issuance.setIssuePrice(5);
         (await issuance.issuePrice()).toString().should.be.equal('5');

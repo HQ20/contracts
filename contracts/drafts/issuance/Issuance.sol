@@ -30,6 +30,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
 
     event IssuanceCreated();
+    event FundsTransferred();
 
     event IssuePriceSet();
     event OpeningDateSet();
@@ -54,6 +55,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     uint256 public openingDate;
     uint256 public closingDate;
 
+    address public wallet;
+
     uint256 nextInvestor;
 
     constructor(
@@ -62,6 +65,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     ) public Ownable() StateMachine() {
         issuanceToken = IssuanceToken(_issuanceToken);
         currencyToken = IssuanceToken(_currencyToken);
+        wallet = msg.sender;
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -162,6 +166,15 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      */
     function cancelAllInvestments() public onlyOwner{
         _transition("FAILED");
+    }
+
+    /**
+     * @dev Function to transfer all collected tokens to the wallet of the owner
+     */
+    function transferFunds() public onlyOwner {
+        require(currentState == "LIVE", "Cannot transfer funds now.");
+        currencyToken.transfer(wallet, amountRaised);
+        emit FundsTransferred();
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
