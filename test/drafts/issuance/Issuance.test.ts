@@ -2,10 +2,12 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { IssuanceInstance, ERC20MintableMockInstance } from '../../../types/truffle-contracts';
+import { ERC20MintableMockInstance, IssuanceInstance } from '../../../types/truffle-contracts';
 
 const Issuance = artifacts.require('./drafts/issuance/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
-const ERC20MintableMock = artifacts.require('./test/issuance/ERC20MintableMock.sol') as Truffle.Contract<ERC20MintableMockInstance>;
+const ERC20MintableMock = artifacts.require(
+        './test/issuance/ERC20MintableMock.sol',
+    ) as Truffle.Contract<ERC20MintableMockInstance>;
 
 should();
 
