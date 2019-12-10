@@ -56,7 +56,7 @@
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.6",
         "@types/mocha": "5.2.7",
-        "@types/node": "12.12.14",
+        "@types/node": "12.12.16",
         "ts-generator": "0.0.8",
         "ts-node": "8.5.4",
         "typescript": "3.7.3",
