@@ -2,11 +2,10 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { IssuanceInstance } from '../../../types/truffle-contracts';
-import { IssuanceTokenInstance } from '../../../types/truffle-contracts';
+import { IssuanceInstance, ERC20MintableMockInstance } from '../../../types/truffle-contracts';
 
 const Issuance = artifacts.require('./drafts/issuance/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
-const IssuanceToken = artifacts.require('./issuance/IssuanceToken.sol') as Truffle.Contract<IssuanceTokenInstance>;
+const ERC20MintableMock = artifacts.require('./test/issuance/ERC20MintableMock.sol') as Truffle.Contract<ERC20MintableMockInstance>;
 
 should();
 
@@ -21,23 +20,14 @@ contract('Issuance', (accounts) => {
     const wallet = accounts[3];
 
     let issuance: IssuanceInstance;
-    let currencyToken: IssuanceTokenInstance;
-    let issuanceToken: IssuanceTokenInstance;
-
-    const currencyTokenName = 'CurrencyToken';
-    const currencyTokenSymbol = 'CRT';
-    const currencyTokenDecimals = 18;
-
-    const issuanceTokenName = 'IssuanceToken';
-    const issuanceTokenSymbol = 'IST';
-    const issuanceTokenDecimals = 18;
+    let currencyToken: ERC20MintableMockInstance;
+    let issuanceToken: ERC20MintableMockInstance;
 
     beforeEach(async () => {
         const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
-        // We are using IssuanceToken also as a test instantiator for the accepted token
-        currencyToken = await IssuanceToken.new(currencyTokenName, currencyTokenSymbol, currencyTokenDecimals);
-        issuanceToken = await IssuanceToken.new(issuanceTokenName, issuanceTokenSymbol, issuanceTokenDecimals);
+        currencyToken = await ERC20MintableMock.new();
+        issuanceToken = await ERC20MintableMock.new();
         issuance = await Issuance.new(
             issuanceToken.address,
             currencyToken.address,
@@ -110,7 +100,7 @@ contract('Issuance', (accounts) => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
         await issuance.openIssuance();
-        await issuance.invest(new BigNumber(13e18), { from: investor1 });
+        await issuance.invest(new BigNumber('1000000000000000001'), { from: investor1 });
     }, 'Fractional investments not allowed.');
 
     /**

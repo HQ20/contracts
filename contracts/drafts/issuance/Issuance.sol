@@ -2,23 +2,9 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./../../state/StateMachine.sol";
-
-
-/**
- * @title IssuanceToken
- * @notice This is the ERC20 token that the Issuance will mint to investors
- */
-contract IssuanceToken is ERC20Mintable, ERC20Detailed {
-
-    constructor(string memory name, string memory symbol, uint8 decimals)
-    public
-    ERC20Detailed(name, symbol, decimals) {}
-
-}
 
 
 /**
@@ -41,7 +27,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentCancelled(address investor, uint256 amount);
 
     IERC20 public currencyToken;
-    IssuanceToken public issuanceToken;
+    ERC20Mintable public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
@@ -60,8 +46,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
-        issuanceToken = IssuanceToken(_issuanceToken);
-        currencyToken = IssuanceToken(_currencyToken);
+        issuanceToken = ERC20Mintable(_issuanceToken);
+        currencyToken = IERC20(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -86,7 +72,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             "Not the right time."
         );
         require(
-            _amount.div(10 ** uint256(issuanceToken.decimals())).mod(issuePrice) == 0,
+            _amount.mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
         require(

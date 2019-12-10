@@ -108,3 +108,6 @@ typings/
 
 # ignore types folder
 types/
+
+# ignore the contracts/test folder
+contracts/test
