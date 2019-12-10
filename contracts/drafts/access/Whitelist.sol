@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "./IWhitelist.sol";
 
 
 /**
@@ -7,7 +8,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
  * @author Alberto Cuesta Canada
  * @dev Implements a simple whitelist of addresses.
  */
-contract Whitelist is Ownable {
+contract Whitelist is Ownable, IWhitelist {
     event MemberAdded(address member);
     event MemberRemoved(address member);
 
