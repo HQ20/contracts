@@ -4107,10 +4107,10 @@ ganache-cli@6.7.0:
     source-map-support "0.5.12"
     yargs "13.2.4"
 
-ganache-time-traveler@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/ganache-time-traveler/-/ganache-time-traveler-1.0.10.tgz#dd171b37b44965b2fe4cbd7e1beec53613b51246"
-  integrity sha512-40gTCfDNPR1CpdhMowjy/oS93kqsRn+QNxvMZfnYGYgbT1MrnMBsoA/ic6/zymq6acHpRwPhivAPDo5EaoPO7Q==
+ganache-time-traveler@1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/ganache-time-traveler/-/ganache-time-traveler-1.0.11.tgz#8d2cc81a09a0bca95db9a1b8bb2603f29840e38b"
+  integrity sha512-zRGGnPyDxNUFTgfmkUbopfZuFWiCBbc+OjGihosXOJ9nb6UQUQV0RkcUhNisWNbgSijm/dv1em4G6MQ0P780Ng==
 
 gauge@~2.7.3:
   version "2.7.4"
