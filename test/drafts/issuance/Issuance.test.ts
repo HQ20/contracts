@@ -18,6 +18,7 @@ contract('Issuance', (accounts) => {
 
     const investor1 = accounts[1];
     const investor2 = accounts[2];
+    const wallet = accounts[3];
 
     let issuance: IssuanceInstance;
     let currencyToken: IssuanceTokenInstance;
@@ -290,8 +291,8 @@ contract('Issuance', (accounts) => {
         await issuance.startDistribution();
         await issuance.withdraw({ from: investor1 });
         await issuance.withdraw({ from: investor2 });
-        await issuance.transferFunds();
-        web3.utils.fromWei(await currencyToken.balanceOf(await issuance.wallet()), 'ether').should.be.equal('60');
+        await issuance.transferFunds(wallet);
+        web3.utils.fromWei(await currencyToken.balanceOf(wallet), 'ether').should.be.equal('60');
     });
 
     /**
@@ -299,7 +300,7 @@ contract('Issuance', (accounts) => {
      */
     itShouldThrow('cannot transfer funds when issuance state is not "LIVE"', async () => {
         await issuance.openIssuance();
-        await issuance.transferFunds();
+        await issuance.transferFunds(wallet);
     }, 'Cannot transfer funds now.');
 
 
