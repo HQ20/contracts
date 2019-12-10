@@ -167,9 +167,9 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function transferFunds(address wallet) public onlyOwner {
+    function transferFunds(address _wallet) public onlyOwner {
         require(currentState == "LIVE", "Cannot transfer funds now.");
-        currencyToken.transfer(wallet, amountRaised);
+        currencyToken.transfer(_wallet, amountRaised);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
