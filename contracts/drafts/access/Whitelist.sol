@@ -55,6 +55,7 @@ contract Whitelist is Ownable {
      */
     function removeMember(address _member)
         public
+        onlyOwner
     {
         require(
             isMember(_member),
