@@ -106,5 +106,14 @@ typings/
 # the .secret
 .secret
 
-# ignore types folder
+# coverage
+.coverage_artifacts/
+.coverage_contracts/
+
+# network
+**/db/geth
+**/db/history
+**/db_ganache/
+
+# ignore types
 types/
