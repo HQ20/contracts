@@ -9,20 +9,16 @@ import "./../../state/StateMachine.sol";
 
 
 /**
- * @title Issuance
- * @notice Implements the investment round procedure for issuances
+ * @title IssuanceSimple
+ * @notice Implements a very simple issuance process for tokens
  */
-contract Issuance is Ownable, StateMachine, ReentrancyGuard {
+contract IssuanceSimple is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 
     event IssuanceCreated();
 
     event IssuePriceSet();
-    event OpeningDateSet();
-    event ClosingDateSet();
-    event SoftCapSet();
-    event MinInvestmentSet();
 
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
@@ -35,11 +31,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
 
     uint256 public amountRaised;
     uint256 public issuePrice;
-    uint256 public softCap;
-    uint256 public minInvestment;
-
-    uint256 public openingDate;
-    uint256 public closingDate;
 
     uint256 nextInvestor;
 
@@ -68,17 +59,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             "Not open for investments."
         );
         require(
-            // solium-disable-next-line security/no-block-members
-            now >= openingDate && now <= closingDate,
-            "Not the right time."
-        );
-        require(
             _amount.mod(issuePrice) == 0,
             "Fractional investments not allowed."
-        );
-        require(
-            _amount >= minInvestment,
-            "Investment below minimum threshold."
         );
 
         currencyToken.transferFrom(msg.sender, address(this), _amount);
@@ -94,8 +76,14 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     }
 
     function withdraw() external nonReentrant {
-        require(currentState == "LIVE", "Cannot withdraw now.");
-        require(investments[msg.sender] > 0, "No investments found.");
+        require(
+            currentState == "LIVE",
+            "Cannot withdraw now."
+        );
+        require(
+            investments[msg.sender] > 0,
+            "No investments found."
+        );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
         issuanceToken.mint(msg.sender, amount.div(issuePrice));
@@ -109,7 +97,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN" || currentState == "FAILED",
             "Cannot cancel now."
         );
-        require(investments[msg.sender] > 0, "No investments found.");
+        require(
+            investments[msg.sender] > 0,
+            "No investments found."
+        );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
         currencyToken.transfer(msg.sender, amount);
@@ -121,9 +112,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      */
     function openIssuance() public onlyOwner {
         require(
-            // solium-disable-next-line security/no-block-members
-            now >= openingDate && now <= closingDate,
-            "Not the right time."
+            issuePrice > 0,
+            "Issue price not set."
         );
         _transition("OPEN");
     }
@@ -132,15 +122,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      * @dev Function to move to the distributing phase
      */
     function startDistribution() public onlyOwner {
-        require(
-            // solium-disable-next-line security/no-block-members
-            now >= closingDate,
-            "Not the right time yet."
-        );
-        require(
-            amountRaised >= softCap,
-            "Not enough funds collected."
-        );
         _transition("LIVE");
     }
 
@@ -155,38 +136,19 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
     function transferFunds(address _wallet) public onlyOwner {
-        require(currentState == "LIVE", "Cannot transfer funds now.");
+        require(
+            currentState == "LIVE",
+            "Cannot transfer funds now."
+        );
         currencyToken.transfer(_wallet, amountRaised);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
-        require(currentState == "SETUP", "Cannot setup now.");
+        require(
+            currentState == "SETUP",
+            "Cannot setup now."
+        );
         issuePrice = _issuePrice;
         emit IssuePriceSet();
     }
-
-    function setOpeningDate(uint256 _openingDate) public onlyOwner {
-        require(currentState == "SETUP", "Cannot setup now.");
-        openingDate = _openingDate;
-        emit OpeningDateSet();
-    }
-
-    function setClosingDate(uint256 _closingDate) public onlyOwner {
-        require(currentState == "SETUP", "Cannot setup now.");
-        closingDate = _closingDate;
-        emit ClosingDateSet();
-    }
-
-    function setSoftCap(uint256 _softCap) public onlyOwner {
-        require(currentState == "SETUP", "Cannot setup now.");
-        softCap = _softCap;
-        emit SoftCapSet();
-    }
-
-    function setMinInvestment(uint256 _minInvestment) public onlyOwner {
-        require(currentState == "SETUP", "Cannot setup now.");
-        minInvestment = _minInvestment;
-        emit MinInvestmentSet();
-    }
-
 }

@@ -2,9 +2,11 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { ERC20MintableMockInstance, IssuanceInstance } from '../../../types/truffle-contracts';
+import { ERC20MintableMockInstance, IssuanceAdvancedInstance } from '../../../types/truffle-contracts';
 
-const Issuance = artifacts.require('./drafts/issuance/Issuance.sol') as Truffle.Contract<IssuanceInstance>;
+const IssuanceAdvanced = artifacts.require(
+    './drafts/issuance/IssuanceAdvanced.sol',
+    ) as Truffle.Contract<IssuanceAdvancedInstance>;
 const ERC20MintableMock = artifacts.require(
         './test/issuance/ERC20MintableMock.sol',
     ) as Truffle.Contract<ERC20MintableMockInstance>;
@@ -14,14 +16,14 @@ should();
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../../utils');
 
-contract('Issuance', (accounts) => {
+contract('IssuanceAdvanced', (accounts) => {
     let snapshotId: any;
 
     const investor1 = accounts[1];
     const investor2 = accounts[2];
     const wallet = accounts[3];
 
-    let issuance: IssuanceInstance;
+    let issuance: IssuanceAdvancedInstance;
     let currencyToken: ERC20MintableMockInstance;
     let issuanceToken: ERC20MintableMockInstance;
 
@@ -30,7 +32,7 @@ contract('Issuance', (accounts) => {
         snapshotId = snapShot.result;
         currencyToken = await ERC20MintableMock.new();
         issuanceToken = await ERC20MintableMock.new();
-        issuance = await Issuance.new(
+        issuance = await IssuanceAdvanced.new(
             issuanceToken.address,
             currencyToken.address,
         );
@@ -47,7 +49,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#openIssuance}
+     * @test {IssuanceAdvanced#openIssuance}
      */
     it('openIssuance can succefully open the Issuance', async () => {
         await issuance.openIssuance();
@@ -55,7 +57,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#openIssuance}
+     * @test {IssuanceAdvanced#openIssuance}
      */
     itShouldThrow('cannot open issuance outside allotted timeframe', async () => {
         await advanceTimeAndBlock(4000);
@@ -63,7 +65,7 @@ contract('Issuance', (accounts) => {
     }, 'Not the right time.');
 
     /**
-     * @test {Issuance#invest}
+     * @test {IssuanceAdvanced#invest}
      */
     it('invest should succesfully invest', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -76,7 +78,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#invest}
+     * @test {IssuanceAdvanced#invest}
      */
     itShouldThrow('cannot invest if state is not "OPEN"', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -85,7 +87,7 @@ contract('Issuance', (accounts) => {
     }, 'Not open for investments.');
 
     /**
-     * @test {Issuance#invest}
+     * @test {IssuanceAdvanced#invest}
      */
     itShouldThrow('cannot invest outisde allotted timespan', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -96,7 +98,7 @@ contract('Issuance', (accounts) => {
     }, 'Not the right time.');
 
     /**
-     * @test {Issuance#invest}
+     * @test {IssuanceAdvanced#invest}
      */
     itShouldThrow('cannot invest with fractional investments', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -106,7 +108,7 @@ contract('Issuance', (accounts) => {
     }, 'Fractional investments not allowed.');
 
     /**
-     * @test {Issuance#invest}
+     * @test {IssuanceAdvanced#invest}
      */
     itShouldThrow('cannot invest with investment below minimum threshold', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -116,7 +118,7 @@ contract('Issuance', (accounts) => {
     }, 'Investment below minimum threshold.');
 
     /**
-     * @test {Issuance#startDistribution}
+     * @test {IssuanceAdvanced#startDistribution}
      */
     it('startDistribution can succesfully close the Issuance', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -132,7 +134,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#startDistribution}
+     * @test {IssuanceAdvanced#startDistribution}
      */
     itShouldThrow('cannot start distribution before closing time', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -146,7 +148,7 @@ contract('Issuance', (accounts) => {
     }, 'Not the right time yet.');
 
     /**
-     * @test {Issuance#startDistribution}
+     * @test {IssuanceAdvanced#startDistribution}
      */
     itShouldThrow('cannot start distribution when soft cap not reached', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -161,7 +163,7 @@ contract('Issuance', (accounts) => {
     }, 'Not enough funds collected.');
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {IssuanceAdvanced#withdraw}
      */
     it('withdraw sends tokens to investors', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -181,7 +183,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {IssuanceAdvanced#withdraw}
      */
     itShouldThrow('cannot withdraw when state is not "LIVE"', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -196,7 +198,7 @@ contract('Issuance', (accounts) => {
     }, 'Cannot withdraw now.');
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {IssuanceAdvanced#withdraw}
      */
     itShouldThrow('cannot withdraw when not invested', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -211,7 +213,7 @@ contract('Issuance', (accounts) => {
     }, 'No investments found.');
 
     /**
-     * @test {Issuance#cancelInvestment}
+     * @test {IssuanceAdvanced#cancelInvestment}
      */
     it('cancelInvestment should cancel an investor investments', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -226,7 +228,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#cancelInvestment}
+     * @test {IssuanceAdvanced#cancelInvestment}
      */
     itShouldThrow('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -240,7 +242,7 @@ contract('Issuance', (accounts) => {
     }, 'Cannot cancel now.');
 
     /**
-     * @test {Issuance#cancelInvestment}
+     * @test {IssuanceAdvanced#cancelInvestment}
      */
     itShouldThrow('cannot cancel investment when not invested', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -250,7 +252,7 @@ contract('Issuance', (accounts) => {
     }, 'No investments found.');
 
     /**
-     * @test {Issuance#cancelAllInvestments}
+     * @test {IssuanceAdvanced#cancelAllInvestments}
      */
     it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -269,7 +271,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#transferFunds}
+     * @test {IssuanceAdvanced#transferFunds}
      */
     it('transferFunds should transfer all collected tokens to the wallet of the owner', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
@@ -288,7 +290,7 @@ contract('Issuance', (accounts) => {
     });
 
     /**
-     * @test {Issuance#transferFunds}
+     * @test {IssuanceAdvanced#transferFunds}
      */
     itShouldThrow('cannot transfer funds when issuance state is not "LIVE"', async () => {
         await issuance.openIssuance();
