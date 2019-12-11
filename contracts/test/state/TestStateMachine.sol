@@ -1,6 +1,6 @@
 pragma solidity ^0.5.10;
 
-import "./StateMachine.sol";
+import "./../../state/StateMachine.sol";
 
 
 contract TestStateMachine is StateMachine {

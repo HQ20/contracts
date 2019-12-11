@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { TestStateMachineInstance } from '../../types/truffle-contracts';
 
-const StateMachine = artifacts.require('./state/TestStateMachine.sol') as Truffle.Contract<TestStateMachineInstance>;
+const StateMachine = artifacts.require('./test/state/TestStateMachine.sol') as Truffle.Contract<TestStateMachineInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
