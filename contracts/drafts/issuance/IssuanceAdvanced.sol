@@ -9,10 +9,10 @@ import "./../../state/StateMachine.sol";
 
 
 /**
- * @title Issuance
+ * @title IssuanceAdvanced
  * @notice Implements the investment round procedure for issuances
  */
-contract Issuance is Ownable, StateMachine, ReentrancyGuard {
+contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 
