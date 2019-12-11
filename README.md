@@ -47,8 +47,12 @@ At the time of writing and as an example, this is the directory structure.
 
 ```
 contracts ------ examples ------ access
+            |
 	        |--- advanced ------ access
+            |
 	        |--- test     ------ issuance
+            |               |--- token
+            |
 	        |--- drafts   ------ access
 	        |               |--- issuance
 	        |               |--- strings
