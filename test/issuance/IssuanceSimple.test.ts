@@ -1,10 +1,10 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
-import { ERC20MintableMockInstance, IssuanceSimpleInstance } from '../../types/truffle-contracts';
+import { ERC20MintableMockInstance, IssuanceInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require(
-    './drafts/issuance/IssuanceSimple.sol',
-    ) as Truffle.Contract<IssuanceSimpleInstance>;
+    './drafts/issuance/Issuance.sol',
+    ) as Truffle.Contract<IssuanceInstance>;
 const ERC20MintableMock = artifacts.require(
         './test/issuance/ERC20MintableMock.sol',
     ) as Truffle.Contract<ERC20MintableMockInstance>;
@@ -20,7 +20,7 @@ contract('Issuance', (accounts) => {
     const investor2 = accounts[2];
     const wallet = accounts[3];
 
-    let issuance: IssuanceSimpleInstance;
+    let issuance: IssuanceInstance;
     let currencyToken: ERC20MintableMockInstance;
     let issuanceToken: ERC20MintableMockInstance;
 
