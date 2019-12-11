@@ -1,13 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
-import { ERC20MintableMockInstance, IssuanceInstance } from '../../types/truffle-contracts';
+import { TestERC20MintableInstance, IssuanceInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require(
     './drafts/issuance/Issuance.sol',
     ) as Truffle.Contract<IssuanceInstance>;
-const ERC20MintableMock = artifacts.require(
-        './test/issuance/ERC20MintableMock.sol',
-    ) as Truffle.Contract<ERC20MintableMockInstance>;
+const TestERC20Mintable = artifacts.require(
+        './test/issuance/TestERC20Mintable.sol',
+    ) as Truffle.Contract<TestERC20MintableInstance>;
 
 should();
 
@@ -21,12 +21,12 @@ contract('Issuance', (accounts) => {
     const wallet = accounts[3];
 
     let issuance: IssuanceInstance;
-    let currencyToken: ERC20MintableMockInstance;
-    let issuanceToken: ERC20MintableMockInstance;
+    let currencyToken: TestERC20MintableInstance;
+    let issuanceToken: TestERC20MintableInstance;
 
     beforeEach(async () => {
-        currencyToken = await ERC20MintableMock.new();
-        issuanceToken = await ERC20MintableMock.new();
+        currencyToken = await TestERC20Mintable.new();
+        issuanceToken = await TestERC20Mintable.new();
         issuance = await Issuance.new(
             issuanceToken.address,
             currencyToken.address,
