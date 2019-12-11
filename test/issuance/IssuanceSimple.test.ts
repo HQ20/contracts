@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
-import { ERC20MintableMockInstance, IssuanceSimpleInstance } from '../../../types/truffle-contracts';
+import { ERC20MintableMockInstance, IssuanceSimpleInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require(
     './drafts/issuance/IssuanceSimple.sol',
@@ -12,7 +12,7 @@ const ERC20MintableMock = artifacts.require(
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../utils');
 
 contract('Issuance', (accounts) => {
 

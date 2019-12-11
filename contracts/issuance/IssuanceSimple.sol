@@ -4,8 +4,8 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./IERC20Mintable.sol";
-import "./../../state/StateMachine.sol";
+import "./../token/IERC20Mintable.sol";
+import "./../state/StateMachine.sol";
 
 
 /**
