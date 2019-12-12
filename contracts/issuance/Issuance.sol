@@ -4,15 +4,15 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./IERC20Mintable.sol";
-import "./../../state/StateMachine.sol";
+import "./../token/IERC20Mintable.sol";
+import "./../state/StateMachine.sol";
 
 
 /**
- * @title IssuanceSimple
+ * @title Issuance
  * @notice Implements a very simple issuance process for tokens
  */
-contract IssuanceSimple is Ownable, StateMachine, ReentrancyGuard {
+contract Issuance is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 

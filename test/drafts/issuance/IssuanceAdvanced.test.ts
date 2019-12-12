@@ -2,14 +2,14 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { ERC20MintableMockInstance, IssuanceAdvancedInstance } from '../../../types/truffle-contracts';
+import { IssuanceAdvancedInstance, TestERC20MintableInstance } from '../../../types/truffle-contracts';
 
 const IssuanceAdvanced = artifacts.require(
     './drafts/issuance/IssuanceAdvanced.sol',
     ) as Truffle.Contract<IssuanceAdvancedInstance>;
-const ERC20MintableMock = artifacts.require(
-        './test/issuance/ERC20MintableMock.sol',
-    ) as Truffle.Contract<ERC20MintableMockInstance>;
+const TestERC20Mintable = artifacts.require(
+        './test/issuance/TestERC20Mintable.sol',
+    ) as Truffle.Contract<TestERC20MintableInstance>;
 
 should();
 
@@ -24,14 +24,14 @@ contract('IssuanceAdvanced', (accounts) => {
     const wallet = accounts[3];
 
     let issuance: IssuanceAdvancedInstance;
-    let currencyToken: ERC20MintableMockInstance;
-    let issuanceToken: ERC20MintableMockInstance;
+    let currencyToken: TestERC20MintableInstance;
+    let issuanceToken: TestERC20MintableInstance;
 
     beforeEach(async () => {
         const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
-        currencyToken = await ERC20MintableMock.new();
-        issuanceToken = await ERC20MintableMock.new();
+        currencyToken = await TestERC20Mintable.new();
+        issuanceToken = await TestERC20Mintable.new();
         issuance = await IssuanceAdvanced.new(
             issuanceToken.address,
             currencyToken.address,
