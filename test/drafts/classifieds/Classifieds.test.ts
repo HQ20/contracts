@@ -164,7 +164,7 @@ contract('Classifieds', (accounts) => {
                 await classifieds.adsByCreationDateInMin(creationDateInMin, 0),
             ))[5],
             true,
-            'Cancellation errored.'
+            'Cancellation errored.',
         );
     });
 
