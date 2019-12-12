@@ -6,10 +6,10 @@ import { ClassifiedsInstance, ERC20MintableMockInstance, ERC721MintableMockInsta
 
 const Classifieds = artifacts.require('./drafts/classifieds/Classifieds.sol') as Truffle.Contract<ClassifiedsInstance>;
 const ERC20MintableMock = artifacts.require(
-        './drafts/test/issuance/ERC20MintableMock.sol',
+        './test/issuance/ERC20MintableMock.sol',
     ) as Truffle.Contract<ERC20MintableMockInstance>;
 const ERC721MintableMock = artifacts.require(
-        './drafts/test/classifieds/ERC721MintableMock.sol',
+        './test/classifieds/ERC721MintableMock.sol',
     ) as Truffle.Contract<ERC721MintableMockInstance>;
 
 should();
