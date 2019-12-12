@@ -44,7 +44,7 @@ contract Classifieds is IERC721Receiver {
     }
 
     /**
-     * @dev Creates a new ad. Must have approved this contract to spend _descritpor of _token.
+     * @dev Creates a new ad. Must have approved this contract to spend _descriptor of _token.
      * @param _token An ERC20 token, or an ERC721 token
      * @param _descriptor The amount of ERC20 token or the tokenId of ERC721 token
      * @param _deadline The time when the ad will expire
@@ -86,7 +86,7 @@ contract Classifieds is IERC721Receiver {
     }
 
     /**
-     * @dev Fills an ad. Must have approved this contract to spend _descritpor of _token.
+     * @dev Fills an ad. Must have approved this contract to spend _descriptor of _token.
      * @param _ad The hash of an existing ad
      * @param _token An ERC20 token, or an ERC721 token
      * @param _descriptor The amount of ERC20 token or the tokenId of ERC721 token
@@ -96,7 +96,6 @@ contract Classifieds is IERC721Receiver {
         bytes memory _ad,
         address _token,
         uint256 _descriptor,
-        uint256 _deadline,
         bool _isCollectible
     ) public {
         Ad memory ad = adsByHash[_ad];
@@ -105,8 +104,6 @@ contract Classifieds is IERC721Receiver {
             !(ad.cancelled || ad.resolved) && ad.deadline > now,
             "Cannot fill expired ad."
         );
-        // solium-disable-next-line security/no-block-members
-        require(_deadline > now, "Deadline cannot be set before now.");
         if (_isCollectible) {
             IERC721(_token).safeTransferFrom(msg.sender, address(this), _descriptor);
         } else {
@@ -116,7 +113,7 @@ contract Classifieds is IERC721Receiver {
             msg.sender,
             _token,
             _descriptor,
-            _deadline,
+            ad.deadline,
             _isCollectible,
             fillersByAd[_ad].length
         );
@@ -125,7 +122,7 @@ contract Classifieds is IERC721Receiver {
             msg.sender,
             _token,
             _descriptor,
-            _deadline,
+            ad.deadline,
             _isCollectible,
             false,
             false
@@ -140,10 +137,24 @@ contract Classifieds is IERC721Receiver {
     function resolveAd(bytes memory _ad, bytes memory _fillerAd) public {
         Ad memory ad = adsByHash[_ad];
         Ad memory fillerAd = adsByHash[_fillerAd];
+        require(ad.poster == msg.sender, "Cannot resolve someone else's ad.");
         require(
             // solium-disable-next-line security/no-block-members
-            !(ad.cancelled || ad.resolved) && !(fillerAd.cancelled) && ad.deadline > now,
+            !(ad.cancelled || ad.resolved) && !(fillerAd.cancelled || fillerAd.resolved) && ad.deadline > now,
             "Cannot fill expired ad."
+        );
+        bool adFilledByFillerAd;
+        for (uint256 i = 0; i < fillersByAd[_ad].length; i++) {
+            if (
+                keccak256(abi.encodePacked(fillersByAd[_ad][i])) == keccak256(abi.encodePacked(_fillerAd))
+            ) {
+                adFilledByFillerAd = true;
+                break;
+            }
+        }
+        require(
+            adFilledByFillerAd,
+            "Cannot resolve to the filler of someone else's ad."
         );
         if (ad.isCollectible){
             IERC721(ad.token).safeTransferFrom(address(this), fillerAd.poster, ad.descriptor);
@@ -174,7 +185,8 @@ contract Classifieds is IERC721Receiver {
         Ad memory ad = adsByHash[_ad];
         require(
             // solium-disable-next-line security/no-block-members
-            !(ad.resolved || ad.cancelled) || ad.deadline > now,
+            (ad.deadline < now || ad.poster == msg.sender) &&
+            !(ad.resolved || ad.cancelled),
             "Cannot cancel this ad."
         );
         if (fillersByAd[_ad].length > 0) {
@@ -183,7 +195,7 @@ contract Classifieds is IERC721Receiver {
                 if (fillerAd.isCollectible) {
                     IERC721(fillerAd.token).safeTransferFrom(address(this), fillerAd.poster, fillerAd.descriptor);
                 } else {
-                    IERC20(fillerAd.token).transferFrom(address(this), fillerAd.poster, fillerAd.descriptor);
+                    IERC20(fillerAd.token).transfer(fillerAd.poster, fillerAd.descriptor);
                 }
                 adsByHash[fillersByAd[_ad][i]].cancelled = true;
             }
@@ -191,7 +203,7 @@ contract Classifieds is IERC721Receiver {
         if (ad.isCollectible) {
             IERC721(ad.token).safeTransferFrom(address(this), ad.poster, ad.descriptor);
         } else {
-            IERC20(ad.token).transferFrom(address(this), ad.poster, ad.descriptor);
+            IERC20(ad.token).transfer(ad.poster, ad.descriptor);
         }
         adsByHash[_ad].cancelled = true;
     }
