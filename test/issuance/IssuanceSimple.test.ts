@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
-import { TestERC20MintableInstance, IssuanceInstance } from '../../types/truffle-contracts';
+import { IssuanceInstance, TestERC20MintableInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require(
     './drafts/issuance/Issuance.sol',

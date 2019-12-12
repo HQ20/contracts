@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { TestERC20MintableInstance, IssuanceAdvancedInstance } from '../../../types/truffle-contracts';
+import { IssuanceAdvancedInstance, TestERC20MintableInstance } from '../../../types/truffle-contracts';
 
 const IssuanceAdvanced = artifacts.require(
     './drafts/issuance/IssuanceAdvanced.sol',
