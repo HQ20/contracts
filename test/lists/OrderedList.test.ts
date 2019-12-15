@@ -10,9 +10,9 @@ const headData = '0x0000000000000000000000000000000000000001';
 const middleData = '0x0000000000000000000000000000000000000002';
 const tailData = '0x0000000000000000000000000000000000000003';
 
-const headRank = 10;
+const headRank = 30;
 const middleRank = 20;
-const tailRank = 30;
+const tailRank = 10;
 
 /** @test {OrderedList} contract */
 contract('OrderedList - add', (accounts) => {
@@ -382,55 +382,19 @@ contract('OrderedList - find and insert', (accounts) => {
     });
 
     it('finds the id for the first object with equal or lower rank.', async () => {
-        let resultId = (await orderedList.findRank(tailRank));
-        resultId.toNumber().should.be.equal(tailId);
+        let resultId = (await orderedList.findRank(headRank));
+        resultId.toNumber().should.be.equal(headId);
         resultId = (await orderedList.findRank(middleRank));
         resultId.toNumber().should.be.equal(middleId);
-        resultId = (await orderedList.findRank(headRank));
-        resultId.toNumber().should.be.equal(headId);
-        resultId = (await orderedList.findRank(headRank - 1));
+        resultId = (await orderedList.findRank(tailRank));
+        resultId.toNumber().should.be.equal(tailId);
+        resultId = (await orderedList.findRank(tailRank - 1));
         resultId.toNumber().should.be.equal(0);
     });
 
-    it('inserts before the head.', async () => {
+    it('inserts before the tail.', async () => {
         const insertedId = (
             await orderedList.insert(5, insertedData)
-        ).logs[0].args.id.toNumber();
-
-        const insertedObject = (await orderedList.get(insertedId));
-        assertEqualObjects(insertedObject, [insertedId, headId, 0, 5, insertedData]);
-
-        const headObject = (await orderedList.get(headId));
-        assertEqualObjects(headObject, [headId, middleId, insertedId, headRank, headData]);
-
-        const middleObject = (await orderedList.get(middleId));
-        assertEqualObjects(middleObject, [middleId, tailId, headId, middleRank, middleData]);
-
-        const tailObject = (await orderedList.get(tailId));
-        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
-    });
-
-    it('inserts in the middle.', async () => {
-        const insertedId = (
-            await orderedList.insert(15, insertedData)
-        ).logs[0].args.id.toNumber();
-
-        const headObject = (await orderedList.get(headId));
-        assertEqualObjects(headObject, [headId, insertedId, 0, headRank, headData]);
-
-        const insertedObject = (await orderedList.get(insertedId));
-        assertEqualObjects(insertedObject, [insertedId, middleId, headId, 15, insertedData]);
-
-        const middleObject = (await orderedList.get(middleId));
-        assertEqualObjects(middleObject, [middleId, tailId, insertedId, middleRank, middleData]);
-
-        const tailObject = (await orderedList.get(tailId));
-        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
-    });
-
-    it('inserts after the tail.', async () => {
-        const insertedId = (
-            await orderedList.insert(35, insertedData)
         ).logs[0].args.id.toNumber();
 
         const headObject = (await orderedList.get(headId));
@@ -443,7 +407,43 @@ contract('OrderedList - find and insert', (accounts) => {
         assertEqualObjects(tailObject, [tailId, insertedId, middleId, tailRank, tailData]);
 
         const insertedObject = (await orderedList.get(insertedId));
-        assertEqualObjects(insertedObject, [insertedId, 0, tailId, 35, insertedData]);
+        assertEqualObjects(insertedObject, [insertedId, 0, tailId, 5, insertedData]);
+    });
+
+    it('inserts in the middle.', async () => {
+        const insertedId = (
+            await orderedList.insert(25, insertedData)
+        ).logs[0].args.id.toNumber();
+
+        const headObject = (await orderedList.get(headId));
+        assertEqualObjects(headObject, [headId, insertedId, 0, headRank, headData]);
+
+        const insertedObject = (await orderedList.get(insertedId));
+        assertEqualObjects(insertedObject, [insertedId, middleId, headId, 25, insertedData]);
+
+        const middleObject = (await orderedList.get(middleId));
+        assertEqualObjects(middleObject, [middleId, tailId, insertedId, middleRank, middleData]);
+
+        const tailObject = (await orderedList.get(tailId));
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
+    });
+
+    it('inserts after the head.', async () => {
+        const insertedId = (
+            await orderedList.insert(35, insertedData)
+        ).logs[0].args.id.toNumber();
+
+        const insertedObject = (await orderedList.get(insertedId));
+        assertEqualObjects(insertedObject, [insertedId, headId, 0, 35, insertedData]);
+
+        const headObject = (await orderedList.get(headId));
+        assertEqualObjects(headObject, [headId, middleId, insertedId, headRank, headData]);
+
+        const middleObject = (await orderedList.get(middleId));
+        assertEqualObjects(middleObject, [middleId, tailId, headId, middleRank, middleData]);
+
+        const tailObject = (await orderedList.get(tailId));
+        assertEqualObjects(tailObject, [tailId, 0, middleId, tailRank, tailData]);
     });
 });
 
