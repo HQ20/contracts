@@ -1,6 +1,6 @@
 {
     "name": "contracts",
-    "version": "0.0.1",
+    "version": "0.0.1-beta",
     "description": "A set of reusable smart contracts from HQ20",
     "license": "Apache-2.0",
     "author": {
@@ -32,14 +32,12 @@
         "generate-ts": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'",
         "build": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
-    "dependencies": {
-        "@openzeppelin/cli": "2.6.0",
-        "@openzeppelin/contracts": "2.4.0",
-        "@openzeppelin/contracts-ethereum-package": "2.4.0",
-        "@openzeppelin/upgrades": "2.6.0",
-        "cross-env": "6.0.3"
+    "peerDependencies": {
+        "@openzeppelin/contracts": "2.4.x"
     },
     "devDependencies": {
+        "@openzeppelin/contracts": "2.4.0",
+        "cross-env": "6.0.3",
         "truffle": "5.1.4",
         "coveralls": "3.0.9",
         "bignumber.js": "9.0.0",
