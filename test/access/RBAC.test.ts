@@ -10,7 +10,7 @@ const { itShouldThrow } = require('./../utils');
 contract('RBAC', (accounts) => {
     let rbac: RBACInstance;
     const root = accounts[1];
-    const NO_ROLE = '0x0';
+    // const NO_ROLE = '0x0';
     const ROOT_ROLE = web3.utils.fromAscii('ROOT');
     const ADDED_ROLE = web3.utils.fromAscii('ADDED');
     const user1 = accounts[2];
@@ -24,21 +24,9 @@ contract('RBAC', (accounts) => {
         assert.isFalse(await rbac.roleExists(ADDED_ROLE));
     });
 
-    it('roleExists returns false for NO_ROLE', async () => {
-        assert.isFalse(await rbac.roleExists(NO_ROLE));
-    });
-
     it('roleExists returns true for existing roles', async () => {
         assert.isTrue(await rbac.roleExists(ROOT_ROLE));
     });
-
-    itShouldThrow(
-        'hasRole throws for NO_ROLE.',
-        async () => {
-            await rbac.hasRole(user1, NO_ROLE);
-        },
-        'Role doesn\'t exist.',
-    );
 
     itShouldThrow(
         'hasRole throws for non existing roles.',
@@ -50,15 +38,6 @@ contract('RBAC', (accounts) => {
 
     it('hasRole returns false for non existing memberships', async () => {
         assert.isFalse(await rbac.hasRole(user1, ROOT_ROLE));
-    });
-
-    it('hasRole gas test', async () => {
-        for (let i = 2; i < 6; i += 1) {
-            await rbac.addMember(accounts[i], ROOT_ROLE, { from: root });
-        }
-        for (let i = 0; i < 10; i += 1) {
-            await rbac.hasRole(accounts[i], ROOT_ROLE);
-        }
     });
 
     itShouldThrow(

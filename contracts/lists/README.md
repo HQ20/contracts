@@ -19,7 +19,7 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 
 ## Usage
 
-`LinkedList.sol`:
+`LinkedList.sol`: Singly Linked List.
 * constructor: Creates an empty list.
 * `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
 * `function findPrevId(uint256 _id)`: Given an Object, denoted by `_id`, returns the id of the Object that points to it, or 0 if `_id` refers to the Head. Method not available for `DoubleLinkedList.sol`, please use `get(_id).prev` instead.
@@ -34,7 +34,7 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 * `function _createObject(address _data)`: Internal function to create an unlinked Object.
 * `function _link(uint256 _prevId, uint256 _nextId)`: Internal function to link an Object to another.
 
-`DoubleLinkedList.sol`:
+`DoubleLinkedList.sol`: Doubly Linked List.
 * constructor: Creates an empty list.
 * `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
 * `function findIdForData(address _data)`: Return the id of the first Object matching `_data` in the data field.
@@ -46,3 +46,18 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 * `function _setHead(uint256 _id)`: Internal function to update the Head pointer.
 * `function _createObject(address _data)`: Internal function to create an unlinked Object.
 * `function _link(uint256 _prevId, uint256 _nextId)`: Internal function to link an Object to another.
+
+`OrderedList.sol`: Doubly Linked List, sorted by `rank` descending from the head.
+* constructor: Creates an empty list.
+* `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
+* `function findRank(uint256 _rank)`: Return the id of the first Object with a lower or equal `_rank`, starting from the head.
+* `function insert(uint256 _rank, address _data)`: Insert a new Object immediately before the one with the closest lower `_rank`.
+* `function remove(uint256 _id)`: Remove the Object denoted by `_id` from the List.
+* `function _addHead(address _data)`: Insert a new Object as the new Head with `_data` in the data field.
+* `function _addTail(address _data)`: Insert a new Object as the new Tail with `_data` in the data field.
+* `function _insertAfter(uint256 _prevId, address _data)`: Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
+* `function _insertBefore(uint256 _nextId, address _data)`: Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
+* `function _setHead(uint256 _id)`: Internal function to update the Head pointer.
+* `function _createObject(address _data)`: Internal function to create an unlinked Object.
+* `function _link(uint256 _prevId, uint256 _nextId)`: Internal function to link an Object to another.
+
