@@ -3,7 +3,7 @@ pragma solidity ^0.5.10;
 
 /**
  * @title OrderedList
- * @dev Doubly linked list of ranked objects. The tail will always have the highest rank and elements will be ordered down to the head.
+ * @dev Doubly linked list of ranked objects. The head will always have the highest rank and elements will be ordered down towards the tail.
  * @author Alberto Cuesta Cañada
  */
 contract OrderedList {
@@ -49,33 +49,36 @@ contract OrderedList {
     }
 
     /**
-     * @dev Return the id of the first Object with a lower or equal rank, starting from the tail.
+     * @dev Return the id of the first Object with a lower or equal rank, starting from the head.
      */
     function findRank(uint256 _rank)
         public
         view
         returns (uint256)
     {
-        Object memory object = objects[tail];
+        Object memory object = objects[head];
         while (object.rank > _rank) {
-            object = objects[object.prev];
+            object = objects[object.next];
         }
         return object.id;
     }
 
     /**
-     * @dev Insert the object immediately after the one with the closest lower rank.
+     * @dev Insert the object immediately before the one with the closest lower rank.
+     * WARNING: This method loops through the whole list before inserting, and therefore limits the
+     * size of the list to a few tens of thousands of objects before becoming unusable. For a scalable
+     * contract make _insertBefore public but check prev and next on insertion.
      */
     function insert(uint256 _rank, address _data)
         public
         returns (bool)
     {
-        uint256 prevId = findRank(_rank);
-        if (prevId == 0) {
-            _addHead(_rank, _data);
+        uint256 nextId = findRank(_rank);
+        if (nextId == 0) {
+            _addTail(_rank, _data);
         }
         else {
-            _insertAfter(prevId, _rank, _data);
+            _insertBefore(nextId, _rank, _data);
         }
     }
 
