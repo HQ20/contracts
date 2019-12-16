@@ -61,6 +61,6 @@
         "ts-node": "8.5.4",
         "typescript": "3.7.3",
         "tslint": "5.20.1",
-        "@truffle/hdwallet-provider": "1.0.26"
+        "@truffle/hdwallet-provider": "1.0.27"
     }
 }
