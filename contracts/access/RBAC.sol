@@ -12,7 +12,6 @@ contract RBAC {
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
 
-    bytes32 public constant NO_ROLE = 0x0;
     bytes32 public constant ROOT_ROLE = "ROOT";
 
     /**
@@ -23,6 +22,7 @@ contract RBAC {
      * @param members Addresses belonging to this role.
      */
     struct Role {
+        bool exists;
         bytes32 adminRoleId;
         mapping (address => bool) members;
     }
@@ -33,8 +33,7 @@ contract RBAC {
      * @notice The contract initializer. It adds NO_ROLE as with role id 0x0, and ROOT_ROLE with role id 'ROOT'.
      */
     constructor(address _root) public {
-        roles[NO_ROLE] = Role({ adminRoleId: NO_ROLE });
-        roles[ROOT_ROLE] = Role({ adminRoleId: ROOT_ROLE });
+        roles[ROOT_ROLE] = Role({ exists: true, adminRoleId: ROOT_ROLE });
 
         emit RoleCreated(ROOT_ROLE);
         roles[ROOT_ROLE].members[_root] = true;
@@ -52,7 +51,7 @@ contract RBAC {
         view
         returns(bool)
     {
-        return (roles[_roleId].adminRoleId != 0); // Not great
+        return (roles[_roleId].exists);
     }
 
     /**
@@ -79,12 +78,12 @@ contract RBAC {
     function addRole(bytes32 _roleId, bytes32 _adminRoleId)
         public
     {
-        require(_roleId != NO_ROLE, "Reserved role id.");
+        // require(_roleId != NO_ROLE, "Reserved role id.");
         require(!roleExists(_roleId), "Role already exists.");
         require(roleExists(_adminRoleId), "Admin role doesn't exist.");
         require(hasRole(msg.sender, _adminRoleId), "Not admin of role.");
 
-        roles[_roleId] = Role({ adminRoleId: _adminRoleId });
+        roles[_roleId] = Role({ exists: true, adminRoleId: _adminRoleId });
         emit RoleCreated(_roleId);
     }
 

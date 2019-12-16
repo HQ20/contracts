@@ -31,7 +31,6 @@ This is an Ethereum project that implements runtime configurable access control.
 ## Usage
 
 In `RBAC.sol`:
-* constant NO_ROLE: Reserved value representing NULL
 * constant ROOT_ROLE: Reserved value of the seed role.
 
 * constructor `address _root`: Creates the root role and adds _root as a member.
