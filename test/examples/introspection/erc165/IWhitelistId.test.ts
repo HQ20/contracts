@@ -1,14 +1,14 @@
 import { should } from 'chai';
-import { IWhitelistIdInstance } from '../../../types/truffle-contracts';
+import { IWhitelistIdInstance } from '../../../../types/truffle-contracts';
 
 const IWhitelistId = artifacts.require(
-    './drafts/access/IWhitelistId.sol',
+    './examples/introspection/erc165/IWhitelistId.sol',
 ) as Truffle.Contract<IWhitelistIdInstance>;
 
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../../../utils');
 
 /** @test {IWhitelistId} contract */
 contract('IWhitelistId', (accounts) => {

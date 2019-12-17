@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
-import "./../access/IWhitelist.sol";
-import "./../access/IWhitelistId.sol";
+import "./IWhitelist.sol";
+import "./IWhitelistId.sol";
 
 
 contract ERC20Whitelisted is ERC20, IWhitelistId {

@@ -1,25 +1,25 @@
 import { should } from 'chai';
-import { WhitelistInstance } from '../../../types/truffle-contracts';
-import { ERC20WhitelistedInstance } from '../../../types/truffle-contracts';
-import { ERC20WhitelistedMockInstance } from '../../../types/truffle-contracts';
+import { WhitelistERC165Instance } from '../../../../types/truffle-contracts';
+import { ERC20WhitelistedInstance } from '../../../../types/truffle-contracts';
+import { ERC20WhitelistedMockInstance } from '../../../../types/truffle-contracts';
 
 const Whitelist = artifacts.require(
-    './drafts/access/Whitelist.sol',
-) as Truffle.Contract<WhitelistInstance>;
+    './examples/introspection/erc165/WhitelistERC165.sol',
+) as Truffle.Contract<WhitelistERC165Instance>;
 const ERC20Whitelisted = artifacts.require(
-    './drafts/token/ERC20Whitelisted.sol',
+    './examples/introspection/erc165/ERC20Whitelisted.sol',
 ) as Truffle.Contract<ERC20WhitelistedInstance>;
 const ERC20WhitelistedMock = artifacts.require(
-    './test/token/ERC20WhitelistedMock.sol',
+    './test/examples/introspection/erc165/ERC20WhitelistedMock.sol',
 ) as Truffle.Contract<ERC20WhitelistedMockInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../../../utils');
 
 /** @test {ERC20Whitelisted} contract */
 contract('ERC20Whitelisted', (accounts) => {
-    let whitelist: WhitelistInstance;
+    let whitelist: WhitelistERC165Instance;
     let erc20Whitelisted: ERC20WhitelistedInstance;
     const root = accounts[0];
     // const whitelistedUser = accounts[1];
@@ -48,7 +48,7 @@ contract('ERC20Whitelisted', (accounts) => {
 
 /** @test {ERC20Whitelisted} contract */
 contract('ERC20Whitelisted', (accounts) => {
-    let whitelist: WhitelistInstance;
+    let whitelist: WhitelistERC165Instance;
     let erc20Whitelisted: ERC20WhitelistedMockInstance;
     const root = accounts[0];
     const whitelistedUser = accounts[1];
@@ -96,7 +96,7 @@ contract('ERC20Whitelisted', (accounts) => {
 
 /** @test {ERC20Whitelisted} contract */
 contract('ERC20Whitelisted', (accounts) => {
-    let whitelist: WhitelistInstance;
+    let whitelist: WhitelistERC165Instance;
     let erc20Whitelisted: ERC20WhitelistedMockInstance;
     const root = accounts[0];
     const whitelistedUser1 = accounts[1];

@@ -1,13 +1,16 @@
 pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "./IWhitelist.sol";
+import "./IWhitelistId.sol";
 
 
 /**
- * @title Whitelist
+ * @title WhitelistERC165
  * @author Alberto Cuesta Canada
- * @dev Implements a simple whitelist of addresses.
+ * @dev Implements a simple whitelist of addresses registered via ERC165
  */
-contract Whitelist is Ownable {
+contract WhitelistERC165 is Ownable, ERC165, IWhitelist, IWhitelistId {
     event MemberAdded(address member);
     event MemberRemoved(address member);
 
@@ -16,7 +19,8 @@ contract Whitelist is Ownable {
     /**
      * @dev The contract constructor.
      */
-    constructor() public Ownable() {
+    constructor() public Ownable() IERC165() {
+        _registerInterface(IWhitelistId.IWHITELIST_ID);
     }
 
     /**
