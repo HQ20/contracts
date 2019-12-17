@@ -4,14 +4,15 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./../../token/IERC20Mintable.sol";
 import "./../../state/StateMachine.sol";
 
 
 /**
- * @title Issuance
+ * @title IssuanceAdvanced
  * @notice Implements the investment round procedure for issuances
  */
-contract Issuance is Ownable, StateMachine, ReentrancyGuard {
+contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 
@@ -27,7 +28,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentCancelled(address investor, uint256 amount);
 
     IERC20 public currencyToken;
-    ERC20Mintable public issuanceToken;
+    IERC20Mintable public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
@@ -46,7 +47,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
-        issuanceToken = ERC20Mintable(_issuanceToken);
+        issuanceToken = IERC20Mintable(_issuanceToken);
         currencyToken = IERC20(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");

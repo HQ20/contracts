@@ -59,6 +59,7 @@ contract Whitelist is Ownable, ERC165, IWhitelist, IWhitelistId {
      */
     function removeMember(address _member)
         public
+        onlyOwner
     {
         require(
             isMember(_member),

@@ -27,6 +27,46 @@ Use the package manager [yarn](https://yarnpkg.com) to install dependencies.
 $ yarn
 ```
 
+## Directories
+
+Contracts go in `contracts`, test files go in `test`.
+
+Inside the contracts folder the files are organized by topic and by type.
+
+Current topics are access, lists, state, strings and token. This list might not be exhaustive.
+
+At the root of `contracts` are directories for each one of the topics, containing the simplest implementations that are in a mature state.
+
+For contracts that are used as example implementations there is a `contracts/examples` directory with the appropriate topic folders inside.
+
+For contracts that are more complex and complete implementations of the base topics there is a `contracts/advanced` directory with the appropriate topic folders inside.
+
+For contracts that are under development there is a `contracts/drafts` directory with the appropriate topic folders inside.
+
+For contracts that are used for testing of libraries or internal methods there is a `contracts/tests` directory with the appropriate topic folders inside.
+
+The `test` directory replicates the structure of the `contracts` directory.
+
+At the time of writing and as an example, this is the directory structure.
+
+```
+contracts ──┬─── examples ────── access
+            │
+            ├─── advanced ────── access
+            │
+            ├─── test     ──┬─── issuance
+            │               └─── token
+            │
+            ├─── drafts   ──┬─── access
+            │               ├─── issuance
+            │               ├─── strings
+            │               └─── token
+            │
+            ├─── access
+            ├─── lists
+            └─── state
+```
+
 ## Usage
 
 ```solidity
@@ -43,6 +83,8 @@ contract MyContract is RBAC {
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+As well as bug fixes , we will welcome updates to the basic contracts that make them even easier to understand, examples of contracts implementing a particular feature, or advanced contracts that put together a number of features into a complete use case.
 
 Please make sure to update tests as appropriate.
 
