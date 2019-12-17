@@ -61,15 +61,3 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 * `function _createObject(address _data)`: Internal function to create an unlinked Object.
 * `function _link(uint256 _prevId, uint256 _nextId)`: Internal function to link an Object to another.
 
-# LinkedListsAsArray
-
-High performance implementation of a Doubly Linked List based on a dynamic array and without structs. It only allows inserting by the head and suffers from some fragmentation which can be managed.
-
-`LinkedListAsArray.sol`:
-* constructor: Creates an empty list.
-* `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
-* `function next(uint256 _id)`: Given an Object, denoted by `_id`, returns (true, id) for the Object it points to, or (false, 0) if `_id` refers to the Tail.
-* `function prev(uint256 _id)`: Given an Object, denoted by `_id`, returns (true, id) for the Object that points to it, or (false, 0) if `_id` refers to the Head.
-* `function find(address _data)`: Return the id of the first Object matching `_data`.
-* `function addHead(address _data)`: Insert a new Object as the new Head with `_data` as payload.
-* `function remove(uint256 _id)`: Remove the Object denoted by `_id` from the List.
