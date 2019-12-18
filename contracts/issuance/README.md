@@ -11,9 +11,9 @@ The issuance is governed by the following parameters:
 `issuanceToken`: The token that will be issued if conditions are met.
 `issuePrice`:  The amount of currency tokens that are required to buy one issued token.
 
-               ,-> LIVE
-SETUP -> OPEN -
-               `-> FAILED
+SETUP ─── OPEN ─┬─ LIVE
+                │
+                └──FAILED
 
 First set the issuance parameters using the `set*` functions.
 
