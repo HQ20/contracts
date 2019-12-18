@@ -1,7 +1,9 @@
 import { should } from 'chai';
-import { LinkedListAsArrayInstance } from '../../types/truffle-contracts';
+import { LinkedListAsArrayInstance } from '../../../types/truffle-contracts';
 
-const LinkedList = artifacts.require('./lists/LinkedListAsArray.sol')  as Truffle.Contract<LinkedListAsArrayInstance>;
+const LinkedList = artifacts.require(
+    './drafts/lists/LinkedListAsArray.sol',
+)  as Truffle.Contract<LinkedListAsArrayInstance>;
 should();
 
 

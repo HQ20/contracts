@@ -1,18 +1,18 @@
 import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
-import { ERC20MintableMockInstance, IssuanceSimpleInstance } from '../../../types/truffle-contracts';
+import { IssuanceInstance, TestERC20MintableInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require(
-    './drafts/issuance/IssuanceSimple.sol',
-    ) as Truffle.Contract<IssuanceSimpleInstance>;
-const ERC20MintableMock = artifacts.require(
-        './test/issuance/ERC20MintableMock.sol',
-    ) as Truffle.Contract<ERC20MintableMockInstance>;
+    './drafts/issuance/Issuance.sol',
+    ) as Truffle.Contract<IssuanceInstance>;
+const TestERC20Mintable = artifacts.require(
+        './test/issuance/TestERC20Mintable.sol',
+    ) as Truffle.Contract<TestERC20MintableInstance>;
 
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+const { itShouldThrow } = require('./../utils');
 
 contract('Issuance', (accounts) => {
 
@@ -20,13 +20,13 @@ contract('Issuance', (accounts) => {
     const investor2 = accounts[2];
     const wallet = accounts[3];
 
-    let issuance: IssuanceSimpleInstance;
-    let currencyToken: ERC20MintableMockInstance;
-    let issuanceToken: ERC20MintableMockInstance;
+    let issuance: IssuanceInstance;
+    let currencyToken: TestERC20MintableInstance;
+    let issuanceToken: TestERC20MintableInstance;
 
     beforeEach(async () => {
-        currencyToken = await ERC20MintableMock.new();
-        issuanceToken = await ERC20MintableMock.new();
+        currencyToken = await TestERC20Mintable.new();
+        issuanceToken = await TestERC20Mintable.new();
         issuance = await Issuance.new(
             issuanceToken.address,
             currencyToken.address,
