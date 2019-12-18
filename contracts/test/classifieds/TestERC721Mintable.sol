@@ -9,4 +9,4 @@ import "@openzeppelin/contracts/token/ERC721/ERC721Mintable.sol";
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract ERC721MintableMock is ERC721Mintable { }
+contract TestERC721Mintable is ERC721Mintable { }

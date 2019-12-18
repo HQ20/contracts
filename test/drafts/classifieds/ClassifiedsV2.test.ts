@@ -2,15 +2,15 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { ClassifiedsV2Instance, ERC20MintableMockInstance, ERC721MintableMockInstance } from '../../../types/truffle-contracts';
+import { ClassifiedsV2Instance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../../types/truffle-contracts';
 
 const ClassifiedsV2 = artifacts.require('./drafts/classifieds/ClassifiedsV2.sol') as Truffle.Contract<ClassifiedsV2Instance>;
-const ERC20MintableMock = artifacts.require(
-        './test/issuance/ERC20MintableMock.sol',
-    ) as Truffle.Contract<ERC20MintableMockInstance>;
-const ERC721MintableMock = artifacts.require(
-        './test/classifieds/ERC721MintableMock.sol',
-    ) as Truffle.Contract<ERC721MintableMockInstance>;
+const TestERC20Mintable = artifacts.require(
+    './test/issuance/TestERC20Mintable.sol',
+) as Truffle.Contract<TestERC20MintableInstance>;
+const TestERC721Mintable = artifacts.require(
+    './test/classifieds/TestERC721Mintable.sol',
+) as Truffle.Contract<TestERC721MintableInstance>;
 
 should();
 
@@ -24,14 +24,14 @@ contract('ClassifiedsV2', (accounts) => {
     const filler = accounts[2];
 
     let classifiedsV2: ClassifiedsV2Instance;
-    let erc20token: ERC20MintableMockInstance;
-    let erc721token: ERC721MintableMockInstance;
+    let erc20token: TestERC20MintableInstance;
+    let erc721token: TestERC721MintableInstance;
 
     beforeEach(async () => {
         const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
-        erc20token = await ERC20MintableMock.new();
-        erc721token = await ERC721MintableMock.new();
+        erc20token = await TestERC20Mintable.new();
+        erc721token = await TestERC721Mintable.new();
         classifiedsV2 = await ClassifiedsV2.new(erc20token.address, erc721token.address);
     });
 
