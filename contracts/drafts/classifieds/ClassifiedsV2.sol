@@ -39,7 +39,7 @@ contract ClassifiedsV2 {
     }
 
     /**
-     * @dev Returns the details for an trade.
+     * @dev Returns the details for a trade.
      * @param _trade The id for the trade.
      */
     function getTrade(uint256 _trade)
@@ -59,7 +59,7 @@ contract ClassifiedsV2 {
     function openTrade(uint256 _item, uint256 _price)
         public
     {
-        // TODO: Put _item into escrow
+        itemToken.transferFrom(msg.sender, address(this), _item);
         trades[tradeCounter] = Trade({
             poster: msg.sender,
             item: _item,
@@ -71,7 +71,7 @@ contract ClassifiedsV2 {
     }
 
     /**
-     * @dev Executes a trade. Must have approved this contract to to transfer the
+     * @dev Executes a trade. Must have approved this contract to transfer the
      * amount of currency specified to the poster. Transfers ownership of the
      * item to the filler.
      * @param _trade The id of an existing trade
@@ -79,21 +79,28 @@ contract ClassifiedsV2 {
     function executeTrade(uint256 _trade)
         public
     {
-        // TODO: Transfer trade.price of ERC20 to trade.poster
-        // TODO: Transfer ERC721(trade.item) to msg.sender
-        // TODO: Change trade status
-        // TODO: Emit trade status change event
+        Trade memory trade = trades[_trade];
+        currencyToken.transferFrom(msg.sender, trade.poster, trade.price);
+        itemToken.transferFrom(address(this), msg.sender, trade.item);
+        trades[_trade].status = "Executed";
+        emit TradeStatusChange(_trade, "Executed");
     }
 
     /**
-     * @dev Cancels an trade by the poster.
+     * @dev Cancels a trade by the poster.
      * @param _trade The trade to be cancelled.
      */
     function cancelTrade(uint256 _trade)
         public
     {
-        // TODO: Return ERC721(trade.item) to trade.poster
-        // TODO: Change trade status
-        // TODO: Emit trade status change event
+        Trade memory trade = trades[_trade];
+        require(
+            msg.sender == trade.poster,
+            "Trade can be cancelled only by poster."
+        );
+        require(trade.status == "Open", "Cannot cancel executed trade.");
+        itemToken.transferFrom(address(this), trade.poster, trade.item);
+        trades[_trade].status = "Cancelled";
+        emit TradeStatusChange(_trade, "Cancelled");
     }
 }

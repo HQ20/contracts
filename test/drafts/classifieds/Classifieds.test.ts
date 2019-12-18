@@ -43,8 +43,8 @@ contract('Classifieds', (accounts) => {
      * @test {Classifieds#newAd}
      */
     it('newAd can succefully open a new ad', async () => {
-        erc20token.mint(poster, new BigNumber(1e18));
-        erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
+        await erc20token.mint(poster, new BigNumber(1e18));
+        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
         const creationDateInMin = new BigNumber(
             Math.floor((await web3.eth.getBlock(await web3.eth.getBlockNumber())).timestamp / 60),
         );
@@ -66,10 +66,10 @@ contract('Classifieds', (accounts) => {
      * @test {Classifieds#fillAd}
      */
     it('fillAd can succefully fill an ad', async () => {
-        erc20token.mint(poster, new BigNumber(1e18));
-        erc721token.mint(filler, 0);
-        erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
-        erc721token.approve(classifieds.address, 0, { from: filler });
+        await erc20token.mint(poster, new BigNumber(1e18));
+        await erc721token.mint(filler, 0);
+        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
+        await erc721token.approve(classifieds.address, 0, { from: filler });
         const creationDateInMin = new BigNumber(
             Math.floor((await web3.eth.getBlock(await web3.eth.getBlockNumber())).timestamp / 60),
         );
@@ -100,10 +100,10 @@ contract('Classifieds', (accounts) => {
      * @test {Classifieds#resolveAd}
      */
     it('resolveAd can succefully resolve an ad', async () => {
-        erc20token.mint(poster, new BigNumber(1e18));
-        erc721token.mint(filler, 0);
-        erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
-        erc721token.approve(classifieds.address, 0, { from: filler });
+        await erc20token.mint(poster, new BigNumber(1e18));
+        await erc721token.mint(filler, 0);
+        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
+        await erc721token.approve(classifieds.address, 0, { from: filler });
         const creationDateInMin = new BigNumber(
             Math.floor((await web3.eth.getBlock(await web3.eth.getBlockNumber())).timestamp / 60),
         );
@@ -138,8 +138,8 @@ contract('Classifieds', (accounts) => {
      * @test {Classifieds#cancelAd}
      */
     it('cancelAd can succefully cancel an ad', async () => {
-        erc20token.mint(poster, new BigNumber(1e18));
-        erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
+        await erc20token.mint(poster, new BigNumber(1e18));
+        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: poster });
         const creationDateInMin = new BigNumber(
             Math.floor((await web3.eth.getBlock(await web3.eth.getBlockNumber())).timestamp / 60),
         );
