@@ -46,7 +46,7 @@
         "ethlint": "1.2.5",
         "ganache-cli": "6.7.0",
         "ganache-time-traveler": "1.0.11",
-        "soldoc": "0.1.2-beta.3",
+        "soldoc": "0.1.2-beta.4",
         "solidity-coverage": "0.6.7",
         "truffle-typings": "1.0.8",
         "typechain": "1.0.3",
