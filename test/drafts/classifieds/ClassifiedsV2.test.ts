@@ -4,7 +4,9 @@ import { should } from 'chai';
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
 import { ClassifiedsV2Instance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../../types/truffle-contracts';
 
-const ClassifiedsV2 = artifacts.require('./drafts/classifieds/ClassifiedsV2.sol') as Truffle.Contract<ClassifiedsV2Instance>;
+const ClassifiedsV2 = artifacts.require(
+    './drafts/classifieds/ClassifiedsV2.sol',
+) as Truffle.Contract<ClassifiedsV2Instance>;
 const TestERC20Mintable = artifacts.require(
     './test/issuance/TestERC20Mintable.sol',
 ) as Truffle.Contract<TestERC20MintableInstance>;
@@ -70,7 +72,7 @@ contract('ClassifiedsV2', (accounts) => {
         await erc721token.approve(classifiedsV2.address, 0, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         await classifiedsV2.executeTrade(0, { from: filler });
-        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[3]), 'Executed', 'Incorrect trade execution.')
+        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[3]), 'Executed', 'Incorrect trade execution.');
     });
 
     /**
@@ -81,7 +83,11 @@ contract('ClassifiedsV2', (accounts) => {
         await erc721token.approve(classifiedsV2.address, 0, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         await classifiedsV2.cancelTrade(0, { from: poster });
-        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[3]), 'Cancelled', 'Incorrect trade cancellation.')
+        assert.equal(
+            bytes32ToString((await classifiedsV2.getTrade(0))[3]),
+            'Cancelled',
+            'Incorrect trade cancellation.',
+        );
     });
 
     /**
