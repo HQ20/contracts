@@ -58,7 +58,7 @@
         "mustache": "3.1.0",
         "node-emoji": "1.10.0",
         "pdf-from-html": "0.1.1",
-        "soldoc": "0.1.2-beta.4",
+        "soldoc": "0.1.2-beta.5",
         "solidity-coverage": "0.6.7",
         "truffle": "5.1.4",
         "truffle-typings": "1.0.8",
