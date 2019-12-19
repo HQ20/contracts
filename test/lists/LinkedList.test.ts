@@ -4,7 +4,7 @@ import { TestLinkedListInstance } from '../../types/truffle-contracts';
 
 const LinkedList = artifacts.require('./lists/LinkedList.sol')  as Truffle.Contract<LinkedListInstance>;
 const TestLinkedList = artifacts.require(
-    './lists/mocks/TestLinkedList.sol'
+    './lists/mocks/TestLinkedList.sol',
 )  as Truffle.Contract<TestLinkedListInstance>;
 should();
 

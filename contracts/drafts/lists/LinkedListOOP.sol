@@ -4,52 +4,67 @@ import "./LinkedListElement.sol";
 
 /**
  * @title LinkedListOOP
- * @dev Data structure
+ * @dev Data structure implementing a Singly Linked List following Object Oriented Programming principles.
  * @author Alberto Cuesta Cañada
  */
 contract LinkedListOOP {
     LinkedListElement public head;
 
+    /**
+     * @dev The constructor is empty as of now.
+     */
     constructor() public
     {}
 
+    /**
+     * @dev Prepend a LinkedListElement at the head of this list.
+     */
     function addHead(address _data) public
     {
-        LinkedListElement newElement = new LinkedListElement(_data);
-        newElement.setNext(head);
-        head = newElement;
+        LinkedListElement create = new LinkedListElement(_data);
+        create.setNext(head);
+        head = create;
         emit HeadSet(address(head));
     }
 
-    function insertAfter(address _prevElement, address _data) public
+    /**
+     * @dev Create a LinkedListElement after the one passed as an address.
+     */
+    function insertAfter(address _prev, address _data) public
     {
-        LinkedListElement newElement = new LinkedListElement(_data);
-        LinkedListElement prevElement = LinkedListElement(_prevElement);
-        LinkedListElement nextElement = prevElement.next();
-        newElement.setNext(nextElement);
-        prevElement.setNext(newElement);
+        LinkedListElement create = new LinkedListElement(_data);
+        LinkedListElement prev = LinkedListElement(_prev);
+        LinkedListElement next = prev.next();
+        create.setNext(next);
+        prev.setNext(create);
     }
 
-    function removeAfter(address _prevElement) public
+    /**
+     * @dev Remove the LinkedListElement after the one passed as an address.
+     */
+    function removeAfter(address _prev) public
     {
-        LinkedListElement prevElement = LinkedListElement(_prevElement);
-        LinkedListElement delElement = prevElement.next();
-        LinkedListElement nextElement = delElement.next();
+        LinkedListElement prev = LinkedListElement(_prev);
+        LinkedListElement del = prev.next();
+        LinkedListElement next = del.next();
 
-        prevElement.setNext(nextElement);
-        // Implement a function on delElement to selfdestruct
+        prev.setNext(next);
+        // Implement a function on del to selfdestruct
     }
 
+    /**
+     * Travel the list from the head and return the address of the first LinkedListElement with matching `_data`.
+     */
     function findFirst(address _data) public view returns (address)
     {
-        LinkedListElement currentElement = head;
+        LinkedListElement current = head;
         while (
-            address(currentElement) != address(0) &&
-            currentElement.data() != _data
+            address(current) != address(0) &&
+            current.data() != _data
         ) {
-            currentElement = currentElement.next();
+            current = current.next();
         }
-        return address(currentElement);
+        return address(current);
     }
 
     event HeadSet(address head);

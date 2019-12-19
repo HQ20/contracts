@@ -29,6 +29,9 @@ contract('LinkedListOOP - functionality', (accounts) => {
         linkedList = await LinkedListOOP.new();
     });
 
+    /**
+     * @test {LinkedListOOP#addHead}
+     */
     it('Add an element at the head.', async () => {
         await linkedList.addHead(headData);
         const headElementAddress = await linkedList.head();
@@ -36,6 +39,9 @@ contract('LinkedListOOP - functionality', (accounts) => {
         headData.should.be.equal(await headElementContract.data());
     });
 
+    /**
+     * @test {LinkedListOOP#addHead}
+     */
     it('adds two elements from the head.', async () => {
         await linkedList.addHead(tailData);
         const tailElementAddress = await linkedList.head();
@@ -50,6 +56,9 @@ contract('LinkedListOOP - functionality', (accounts) => {
         tailData.should.be.equal(await tailElementContract.data());
     });
 
+    /**
+     * @test {LinkedListOOP#insertAfter}
+     */
     it('inserts an element between two others.', async () => {
         await linkedList.addHead(tailData);
         const tailElementAddress = await linkedList.head();
@@ -68,6 +77,9 @@ contract('LinkedListOOP - functionality', (accounts) => {
         tailElementAddress.should.be.equal(await middleElementContract.next());
     });
 
+    /**
+     * @test {LinkedListOOP#removeAfter}
+     */
     it('removes an element between two others.', async () => {
         await linkedList.addHead(tailData);
         const tailElementAddress = await linkedList.head();
@@ -86,7 +98,7 @@ contract('LinkedListOOP - functionality', (accounts) => {
 });
 
 /** @test {LinkedListOOP} contract */
-contract('LinkedListOOP - gas', (accounts) => {
+/* contract('LinkedListOOP - gas', (accounts) => {
 
     let linkedList: TestLinkedListOOPInstance;
     let targetElementContract: LinkedListElementInstance;
@@ -106,40 +118,5 @@ contract('LinkedListOOP - gas', (accounts) => {
     it('Loop over 100 elements searching.', async () => {
         await linkedList.findFirstWithGas(targetData);
         targetData.should.be.equal(await targetElementContract.data());
-    });
-});
-
-/* contract('LinkedList - gas tests', (accounts) => {
-    let linkedList: LinkedListInstance;
-    const dummyData = '0x0000000000000000000000000000000000000001';
-
-    beforeEach(async () => {
-        linkedList = await LinkedList.new();
-        for (let i = 0; i < 100; i++) {
-            await linkedList.addHead(dummyData);
-        }
-    });
-
-    it('Add Head.', async () => {
-        await linkedList.addHead(dummyData);
-    });
-
-    it('Add Tail.', async () => {
-        await linkedList.addTail(dummyData);
-    });
-
-    it('Insert After.', async () => {
-        const tailId = await linkedList.findTailId();
-        await linkedList.insertAfter(tailId, dummyData);
-    });
-
-    it('Insert Before.', async () => {
-        const tailId = await linkedList.findTailId();
-        await linkedList.insertBefore(tailId, dummyData);
-    });
-
-    it('Remove.', async () => {
-        const tailId = await linkedList.findTailId();
-        await linkedList.remove(tailId);
     });
 }); */
