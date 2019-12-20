@@ -14,7 +14,7 @@ contract WhitelistERC165 is Ownable, ERC165, IWhitelist, IWhitelistId {
     event MemberAdded(address member);
     event MemberRemoved(address member);
 
-    mapping (address => bool) members;
+    mapping (address => bool) internal members;
 
     /**
      * @dev The contract constructor.
