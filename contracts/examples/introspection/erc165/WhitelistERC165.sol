@@ -9,6 +9,10 @@ import "./WhitelistInterfaceId.sol";
  * @title WhitelistERC165
  * @author Alberto Cuesta Canada
  * @dev Implements a simple whitelist of addresses registered via ERC165
+ * @dev TODO: Can be done inheriting from hq20/contracts/access/Whitelist.sol,
+ * but it becomes a bit confusing for WhitelistERC165 to inherit from both
+ * Whitelist.sol and IWhitelist.sol. Maybe do after moving IWwhitelist.sol to
+ * hq20/contracts/access.
  */
 contract WhitelistERC165 is Ownable, ERC165, IWhitelist, WhitelistInterfaceId {
     event MemberAdded(address member);
