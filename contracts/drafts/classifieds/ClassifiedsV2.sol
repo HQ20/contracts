@@ -80,6 +80,7 @@ contract ClassifiedsV2 {
         public
     {
         Trade memory trade = trades[_trade];
+        require(trade.status == "Open", "Trade is not Open.");
         currencyToken.transferFrom(msg.sender, trade.poster, trade.price);
         itemToken.transferFrom(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
@@ -98,7 +99,7 @@ contract ClassifiedsV2 {
             msg.sender == trade.poster,
             "Trade can be cancelled only by poster."
         );
-        require(trade.status == "Open", "Cannot cancel executed trade.");
+        require(trade.status == "Open", "Trade is not Open.");
         itemToken.transferFrom(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");

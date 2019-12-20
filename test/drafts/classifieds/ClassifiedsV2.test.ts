@@ -29,6 +29,12 @@ contract('ClassifiedsV2', (accounts) => {
     let erc20token: TestERC20MintableInstance;
     let erc721token: TestERC721MintableInstance;
 
+    const ERC721id = 0;
+    const POSTER = 0;
+    const ITEM = 1;
+    const PRICE = 2;
+    const STATUS = 3;
+
     beforeEach(async () => {
         const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
@@ -44,22 +50,29 @@ contract('ClassifiedsV2', (accounts) => {
     /**
      * @test {Classifieds#openTrade}
      */
-    it('openTrade can succefully open a new trade', async () => {
-        await erc721token.mint(poster, 0);
-        await erc721token.approve(classifiedsV2.address, 0, { from: poster });
+    it('openTrade emits an event to signal trade opening', async () => {
+        await erc721token.mint(poster, ERC721id);
+        await erc721token.approve(classifiedsV2.address, ERC721id, { from: poster });
         const tx = await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         assert.equal(tx.logs[0].event, 'TradeStatusChange', 'Should have fired TradeStatusChange.');
         assert.equal(bytes32ToString(tx.logs[0].args.status), 'Open', 'Status should be "Open".');
     });
 
     /**
-     * @test {Classifieds#getTrade}
+     * @test {Classifieds#openTrade} and {Classifieds#getTrade}
      */
     it('getTrade can succesfully retrieve a trade', async () => {
-        await erc721token.mint(poster, 0);
-        await erc721token.approve(classifiedsV2.address, 0, { from: poster });
+        await erc721token.mint(poster, ERC721id);
+        await erc721token.approve(classifiedsV2.address, ERC721id, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
-        assert.equal((await classifiedsV2.getTrade(0))[0].toString(), poster, 'Incorrect trade fetched.');
+        assert.equal((await classifiedsV2.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade fetched.');
+        assert.equal(
+            (await classifiedsV2.getTrade(0))[ITEM].toString(),
+            ERC721id.toString(),
+            'Incorrect trade fetched.',
+        );
+        assert.equal((await classifiedsV2.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade fetched.');
+        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[STATUS]), 'Open', 'Incorrect trade fetched.');
     });
 
     /**
@@ -67,41 +80,46 @@ contract('ClassifiedsV2', (accounts) => {
      */
     it('executeTrade can succesfully close a trade', async () => {
         await erc20token.mint(filler, new BigNumber(1e18));
-        await erc721token.mint(poster, 0);
+        await erc721token.mint(poster, ERC721id);
         await erc20token.approve(classifiedsV2.address, new BigNumber(1e18), { from: filler });
-        await erc721token.approve(classifiedsV2.address, 0, { from: poster });
+        await erc721token.approve(classifiedsV2.address, ERC721id, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         await classifiedsV2.executeTrade(0, { from: filler });
-        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[3]), 'Executed', 'Incorrect trade execution.');
+        assert.equal((await classifiedsV2.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade execution.');
+        assert.equal((await classifiedsV2.getTrade(0))[ITEM].toString(), ERC721id.toString(), 'Incorrect trade execution.');
+        assert.equal((await classifiedsV2.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade execution.');
+        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[STATUS]), 'Executed', 'Incorrect trade execution.');
+        assert.equal(await erc721token.ownerOf(ERC721id), filler, 'Incorrect trade execution.');
+        assert.equal((await erc20token.balanceOf(poster)).toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade execution.');
     });
 
     /**
      * @test {Classifieds#cancelTrade}
      */
     it('cancelTrade can succefully cancel a trade', async () => {
-        await erc721token.mint(poster, 0);
-        await erc721token.approve(classifiedsV2.address, 0, { from: poster });
+        await erc721token.mint(poster, ERC721id);
+        await erc721token.approve(classifiedsV2.address, ERC721id, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         await classifiedsV2.cancelTrade(0, { from: poster });
-        assert.equal(
-            bytes32ToString((await classifiedsV2.getTrade(0))[3]),
-            'Cancelled',
-            'Incorrect trade cancellation.',
-        );
+        assert.equal((await classifiedsV2.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade cancellation.');
+        assert.equal((await classifiedsV2.getTrade(0))[ITEM].toString(), ERC721id.toString(), 'Incorrect trade cancellation.');
+        assert.equal((await classifiedsV2.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade cancellation.');
+        assert.equal(bytes32ToString((await classifiedsV2.getTrade(0))[STATUS]), 'Cancelled', 'Incorrect trade cancellation.');
+        assert.equal(await erc721token.ownerOf(ERC721id), poster, 'Incorrect trade cancellation.');
     });
 
     /**
      * @test {Classifieds#cancelTrade}
      */
-    itShouldThrow('cancelTrade should succefully cancel a trade', async () => {
+    itShouldThrow('cancelTrade cannot cancel a trade which is not Open', async () => {
         await erc20token.mint(filler, new BigNumber(1e18));
-        await erc721token.mint(poster, 0);
+        await erc721token.mint(poster, ERC721id);
         await erc20token.approve(classifiedsV2.address, new BigNumber(1e18), { from: filler });
-        await erc721token.approve(classifiedsV2.address, 0, { from: poster });
+        await erc721token.approve(classifiedsV2.address, ERC721id, { from: poster });
         await classifiedsV2.openTrade(0, new BigNumber(1e18), { from: poster });
         await classifiedsV2.executeTrade(0, { from: filler });
         await classifiedsV2.cancelTrade(0, { from: poster });
-    }, 'Cannot cancel executed trade.');
+    }, 'Trade is not Open.');
 
 });
 
