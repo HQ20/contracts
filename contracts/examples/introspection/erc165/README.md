@@ -6,11 +6,11 @@ This project shows an example contract as an user of the ERC165 standard for reg
 
 The example is built on a modified ERC20 contract that restricts transferring of tokens to whitelisted addresses. On construction `ERC20Whitelisted.sol` requires an address for the `WhitelistERC165.sol` deployed contract containing such addresses.
 
-`WhitelistERC165.sol` implements `IWhitelist.sol` and inherits from `ERC165.sol`. On construction registers the `IWhitelist.sol` implementation using `_registerInterface(IWhitelistId.IWHITELIST_ID);` (method from `ERC165.sol`).
+`WhitelistERC165.sol` implements `IWhitelist.sol` and inherits from `ERC165.sol`. On construction registers the `IWhitelist.sol` implementation using `_registerInterface(WhitelistInterfaceId.IWHITELIST_ID);` (method from `ERC165.sol`).
 
 `IWhitelist.sol` is the interface for `WhitelistERC165.sol`, specifying the `isMember(...)`, `addMember(...)` and `removeMember(...)` methods.
  
-`IWhitelistId.sol` keeps the `IWhitelist.sol` ERC165 signature and the method to calculate it. The output of `IWhitelistId.calc()` and the `IWhitelistId.IWHITELIST_ID` must match at all times.
+`WhitelistInterfaceId.sol` keeps the `IWhitelist.sol` ERC165 signature and the method to calculate it. The output of `WhitelistInterfaceId.calc()` and the `WhitelistInterfaceId.IWHITELIST_ID` must match at all times.
 
 
 Contracts accepting `WhitelistERC165` instances through an address parameter should check for its implementation of `IWhitelist.sol` as follows:
@@ -18,10 +18,10 @@ Contracts accepting `WhitelistERC165` instances through an address parameter sho
 ```
 import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 import "./../access/IWhitelist.sol";
-import "./../access/IWhitelistId.sol";
+import "./../access/WhitelistInterfaceId.sol";
 
 
-contract [name] is IWhitelistId {
+contract [name] is WhitelistInterfaceId {
     IWhitelist whitelist;
 
     constructor (address whitelistAddress) public {

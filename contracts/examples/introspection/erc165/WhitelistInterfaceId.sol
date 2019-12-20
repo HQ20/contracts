@@ -2,7 +2,7 @@ pragma solidity ^0.5.10;
 import "./IWhitelist.sol";
 
 
-contract IWhitelistId {
+contract WhitelistInterfaceId {
     bytes4 public constant IWHITELIST_ID = 0x63413762;
 
     function calc() external pure returns (bytes4) {

@@ -2,10 +2,10 @@ pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 import "./IWhitelist.sol";
-import "./IWhitelistId.sol";
+import "./WhitelistInterfaceId.sol";
 
 
-contract ERC20Whitelisted is ERC20, IWhitelistId {
+contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
     IWhitelist whitelist;
 
     constructor (address whitelistAddress) public {

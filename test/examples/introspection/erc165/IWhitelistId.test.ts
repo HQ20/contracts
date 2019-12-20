@@ -1,31 +1,31 @@
 import { should } from 'chai';
-import { IWhitelistIdInstance } from '../../../../types/truffle-contracts';
+import { WhitelistInterfaceIdInstance } from '../../../../types/truffle-contracts';
 
-const IWhitelistId = artifacts.require(
-    './examples/introspection/erc165/IWhitelistId.sol',
-) as Truffle.Contract<IWhitelistIdInstance>;
+const WhitelistInterfaceId = artifacts.require(
+    './examples/introspection/erc165/WhitelistInterfaceId.sol',
+) as Truffle.Contract<WhitelistInterfaceIdInstance>;
 
 should();
 
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../../../utils');
 
-/** @test {IWhitelistId} contract */
-contract('IWhitelistId', (accounts) => {
-    let iWhitelistId: IWhitelistIdInstance;
+/** @test {WhitelistInterfaceId} contract */
+contract('WhitelistInterfaceId', (accounts) => {
+    let whitelistInterfaceId: WhitelistInterfaceIdInstance;
 
     /**
-     * @test {IWhitelistId#calc}
+     * @test {WhitelistInterfaceId#calc}
      */
     it('calculates the interface id for IWhitelist', async () => {
-        iWhitelistId = await IWhitelistId.new();
+        whitelistInterfaceId = await WhitelistInterfaceId.new();
         // tslint:disable-next-line no-console
-        console.log(await iWhitelistId.calc());
+        console.log(await whitelistInterfaceId.calc());
     });
 
     it('checks the constant interface id for IWhitelist', async () => {
-        iWhitelistId = await IWhitelistId.new();
-        const id = (await iWhitelistId.calc());
-        id.should.be.equal(await iWhitelistId.IWHITELIST_ID());
+        whitelistInterfaceId = await WhitelistInterfaceId.new();
+        const id = (await whitelistInterfaceId.calc());
+        id.should.be.equal(await whitelistInterfaceId.IWHITELIST_ID());
     });
 });
