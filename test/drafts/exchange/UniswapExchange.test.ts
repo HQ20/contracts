@@ -121,9 +121,9 @@ contract('UniswapExchange - Trades', (accounts) => {
         // Swap tokens
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
         const tokenAmount = new BigNumber(5e17);
-        const minEth = new BigNumber(3e17);
+        const minEth = new BigNumber(2e17);
+        token.mint(swapper, tokenAmount);
         token.approve(uniswapExchange.address, tokenAmount, { from: swapper });
-        const balanceBefore = await web3.eth.getBalance(swapper);
         expect(
             uniswapExchange.tokenToTokenSwap(
                 token2.address,
