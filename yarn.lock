@@ -152,7 +152,7 @@
     ethereumjs-util "^6.1.0"
     ethereumjs-wallet "^0.6.3"
     web3 "1.2.1"
-    web3-provider-engine "git+https://github.com/trufflesuite/provider-engine.git#web3-one"
+    web3-provider-engine "https://github.com/trufflesuite/provider-engine#web3-one"
 
 "@types/bignumber.js@5.0.0", "@types/bignumber.js@^5.0.0":
   version "5.0.0"
@@ -3386,6 +3386,14 @@ getpass@^0.1.1:
   integrity sha1-Xv+OPmhNVprkyysSgmBOi6YhSfo=
   dependencies:
     assert-plus "^1.0.0"
+
+girino@0.0.1-alpha:
+  version "0.0.1-alpha"
+  resolved "https://registry.yarnpkg.com/girino/-/girino-0.0.1-alpha.tgz#772db6d2c8dc0c17a674128f406241fae43c0d56"
+  integrity sha512-E75dAzCz/JS3uowsimTSqVNWlxE+XWz0lj/D6JtMKsFHiT7Kth+pGl4F40Ui9mQe0RvSeMFuhYTLVMgz8AWe6w==
+  dependencies:
+    bignumber.js "9.0.0"
+    chai "4.2.0"
 
 glob-base@^0.3.0:
   version "0.3.0"
@@ -8132,10 +8140,9 @@ web3-net@1.2.4:
     web3-core-method "1.2.4"
     web3-utils "1.2.4"
 
-"web3-provider-engine@git+https://github.com/trufflesuite/provider-engine.git#web3-one":
+"web3-provider-engine@https://github.com/trufflesuite/provider-engine#web3-one":
   version "14.0.6"
-  uid "3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
-  resolved "git+https://github.com/trufflesuite/provider-engine.git#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
+  resolved "https://github.com/trufflesuite/provider-engine#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
   dependencies:
     async "^2.5.0"
     backoff "^2.5.0"
