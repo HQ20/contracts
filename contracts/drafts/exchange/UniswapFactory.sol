@@ -1,16 +1,19 @@
 pragma solidity ^0.5.10;
 import "./UniswapExchange.sol";
-/* solium-disable max-len */
 
 
-contract IUniswapFactory {
+interface IUniswapFactory {
     address[] public tokenList;
     mapping(address => address) tokenToExchange;
     mapping(address => address) exchangeToToken;
     function launchExchange(address _token) public returns (address exchange);
     function getExchangeCount() public view returns (uint exchangeCount);
-    function tokenToExchangeLookup(address _token) public view returns (address payable exchange);
-    function exchangeToTokenLookup(address _exchange) public view returns (address token);
+    function tokenToExchangeLookup(
+        address _token
+    ) public view returns (address payable exchange);
+    function exchangeToTokenLookup(
+        address _exchange
+    ) public view returns (address token);
     event ExchangeLaunch(address indexed exchange, address indexed token);
 }
 
@@ -44,11 +47,15 @@ contract UniswapFactory is IUniswapFactory {
         return tokenList.length;
     }
 
-    function tokenToExchangeLookup(address _token) public view returns (address payable exchange) {
+    function tokenToExchangeLookup(
+        address _token
+    ) public view returns (address payable exchange) {
         return tokenToExchange[_token];
     }
 
-    function exchangeToTokenLookup(address _exchange) public view returns (address token) {
+    function exchangeToTokenLookup(
+        address _exchange
+    ) public view returns (address token) {
         return exchangeToToken[_exchange];
     }
 }

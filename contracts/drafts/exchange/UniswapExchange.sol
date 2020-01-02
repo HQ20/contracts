@@ -2,17 +2,30 @@ pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./UniswapFactory.sol";
-/* solium-disable max-len */
 
 
 contract UniswapExchange {
     using SafeMath for uint256;
 
     /// EVENTS
-    event EthToTokenPurchase(address indexed buyer, uint256 indexed ethIn, uint256 indexed tokensOut);
-    event TokenToEthPurchase(address indexed buyer, uint256 indexed tokensIn, uint256 indexed ethOut);
-    event Investment(address indexed liquidityProvider, uint256 indexed sharesPurchased);
-    event Divestment(address indexed liquidityProvider, uint256 indexed sharesBurned);
+    event EthToTokenPurchase(
+        address indexed buyer,
+        uint256 indexed ethIn,
+        uint256 indexed tokensOut
+    );
+    event TokenToEthPurchase(
+        address indexed buyer,
+        uint256 indexed tokensIn,
+        uint256 indexed ethOut
+    );
+    event Investment(
+        address indexed liquidityProvider,
+        uint256 indexed sharesPurchased
+    );
+    event Divestment(
+        address indexed liquidityProvider,
+        uint256 indexed sharesBurned
+    );
 
     /// CONSTANTS
     uint256 public constant FEE_RATE = 500;        //fee = 1/feeRate = 0.2%
@@ -30,7 +43,10 @@ contract UniswapExchange {
 
     /// MODIFIERS
     modifier exchangeInitialized() {
-        require(invariant > 0 && totalShares > 0, "Exchange wasn't initialized.");
+        require(
+            invariant > 0 && totalShares > 0,
+            "Exchange wasn't initialized."
+        );
         _;
     }
 
@@ -58,7 +74,10 @@ contract UniswapExchange {
 
     /// EXTERNAL FUNCTIONS
     function initializeExchange(uint256 _tokenAmount) external payable {
-        require(invariant == 0 && totalShares == 0, "Invariant or totalShares != 0");
+        require(
+            invariant == 0 && totalShares == 0,
+            "Invariant or totalShares != 0"
+        );
         // Prevents share cost from being too high or too low - potentially needs work
         require(
             msg.value >= 10000 && _tokenAmount >= 10000 && msg.value <= 5*10**18,
@@ -402,7 +421,9 @@ contract UniswapExchange {
         require(
             tokenPurchased != address(0) && tokenPurchased != address(this),
             "Invalid purchased token address.");
-        address payable exchangeAddress = factory.tokenToExchangeLookup(tokenPurchased);
+        address payable exchangeAddress = factory.tokenToExchangeLookup(
+            tokenPurchased
+        );
         require(
             exchangeAddress != address(0) && exchangeAddress != address(this),
             "Invalid exchange address."
