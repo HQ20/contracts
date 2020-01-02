@@ -3,17 +3,16 @@ import "./UniswapExchange.sol";
 
 
 interface IUniswapFactory {
-    address[] public tokenList;
-    mapping(address => address) tokenToExchange;
-    mapping(address => address) exchangeToToken;
-    function launchExchange(address _token) public returns (address exchange);
-    function getExchangeCount() public view returns (uint exchangeCount);
+    function launchExchange(
+        address _token
+    ) external returns (address exchange);
+    function getExchangeCount() external view returns (uint exchangeCount);
     function tokenToExchangeLookup(
         address _token
-    ) public view returns (address payable exchange);
+    ) external view returns (address payable exchange);
     function exchangeToTokenLookup(
         address _exchange
-    ) public view returns (address token);
+    ) external view returns (address token);
     event ExchangeLaunch(address indexed exchange, address indexed token);
 }
 
