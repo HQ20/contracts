@@ -52,7 +52,9 @@ contract('EnergyMarket', (accounts) => {
      */
     it('Consume energy', async () => {
         await energyMarket.produce({from: authorized });
-        await energyMarket.approve(energyMarket.address, await energyMarket.getConsumptionPrice(), { from: authorized });
+        await energyMarket.approve(
+            energyMarket.address, await energyMarket.getConsumptionPrice(), { from: authorized },
+        );
         expect(energyMarket.consume({ from: authorized })).to.emit('EnergyConsumed').withArgs(authorized);
     });
 
