@@ -44,7 +44,7 @@ contract EnergyMarket is ERC20, Whitelist {
      * @dev The production price is maxPrice / load + 1
      */
     function getProductionPrice() public view returns(uint256) {
-        maxPrice.div(load.add(1));
+        return maxPrice.div(load.add(1));
     }
 
     /**
@@ -61,8 +61,8 @@ contract EnergyMarket is ERC20, Whitelist {
      */
     function produce() public {
         require(isMember(msg.sender), "Unknown meter.");
-        load.add(1);
-        transfer(msg.sender, getProductionPrice());
+        this.transfer(msg.sender, getProductionPrice());
+        load = load.add(1);
         emit EnergyProduced(msg.sender);
     }
 
@@ -72,8 +72,8 @@ contract EnergyMarket is ERC20, Whitelist {
      */
     function consume() public {
         require(isMember(msg.sender), "Unknown meter.");
-        transferFrom(msg.sender, address(this), getConsumptionPrice());
-        load.sub(1);
+        this.transferFrom(msg.sender, address(this), getConsumptionPrice());
+        load = load.sub(1);
         emit EnergyConsumed(msg.sender);
     }
 }
