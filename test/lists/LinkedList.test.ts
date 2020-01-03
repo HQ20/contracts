@@ -1,7 +1,11 @@
 import { should } from 'chai';
 import { LinkedListInstance } from '../../types/truffle-contracts';
+import { TestLinkedListInstance } from '../../types/truffle-contracts';
 
 const LinkedList = artifacts.require('./lists/LinkedList.sol')  as Truffle.Contract<LinkedListInstance>;
+const TestLinkedList = artifacts.require(
+    './lists/mocks/TestLinkedList.sol',
+)  as Truffle.Contract<TestLinkedListInstance>;
 should();
 
 
@@ -423,15 +427,19 @@ contract('LinkedList - insert', (accounts) => {
     });
 });
 
-/* contract('LinkedList - gas tests', (accounts) => {
-    let linkedList: LinkedListInstance;
+contract('LinkedList - gas tests', (accounts) => {
+    let linkedList: TestLinkedListInstance;
     const dummyData = '0x0000000000000000000000000000000000000001';
 
     beforeEach(async () => {
-        linkedList = await LinkedList.new();
+        linkedList = await TestLinkedList.new();
         for (let i = 0; i < 100; i++) {
             await linkedList.addHead(dummyData);
         }
+    });
+
+    it('Find Tail as a transaction.', async () => {
+        await linkedList.findTailIdWithGas();
     });
 
     it('Add Head.', async () => {
@@ -456,4 +464,4 @@ contract('LinkedList - insert', (accounts) => {
         const tailId = await linkedList.findTailId();
         await linkedList.remove(tailId);
     });
-}); */
+});
