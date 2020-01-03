@@ -2320,7 +2320,7 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-directory-tree@^2.2.4:
+directory-tree@2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/directory-tree/-/directory-tree-2.2.4.tgz#6d5bd7d82e48378e256a1e87b678a43c50076e2e"
   integrity sha512-2N43msQptKbi3WMfIs+U09yi6bfyKL+MWyj5VMj8t1F/Tx04bt1cn/EEIU3o1JBltlJk7NQnzOEuTNa/KQvbWA==
@@ -7014,12 +7014,12 @@ sol-explore@1.6.1:
   resolved "https://registry.yarnpkg.com/sol-explore/-/sol-explore-1.6.1.tgz#b59f073c69fe332560d5a10c32ba8ca7f2986cfb"
   integrity sha1-tZ8HPGn+MyVg1aEMMrqMp/KYbPs=
 
-soldoc@0.1.2-beta.5:
-  version "0.1.2-beta.5"
-  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2-beta.5.tgz#8a594b205c4d8feb35cb4133d8512c500c422692"
-  integrity sha512-2gzcdNDbvTtIgXfrNOEN5A7R0H+8p57rixQYJlFxNPqf/bWUcS70HA5yCyMxbTEC9xzlaHI1MrVxUVWJZIngOQ==
+soldoc@0.1.2-beta.6:
+  version "0.1.2-beta.6"
+  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2-beta.6.tgz#004ebf6f46b6b24966bf540237651bc824864d8e"
+  integrity sha512-VKiGNcSjse0PtiroS5CEeThh6gfuoNbnA+y6y3hMROxWKpcFZ47js9cD9xv1Q0L9ckwcnKZs1h4r+BU4VRFA+A==
   dependencies:
-    solidity-parser-antlr "git://github.com/obernardovieira/solidity-parser-antlr.git#5fb4ceb"
+    solidity-parser-antlr "git://github.com/obernardovieira/solidity-parser-antlr.git#80086a4"
 
 solidity-coverage@0.7.0:
   version "0.7.0"
@@ -7053,9 +7053,9 @@ solidity-parser-antlr@0.4.7:
   dependencies:
     npm-check-updates "^3.1.11"
 
-"solidity-parser-antlr@git://github.com/obernardovieira/solidity-parser-antlr.git#5fb4ceb":
+"solidity-parser-antlr@git://github.com/obernardovieira/solidity-parser-antlr.git#80086a4":
   version "0.4.11"
-  resolved "git://github.com/obernardovieira/solidity-parser-antlr.git#5fb4ceb17418285ef5549b5ce3482fd3c928a227"
+  resolved "git://github.com/obernardovieira/solidity-parser-antlr.git#80086a48e8a61cbdfdaf01c6d8c8493dd509c704"
 
 solium-plugin-security@0.1.1:
   version "0.1.1"
