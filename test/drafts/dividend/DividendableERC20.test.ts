@@ -55,4 +55,4 @@ contract('DividenableERC20', (accounts) => {
         await dividendableERC20.updateAccount(account2);
         (await tracker2.delta()).should.be.bignumber.equal('12');
     });
-})
+});
