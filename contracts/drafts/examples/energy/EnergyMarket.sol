@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
-import "./../../access/Whitelist.sol";
+import "./../../../access/Whitelist.sol";
 
 
 /**

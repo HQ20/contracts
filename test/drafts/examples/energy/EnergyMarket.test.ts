@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 // tslint:disable-next-line:no-var-requires
-import { EnergyMarketInstance } from '../../../types/truffle-contracts';
+import { EnergyMarketInstance } from '../../../../types/truffle-contracts';
 
 const EnergyMarket = artifacts.require(
-    './examples/energy/EnergyMarket.sol',
+    './drafts/examples/energy/EnergyMarket.sol',
     ) as Truffle.Contract<EnergyMarketInstance>;
 
 // tslint:disable:no-var-requires
