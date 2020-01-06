@@ -2,6 +2,7 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/math/Math.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
 import "./../../access/Whitelist.sol";
 
@@ -17,19 +18,18 @@ import "./../../access/Whitelist.sol";
 contract EnergyMarket is ERC20, Whitelist {
     using SafeMath for uint256;
 
-    event EnergyProduced(address producer);
-    event EnergyConsumed(address consumer);
+    event EnergyProduced(address producer, uint256 time);
+    event EnergyConsumed(address consumer, uint256 time);
 
-    uint256 public load;
+    mapping(uint256 => uint256) public consumption;
+    mapping(uint256 => uint256) public production;
     uint256 public maxPrice;
 
     /**
      * @dev The constructor initializes the underlying currency token and the
      * smart meter whitelist. The constructor also mints the requested amount
      * of the underlying currency token to fund the network load. Also sets the
-     * maximum energy price, used for calculating prices and for when load is 0
-     * for production (supplying the first energy unit) or when load is 1 for
-     * consumption (taking the last energy unit).
+     * maximum energy price, used for calculating prices.
      */
     constructor (uint256 _initialSupply, uint256 _maxPrice)
         public
@@ -41,39 +41,59 @@ contract EnergyMarket is ERC20, Whitelist {
     }
 
     /**
-     * @dev The production price is maxPrice / load + 1
+     * @dev The production price for each time slot is maxPrice / max((consumption - production + 1), 1)
      */
-    function getProductionPrice() public view returns(uint256) {
-        return maxPrice.div(load.add(1));
+    function getProductionPrice(uint256 _time) public view returns(uint256) {
+        if (production[_time] >= consumption[_time]) return maxPrice;
+        return maxPrice.div(
+            Math.max(
+                consumption[_time].sub(production[_time].add(1)),
+                1
+            )
+        );
     }
 
     /**
-     * @dev The consumption price is maxPrice / load
+     * @dev The consumption price for each time slot is maxPrice / max((production - consumption + 1), 1)
      */
-    function getConsumptionPrice() public view returns(uint256) {
-        if (load > 0) return maxPrice.div(load);
-        else return maxPrice;
+    function getConsumptionPrice(uint256 _time) public view returns(uint256) {
+        if (consumption[_time] >= production[_time]) return maxPrice;
+        return maxPrice.div(
+            Math.max(
+                production[_time].sub(consumption[_time].add(1)),
+                1
+            )
+        );
     }
 
     /**
-     * @dev Add one energy unit to the distribution network and be paid the
-     * production price. Only whitelisted smart meters can call this function.
+     * @dev Add one energy unit to the distribution network at the specified
+     * time and be paid the production price. Only whitelisted smart meters can
+     * call this function.
      */
-    function produce() public {
+    function produce(uint256 _time) public {
         require(isMember(msg.sender), "Unknown meter.");
-        this.transfer(msg.sender, getProductionPrice());
-        load = load.add(1);
-        emit EnergyProduced(msg.sender);
+        this.transfer(
+            msg.sender,
+            getProductionPrice(_time)
+        );
+        production[_time] = production[_time].add(1);
+        emit EnergyProduced(msg.sender, _time);
     }
 
     /**
-     * @dev Take one energy unit from the distribution network by paying the
-     * consumption price. Only whitelisted smart meters can call this function.
+     * @dev Take one energy unit from the distribution network at the specified
+     * time by paying the consumption price. Only whitelisted smart meters can
+     * call this function.
      */
-    function consume() public {
+    function consume(uint256 _time) public {
         require(isMember(msg.sender), "Unknown meter.");
-        this.transferFrom(msg.sender, address(this), getConsumptionPrice());
-        load = load.sub(1);
-        emit EnergyConsumed(msg.sender);
+        this.transferFrom(
+            msg.sender,
+            address(this),
+            getConsumptionPrice(_time)
+        );
+        consumption[_time] = consumption[_time].add(1);
+        emit EnergyConsumed(msg.sender, _time);
     }
 }
