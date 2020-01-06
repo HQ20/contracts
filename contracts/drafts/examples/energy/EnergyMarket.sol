@@ -23,7 +23,7 @@ contract EnergyMarket is ERC20, Whitelist {
 
     mapping(uint256 => uint256) public consumption;
     mapping(uint256 => uint256) public production;
-    uint256 public maxPrice;
+    uint256 public basePrice;
 
     /**
      * @dev The constructor initializes the underlying currency token and the
@@ -31,39 +31,27 @@ contract EnergyMarket is ERC20, Whitelist {
      * of the underlying currency token to fund the network load. Also sets the
      * maximum energy price, used for calculating prices.
      */
-    constructor (uint256 _initialSupply, uint256 _maxPrice)
+    constructor (uint256 _initialSupply, uint256 _basePrice)
         public
         ERC20()
         Whitelist()
     {
         _mint(address(this), _initialSupply);
-        maxPrice = _maxPrice;
+        basePrice = _basePrice;
     }
 
     /**
-     * @dev The production price for each time slot is maxPrice / max((consumption - production + 1), 1)
+     * @dev The production price for each time slot
      */
     function getProductionPrice(uint256 _time) public view returns(uint256) {
-        if (production[_time] >= consumption[_time]) return maxPrice;
-        return maxPrice.div(
-            Math.max(
-                consumption[_time].sub(production[_time].add(1)),
-                1
-            )
-        );
+        return basePrice * production[_time] / (consumption[_time] + 1);
     }
 
     /**
-     * @dev The consumption price for each time slot is maxPrice / max((production - consumption + 1), 1)
+     * @dev The consumption price for each time slot
      */
     function getConsumptionPrice(uint256 _time) public view returns(uint256) {
-        if (consumption[_time] >= production[_time]) return maxPrice;
-        return maxPrice.div(
-            Math.max(
-                production[_time].sub(consumption[_time].add(1)),
-                1
-            )
-        );
+        return basePrice * consumption[_time] / (production[_time] + 1);
     }
 
     /**

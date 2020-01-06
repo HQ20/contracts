@@ -23,14 +23,14 @@ contract('EnergyMarket', (accounts) => {
     let energyMarket: EnergyMarketInstance;
 
     const initialSupply = 1000000;
-    const maxPrice = 10;
+    const basePrice = 10;
 
     const timeSlot = 1;
 
     beforeEach(async () => {
         energyMarket = await EnergyMarket.new(
             initialSupply,
-            maxPrice,
+            basePrice,
         );
         await energyMarket.addMember(authorized);
     });
