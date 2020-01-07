@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/math/Math.sol";
+// import "@openzeppelin/contracts/math/SafeMath.sol";
+// import "@openzeppelin/contracts/math/Math.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
 import "./../../../access/Whitelist.sol";
 
@@ -16,14 +16,17 @@ import "./../../../access/Whitelist.sol";
  * meters that communicate the production and consumption of energy.
  */
 contract EnergyMarket is ERC20, Whitelist {
-    using SafeMath for uint256;
+    // using SafeMath for uint256;
 
     event EnergyProduced(address producer, uint256 time);
     event EnergyConsumed(address consumer, uint256 time);
 
-    mapping(uint256 => uint256) public consumption;
-    mapping(uint256 => uint256) public production;
-    uint256 public basePrice;
+    // uint128 is used here to facilitate the price formula
+    // Casting between uint128 and int256 never overflows
+    // int256(uint128) - int256(uint128) never overflows
+    mapping(uint256 => uint128) public consumption;
+    mapping(uint256 => uint128) public production;
+    uint128 public basePrice;
 
     /**
      * @dev The constructor initializes the underlying currency token and the
@@ -31,7 +34,7 @@ contract EnergyMarket is ERC20, Whitelist {
      * of the underlying currency token to fund the network load. Also sets the
      * maximum energy price, used for calculating prices.
      */
-    constructor (uint256 _initialSupply, uint256 _basePrice)
+    constructor (uint256 _initialSupply, uint128 _basePrice)
         public
         ERC20()
         Whitelist()
@@ -41,12 +44,15 @@ contract EnergyMarket is ERC20, Whitelist {
     }
 
     /**
-     * @dev The production price for each time slot
+     * @dev The production price for each time slot.
      */
     function getProductionPrice(uint256 _time) public view returns(uint256) {
-        return basePrice * Math.max(
-            production[_time].sub(consumption[_time]),
-            1
+        return uint256(
+            max(
+                0,
+                int256(basePrice) *
+                    (3 + safeSub(production[_time], consumption[_time]))
+            )
         );
     }
 
@@ -54,9 +60,12 @@ contract EnergyMarket is ERC20, Whitelist {
      * @dev The consumption price for each time slot
      */
     function getConsumptionPrice(uint256 _time) public view returns(uint256) {
-        return basePrice * Math.max(
-            consumption[_time].sub(production[_time]),
-            1
+        return uint256(
+            max(
+                0,
+                int256(basePrice) *
+                    (3 + safeSub(consumption[_time], production[_time]))
+            )
         );
     }
 
@@ -71,7 +80,7 @@ contract EnergyMarket is ERC20, Whitelist {
             msg.sender,
             getProductionPrice(_time)
         );
-        production[_time] = production[_time].add(1);
+        production[_time] = production[_time] + 1;
         emit EnergyProduced(msg.sender, _time);
     }
 
@@ -87,7 +96,21 @@ contract EnergyMarket is ERC20, Whitelist {
             address(this),
             getConsumptionPrice(_time)
         );
-        consumption[_time] = consumption[_time].add(1);
+        consumption[_time] = consumption[_time] + 1;
         emit EnergyConsumed(msg.sender, _time);
+    }
+
+    /**
+     * @dev Returns the largest of two numbers.
+     */
+    function max(int256 a, int256 b) internal pure returns (int256) {
+        return a >= b ? a : b;
+    }
+
+    /**
+     * @dev Substracts b from a using types safely casting from uint to int.
+     */
+    function safeSub(uint128 a, uint128 b) internal pure returns (int256) {
+        return int256(a) - int256(b);
     }
 }
