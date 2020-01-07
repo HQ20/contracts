@@ -44,14 +44,20 @@ contract EnergyMarket is ERC20, Whitelist {
      * @dev The production price for each time slot
      */
     function getProductionPrice(uint256 _time) public view returns(uint256) {
-        return basePrice * production[_time] / (consumption[_time] + 1);
+        return basePrice * Math.max(
+            production[_time].sub(consumption[_time]),
+            1
+        );
     }
 
     /**
      * @dev The consumption price for each time slot
      */
     function getConsumptionPrice(uint256 _time) public view returns(uint256) {
-        return basePrice * consumption[_time] / (production[_time] + 1);
+        return basePrice * Math.max(
+            consumption[_time].sub(production[_time]),
+            1
+        );
     }
 
     /**
