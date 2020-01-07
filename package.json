@@ -49,7 +49,7 @@
         "directory-tree": "2.2.4",
         "eth-gas-reporter": "0.2.14",
         "ethlint": "1.2.5",
-        "ganache-cli": "6.7.0",
+        "ganache-cli": "6.8.1",
         "ganache-time-traveler": "1.0.11",
         "girino": "0.0.1-alpha",
         "highlight.js": "9.17.1",

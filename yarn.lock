@@ -3425,6 +3425,15 @@ ganache-cli@6.7.0:
     source-map-support "0.5.12"
     yargs "13.2.4"
 
+ganache-cli@6.8.1:
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.8.1.tgz#62dbe3a7fc8ba0e1d121637c7d84e24fc542ad6f"
+  integrity sha512-nzmIwn2Mg0zb8yUM0vfGI1uMnjHf/j4ZzCE+90sXAAbOKbaq1zxRCRo5zyMXMHrB/c6JtD2mMbO4cEz74gospA==
+  dependencies:
+    ethereumjs-util "6.1.0"
+    source-map-support "0.5.12"
+    yargs "13.2.4"
+
 ganache-time-traveler@1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/ganache-time-traveler/-/ganache-time-traveler-1.0.11.tgz#8d2cc81a09a0bca95db9a1b8bb2603f29840e38b"
