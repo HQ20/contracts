@@ -1,8 +1,6 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/math/Math.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
 import "./../../../access/Whitelist.sol";
 
@@ -16,7 +14,6 @@ import "./../../../access/Whitelist.sol";
  * meters that communicate the production and consumption of energy.
  */
 contract EnergyMarket is ERC20, Whitelist {
-    // using SafeMath for uint256;
 
     event EnergyProduced(address producer, uint256 time);
     event EnergyConsumed(address consumer, uint256 time);
@@ -108,7 +105,7 @@ contract EnergyMarket is ERC20, Whitelist {
     }
 
     /**
-     * @dev Substracts b from a using types safely casting from uint to int.
+     * @dev Substracts b from a using types safely casting from uint128 to int256.
      */
     function safeSub(uint128 a, uint128 b) internal pure returns (int256) {
         return int256(a) - int256(b);
