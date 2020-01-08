@@ -1,6 +1,6 @@
 pragma solidity ^0.5.10;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721Mintable.sol";
 
 
 /**
@@ -9,4 +9,4 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract TestERC20Mintable is ERC20Mintable { }
+contract TestERC721Mintable is ERC721Mintable { }
