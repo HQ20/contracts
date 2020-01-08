@@ -10,6 +10,7 @@ const UniswapExchange = artifacts.require('./exchange/UniswapExchange.sol') as T
 const UniswapFactory = artifacts.require('./exchange/UniswapFactory.sol') as Truffle.Contract<UniswapFactoryInstance>;
 // tslint:enable:max-line-length
 
+// tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
 chai.should();
 
@@ -141,7 +142,7 @@ contract('UniswapExchange - Trades', (accounts) => {
                 buyer: swapper,
                 tokensIn: tokenAmount,
             },
-        )
+        );
         expectEvent(
             swap,
             'EthToTokenPurchase',
