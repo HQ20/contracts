@@ -45,6 +45,7 @@
         "@types/node": "13.1.4",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
+        "chai-bn": "0.2.0",
         "coveralls": "3.0.9",
         "cross-env": "6.0.3",
         "directory-tree": "2.2.4",

@@ -1,4 +1,6 @@
-import BigNumber from 'bignumber.js';
+import chai = require('chai');
+// tslint:disable-next-line:no-var-requires
+const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
 import { TestERC20MintableInstance } from '../../../types/truffle-contracts';
 import { UniswapExchangeInstance, UniswapFactoryInstance } from '../../../types/truffle-contracts';
 
@@ -8,14 +10,9 @@ const UniswapExchange = artifacts.require('./exchange/UniswapExchange.sol') as T
 const UniswapFactory = artifacts.require('./exchange/UniswapFactory.sol') as Truffle.Contract<UniswapFactoryInstance>;
 // tslint:enable:max-line-length
 
-// tslint:disable:no-var-requires
-const chai = require('chai');
-const girino = require('girino');
-// tslint:enable:no-var-requires
-
-const { expect } = chai;
-
-chai.use(girino);
+// tslint:disable-next-line:no-var-requires
+chai.use(require('chai-bn')(require('bn.js')));
+chai.should();
 
 /** @test {UniswapExchange} contract */
 contract('UniswapExchange - Initialization', (accounts) => {
@@ -34,14 +31,14 @@ contract('UniswapExchange - Initialization', (accounts) => {
         uniswapExchange = await UniswapExchange.at(
             (await uniswapFactory.launchExchange(token.address)).logs[0].args.exchange,
         );
-        await token.mint(initialiser1, new BigNumber(1e18));
-        await token.approve(uniswapExchange.address, new BigNumber(1e18), { from: initialiser1 });
+        await token.mint(initialiser1, ether('1'));
+        await token.approve(uniswapExchange.address, ether('1'), { from: initialiser1 });
         await uniswapExchange.initializeExchange.sendTransaction(
-            new BigNumber(1e18),
-            { from: initialiser1, value: (new BigNumber(1e18)).toString() },
+            ether('1'),
+            { from: initialiser1, value: ether('1').toString() },
         );
-        assert.equal((await token.balanceOf(uniswapExchange.address)).toString(), (new BigNumber(1e18)).toString(), 'Token amount not transferred correctly.');
-        assert.equal((await web3.eth.getBalance(uniswapExchange.address)).toString(), (new BigNumber(1e18)).toString(), 'Ether not transferred correctly.');
+        (await web3.eth.getBalance(uniswapExchange.address)).should.be.bignumber.equal(ether('1'));
+        new BN((await token.balanceOf(uniswapExchange.address)).toString()).should.be.bignumber.equal(ether('1'));
     });
 });
 
@@ -61,11 +58,11 @@ contract('UniswapExchange - Trades', (accounts) => {
         uniswapExchange = await UniswapExchange.at(
             (await uniswapFactory.launchExchange(token.address)).logs[0].args.exchange,
         );
-        await token.mint(initialiser1, new BigNumber(1e18));
-        await token.approve(uniswapExchange.address, new BigNumber(1e18), { from: initialiser1 });
+        await token.mint(initialiser1, ether('1'));
+        await token.approve(uniswapExchange.address, ether('1'), { from: initialiser1 });
         await uniswapExchange.initializeExchange.sendTransaction(
-            new BigNumber(1e18),
-            { from: initialiser1, value: (new BigNumber(1e18)).toString() },
+            ether('1'),
+            { from: initialiser1, value: ether('1').toString() },
         );
     });
 
@@ -74,19 +71,19 @@ contract('UniswapExchange - Trades', (accounts) => {
      */
     it('Ether to token swap', async () => {
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
-        const minTokens = new BigNumber(3e17);
-        expect(
-            uniswapExchange.ethToTokenSwap.sendTransaction(
+        const minTokens = new BN('3e17');
+        expectEvent(
+            await uniswapExchange.ethToTokenSwap.sendTransaction(
                 minTokens,
                 timeout,
-                { from: swapper, value: (new BigNumber(5e17)).toString() },
+                { from: swapper, value: (new BN('5e17')).toString() },
             ),
-        ).to.emit(
             'EthToTokenPurchase',
-        ).withArgs(
-            swapper,
-            (new BigNumber(5e17)).toString(),
-            (await token.balanceOf(swapper)),
+            {
+                buyer: swapper,
+                ethIn: new BN('5e17'),
+                tokensOut: await token.balanceOf(swapper),
+            },
         );
     });
 
@@ -95,12 +92,19 @@ contract('UniswapExchange - Trades', (accounts) => {
      */
     it('Token to ether swap', async () => {
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
-        const tokenAmount = new BigNumber(5e17);
-        const minEth = new BigNumber(3e17);
+        const tokenAmount = ether('0.5');
+        const minEth = ether('0.3');
         token.mint(swapper, tokenAmount);
         token.approve(uniswapExchange.address, tokenAmount, { from: swapper });
-        const balanceBefore = await web3.eth.getBalance(swapper);
-        expect(uniswapExchange.tokenToEthSwap(tokenAmount, minEth, timeout, { from: swapper })).to.emit('TokenToEthPurchase');
+        const swap = await uniswapExchange.tokenToEthSwap(tokenAmount, minEth, timeout, { from: swapper });
+        expectEvent(
+            swap,
+            'TokenToEthPurchase',
+            {
+                buyer: swapper,
+                tokensIn: tokenAmount,
+            },
+        );
     });
 
     /**
@@ -112,27 +116,40 @@ contract('UniswapExchange - Trades', (accounts) => {
         const uniswapExchange2 = await UniswapExchange.at(
             (await uniswapFactory.launchExchange(token2.address)).logs[0].args.exchange,
         );
-        await token2.mint(initialiser2, new BigNumber(1e18));
-        await token2.approve(uniswapExchange2.address, new BigNumber(1e18), { from: initialiser2 });
+        await token2.mint(initialiser2, ether('1'));
+        await token2.approve(uniswapExchange2.address, ether('1'), { from: initialiser2 });
         await uniswapExchange2.initializeExchange.sendTransaction(
-            new BigNumber(1e18),
-            { from: initialiser2, value: (new BigNumber(1e18)).toString() },
+            ether('1'),
+            { from: initialiser2, value: (ether('1')).toString() },
         );
         // Swap tokens
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
-        const tokenAmount = new BigNumber(5e17);
-        const minEth = new BigNumber(2e17);
+        const tokenAmount = ether('0.5');
+        const minEth = ether('0.2');
         token.mint(swapper, tokenAmount);
         token.approve(uniswapExchange.address, tokenAmount, { from: swapper });
-        expect(
-            uniswapExchange.tokenToTokenSwap(
-                token2.address,
-                tokenAmount,
-                minEth,
-                timeout,
-                { from: swapper },
-            ),
-        ).to.emit('TokenToEthPurchase').to.emit('EthToTokenPurchase');
+        const swap = await uniswapExchange.tokenToTokenSwap(
+            token2.address,
+            tokenAmount,
+            minEth,
+            timeout,
+            { from: swapper },
+        );
+        expectEvent(
+            swap,
+            'TokenToEthPurchase',
+            {
+                buyer: swapper,
+                tokensIn: tokenAmount,
+            },
+        );
+        expectEvent(
+            swap,
+            'EthToTokenPurchase',
+            {
+                buyer: uniswapExchange.address,
+                tokensOut: await token2.balanceOf(swapper),
+            },
+        );
     });
 });
-
