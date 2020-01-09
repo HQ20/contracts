@@ -42,7 +42,7 @@
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.7",
         "@types/mocha": "5.2.7",
-        "@types/node": "13.1.4",
+        "@types/node": "13.1.5",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.0",
