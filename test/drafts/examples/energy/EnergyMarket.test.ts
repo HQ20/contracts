@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 // tslint:disable-next-line:no-var-requires
-import { EnergyMarketInstance } from '../../../types/truffle-contracts';
+import { EnergyMarketInstance } from '../../../../types/truffle-contracts';
 
 const EnergyMarket = artifacts.require(
-    './examples/energy/EnergyMarket.sol',
+    './drafts/examples/energy/EnergyMarket.sol',
     ) as Truffle.Contract<EnergyMarketInstance>;
 
 // tslint:disable:no-var-requires
@@ -23,12 +23,14 @@ contract('EnergyMarket', (accounts) => {
     let energyMarket: EnergyMarketInstance;
 
     const initialSupply = 1000000;
-    const maxPrice = 10;
+    const basePrice = 10;
+
+    const timeSlot = 1;
 
     beforeEach(async () => {
         energyMarket = await EnergyMarket.new(
             initialSupply,
-            maxPrice,
+            basePrice,
         );
         await energyMarket.addMember(authorized);
     });
@@ -37,38 +39,38 @@ contract('EnergyMarket', (accounts) => {
      * @test {EnergyMarket#produce}
      */
     it('Produce energy', async () => {
-        expect(energyMarket.produce({ from: authorized })).to.emit('EnergyProduced').withArgs(authorized);
+        expect(energyMarket.produce(timeSlot, { from: authorized })).to.emit('EnergyProduced').withArgs(authorized);
     });
 
     /**
      * @test {EnergyMarket#produce}
      */
     it('Produce throws with unauthorized producer', async () => {
-        expect(energyMarket.produce({ from: unauthorized })).to.revertWith('Unknown meter.');
+        expect(energyMarket.produce(timeSlot, { from: unauthorized })).to.revertWith('Unknown meter.');
     });
 
     /**
      * @test {EnergyMarket#consume}
      */
     it('Consume energy', async () => {
-        await energyMarket.produce({from: authorized });
+        await energyMarket.produce(timeSlot, {from: authorized });
         await energyMarket.approve(
-            energyMarket.address, await energyMarket.getConsumptionPrice(), { from: authorized },
+            energyMarket.address, await energyMarket.getConsumptionPrice(1), { from: authorized },
         );
-        expect(energyMarket.consume({ from: authorized })).to.emit('EnergyConsumed').withArgs(authorized);
+        expect(energyMarket.consume(timeSlot, { from: authorized })).to.emit('EnergyConsumed').withArgs(authorized);
     });
 
     /**
      * @test {EnergyMarket#consume}
      */
     it('Consume throws with unauthorized consumer', async () => {
-        expect(energyMarket.consume({ from: unauthorized })).to.revertWith('Unknown meter.');
+        expect(energyMarket.consume(timeSlot, { from: unauthorized })).to.revertWith('Unknown meter.');
     });
 
     /**
      * @test {EnergyMarket#consume}
      */
     it('Consume throws if consumer has insufficient balance', async () => {
-        expect(energyMarket.consume({ from: authorized })).to.revert;
+        expect(energyMarket.consume(timeSlot, { from: authorized })).to.revert;
     });
 });
