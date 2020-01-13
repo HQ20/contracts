@@ -14,5 +14,14 @@ jobs:
   include:
     - stage: "Tests"
       script: yarn test:ci
+    -
       script: yarn coverage:ci
+    -
       script: yarn lint
+    - stage: npm release
+      if: branch = master
+      script: echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        api_key: $NPM_API_KEY
+        on: deploy-npm-release
