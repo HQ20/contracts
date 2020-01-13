@@ -38,7 +38,7 @@ start_ganache() {
 npx truffle version
 
 if [ "$SOLIDITY_COVERAGE" = true ]; then
-    npx solidity-coverage
+    npx truffle run coverage --solcoverjs ./.solcover.js --network development
 
     if [ "$CI" = true ]; then
         cat coverage/lcov.info | npx coveralls
