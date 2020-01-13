@@ -1,7 +1,6 @@
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send, time } = require('@openzeppelin/test-helpers');
-import { ClassifiedsInstance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../../types/truffle-contracts';
-import { executionAsyncId } from 'async_hooks';
+import { ClassifiedsInstance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../types/truffle-contracts';
 
 const Classifieds = artifacts.require(
     './classifieds/Classifieds.sol',
