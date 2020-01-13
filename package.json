@@ -63,7 +63,7 @@
         "pdf-from-html": "0.1.1",
         "soldoc": "0.1.2-beta.6",
         "solidity-coverage": "0.7.1",
-        "truffle": "5.1.7",
+        "truffle": "5.1.8",
         "truffle-typings": "1.0.8",
         "ts-generator": "0.0.8",
         "ts-node": "8.6.1",
