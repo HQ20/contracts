@@ -1,6 +1,6 @@
 import { should } from 'chai';
-import { TestERC20MintableInstance } from '../../../types/truffle-contracts';
-import { UniswapFactoryInstance } from '../../../types/truffle-contracts';
+import { TestERC20MintableInstance } from '../../types/truffle-contracts';
+import { UniswapFactoryInstance } from '../../types/truffle-contracts';
 
 // tslint:disable-next-line:max-line-length
 const TestERC20Mintable = artifacts.require('./test/issuance/TestERC20Mintable.sol') as Truffle.Contract<TestERC20MintableInstance>;
