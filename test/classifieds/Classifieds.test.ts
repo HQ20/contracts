@@ -12,9 +12,10 @@ const TestERC721Mintable = artifacts.require(
     './test/classifieds/TestERC721Mintable.sol',
 ) as Truffle.Contract<TestERC721MintableInstance>;
 
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
 const chai = require('chai');
 chai.use(require('chai-bn')(require('bn.js')));
+// tslint:enable:no-var-requires
 chai.should();
 
 contract('Classifieds', (accounts) => {
@@ -66,7 +67,7 @@ contract('Classifieds', (accounts) => {
         const tx = await classifieds.getTrade(0);
         expect(tx).to.include({
             [POSTER]: poster,
-            [STATUS]: stringToBytes32('Open')
+            [STATUS]: stringToBytes32('Open'),
         });
         chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
         chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
@@ -85,7 +86,7 @@ contract('Classifieds', (accounts) => {
         const tx = await classifieds.getTrade(0);
         expect(tx).to.include({
             [POSTER]: poster,
-            [STATUS]: stringToBytes32('Executed')
+            [STATUS]: stringToBytes32('Executed'),
         });
         chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
         chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
@@ -117,7 +118,7 @@ contract('Classifieds', (accounts) => {
         const tx = await classifieds.getTrade(0);
         expect(tx).to.include({
             [POSTER]: poster,
-            [STATUS]: stringToBytes32('Cancelled')
+            [STATUS]: stringToBytes32('Cancelled'),
         });
         chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
         chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
