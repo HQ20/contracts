@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
 /**
- * @title Classifieds
+ * @title ClassifiedsAdvanced
  * @notice Implements the classifieds board market
  */
-contract Classifieds is IERC721Receiver {
+contract ClassifiedsAdvanced is IERC721Receiver {
 
     using SafeMath for uint256;
 

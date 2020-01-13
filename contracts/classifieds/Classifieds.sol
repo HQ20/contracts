@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract ClassifiedsV2 {
+contract Classifieds {
     event TradeStatusChange(uint256 ad, bytes32 status);
 
     IERC20 currencyToken;
