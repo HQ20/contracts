@@ -95,6 +95,19 @@ contract('Classifieds', (accounts) => {
     });
 
     /**
+     * @test {Classifieds#executeTrade}
+     */
+    it('executeTrade cannot execute trade when it is not opened', async () => {
+        await erc20token.mint(filler, ether('1'));
+        await erc721token.mint(poster, ERC721id);
+        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
+        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
+        await classifieds.openTrade(0, ether('1'), { from: poster });
+        await classifieds.cancelTrade(0, { from: poster });
+        await expectRevert(classifieds.executeTrade(0, { from: poster }), 'Trade is not Open.');
+    });
+
+    /**
      * @test {Classifieds#cancelTrade}
      */
     it('cancelTrade can succefully cancel a trade', async () => {
@@ -110,6 +123,18 @@ contract('Classifieds', (accounts) => {
         chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
         chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
         expect(await erc721token.ownerOf(ERC721id)).to.be.equal(poster);
+    });
+
+    /**
+     * @test {Classifieds#cancelTrade}
+     */
+    it('cancelTrade cannot cancel a trade by inavlid caller', async () => {
+        await erc20token.mint(filler, ether('1'));
+        await erc721token.mint(poster, ERC721id);
+        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
+        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
+        await classifieds.openTrade(0, ether('1'), { from: poster });
+        await expectRevert(classifieds.cancelTrade(0, { from: filler }), 'Trade can be cancelled only by poster.');
     });
 
     /**
