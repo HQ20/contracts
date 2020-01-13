@@ -88,10 +88,7 @@ contract UniswapExchange {
         invariant = ethPool.mul(tokenPool);
         shares[msg.sender] = 1000;
         totalShares = 1000;
-        require(
-            token.transferFrom(msg.sender, address(this), _tokenAmount),
-            "Initial transferFrom failed."
-        );
+        token.transferFrom(msg.sender, address(this), _tokenAmount);
     }
 
     // Buyer swaps ETH for Tokens
@@ -295,11 +292,8 @@ contract UniswapExchange {
         ethPool = ethPool.add(msg.value);
         tokenPool = tokenPool.add(tokensRequired);
         invariant = ethPool.mul(tokenPool);
+        token.transferFrom(msg.sender, address(this), tokensRequired);
         emit Investment(msg.sender, sharesPurchased);
-        require(
-            token.transferFrom(msg.sender, address(this), tokensRequired),
-            "Liquidity transfer failed."
-        );
     }
 
     // Divest market shares and receive liquidity
@@ -331,12 +325,9 @@ contract UniswapExchange {
         } else {
             invariant = ethPool.mul(tokenPool);
         }
-        emit Divestment(msg.sender, _sharesBurned);
-        require(
-            token.transfer(msg.sender, tokensDivested),
-            "Divestment transfer failed."
-        );
+        token.transfer(msg.sender, tokensDivested);
         msg.sender.transfer(ethDivested);
+        emit Divestment(msg.sender, _sharesBurned);
     }
 
     // View share balance of an address
@@ -372,11 +363,8 @@ contract UniswapExchange {
         ethPool = newEthPool;
         tokenPool = newTokenPool;
         invariant = newEthPool.mul(newTokenPool);
+        token.transfer(recipient, tokensOut);
         emit EthToTokenPurchase(buyer, ethIn, tokensOut);
-        require(
-            token.transfer(recipient, tokensOut),
-            "ethToToken transfer failed."
-        );
     }
 
     function tokenToEth(
@@ -400,12 +388,9 @@ contract UniswapExchange {
         tokenPool = newTokenPool;
         ethPool = newEthPool;
         invariant = newEthPool.mul(newTokenPool);
-        emit TokenToEthPurchase(buyer, tokensIn, ethOut);
-        require(
-            token.transferFrom(buyer, address(this), tokensIn),
-            "tokenToEth transfer failed."
-        );
+        token.transferFrom(buyer, address(this), tokensIn);
         recipient.transfer(ethOut);
+        emit TokenToEthPurchase(buyer, tokensIn, ethOut);
     }
 
     function tokenToTokenOut(
@@ -433,22 +418,12 @@ contract UniswapExchange {
         uint256 tempTokenPool = newTokenPool.sub(fee);
         uint256 newEthPool = invariant.div(tempTokenPool);
         uint256 ethOut = ethPool.sub(newEthPool);
-        require(
-            ethOut <= ethPool,
-            "Not enough ether in pool."
-        );
         UniswapExchange exchange = UniswapExchange(exchangeAddress);
         emit TokenToEthPurchase(buyer, tokensIn, ethOut);
         tokenPool = newTokenPool;
         ethPool = newEthPool;
         invariant = newEthPool.mul(newTokenPool);
-        require(
-            token.transferFrom(buyer, address(this), tokensIn),
-            "tokenToTokenOut transfer failed."
-        );
-        require(
-            exchange.tokenToTokenIn.value(ethOut)(recipient, minTokensOut),
-            "Ether transfer to purchased token exchange failed."
-        );
+        token.transferFrom(buyer, address(this), tokensIn);
+        exchange.tokenToTokenIn.value(ethOut)(recipient, minTokensOut);
     }
 }
