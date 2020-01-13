@@ -70,7 +70,7 @@ contract('UniswapExchange - Trades', (accounts) => {
     /**
      * @test {UniswapExchange#}
      */
-    it('Fallback function should exchange ether to token', async () => {
+    it('Fallback function', async () => {
         const { transactionHash } = await web3.eth.sendTransaction({ from: swapper1, to: uniswapExchange.address, value: ether('0.5').toString() });
         expectEvent.inTransaction(
             transactionHash,
@@ -263,4 +263,44 @@ contract('UniswapExchange - Trades', (accounts) => {
             },
         );
     });
+
+    /**
+     * @test {UniswapExchange#getShares}
+     */
+    it('get shares', async () => {
+        BN(await uniswapExchange.getShares(initialiser1)).should.be.bignumber.equal(new BN('1000'));
+    });
+
+    /**
+     * @test {UniswapExchange#investLiquidity}
+     */
+    it('invest liquidity', async () => {
+        await token.mint(swapper1, ether('1'));
+        await token.approve(uniswapExchange.address, ether('1'), { from: swapper1 });
+        const sharesBefore = await uniswapExchange.getShares(swapper1);
+        expectEvent(
+            await uniswapExchange.investLiquidity.sendTransaction(300, { from: swapper1, value: ether('1').toString() }),
+            'Investment',
+            {
+                liquidityProvider: swapper1,
+                sharesPurchased: BN(await uniswapExchange.getShares(swapper1)).sub(sharesBefore),
+            }
+        );
+    });
+
+    /**
+     * @test {UniswapExchange#divestLiquidity}
+     */
+    it('divest liquidity', async () => {
+        const sharesBefore = await uniswapExchange.getShares(initialiser1);
+        expectEvent(
+            await uniswapExchange.divestLiquidity(300, ether('0.1'), ether('0.1'), { from: initialiser1 }),
+            'Divestment',
+            {
+                liquidityProvider: initialiser1,
+                sharesBurned: BN(sharesBefore).sub(await uniswapExchange.getShares(initialiser1)),
+            }
+        );
+    });
+
 });

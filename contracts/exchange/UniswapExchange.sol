@@ -448,7 +448,7 @@ contract UniswapExchange {
         );
         require(
             exchange.tokenToTokenIn.value(ethOut)(recipient, minTokensOut),
-            "No idea what this does."
+            "Ether transfer to purchased token exchange failed."
         );
     }
 }
