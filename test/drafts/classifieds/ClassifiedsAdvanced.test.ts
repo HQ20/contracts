@@ -19,7 +19,7 @@ should();
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../../utils');
 
-contract('Classifieds', (accounts) => {
+contract('ClassifiedsAdvanced', (accounts) => {
     let snapshotId: any;
 
     const poster = accounts[1];

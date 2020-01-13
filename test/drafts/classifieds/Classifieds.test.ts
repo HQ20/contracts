@@ -5,7 +5,7 @@ const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache
 import { ClassifiedsInstance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../../types/truffle-contracts';
 
 const Classifieds = artifacts.require(
-    './drafts/classifieds/Classifieds.sol',
+    './classifieds/Classifieds.sol',
 ) as Truffle.Contract<ClassifiedsInstance>;
 const TestERC20Mintable = artifacts.require(
     './test/issuance/TestERC20Mintable.sol',
