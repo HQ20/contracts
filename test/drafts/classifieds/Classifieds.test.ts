@@ -1,8 +1,7 @@
-import { BigNumber } from 'bignumber.js';
-import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
-const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
+const { balance, BN, constants, ether, expectEvent, expectRevert, send, time } = require('@openzeppelin/test-helpers');
 import { ClassifiedsInstance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../../types/truffle-contracts';
+import { executionAsyncId } from 'async_hooks';
 
 const Classifieds = artifacts.require(
     './classifieds/Classifieds.sol',
@@ -14,13 +13,13 @@ const TestERC721Mintable = artifacts.require(
     './test/classifieds/TestERC721Mintable.sol',
 ) as Truffle.Contract<TestERC721MintableInstance>;
 
-should();
-
-// tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
+// tslint:disable-next-line:no-var-requires
+const chai = require('chai');
+chai.use(require('chai-bn')(require('bn.js')));
+chai.should();
 
 contract('Classifieds', (accounts) => {
-    let snapshotId: any;
+    let snapshot: any;
 
     const poster = accounts[1];
     const filler = accounts[2];
@@ -36,15 +35,10 @@ contract('Classifieds', (accounts) => {
     const STATUS = 3;
 
     beforeEach(async () => {
-        const snapShot = await takeSnapshot();
-        snapshotId = snapShot.result;
+        snapshot = await time.latest();
         erc20token = await TestERC20Mintable.new();
         erc721token = await TestERC721Mintable.new();
         classifieds = await Classifieds.new(erc20token.address, erc721token.address);
-    });
-
-    afterEach(async  () => {
-        await revertToSnapshot(snapshotId);
     });
 
     /**
@@ -53,9 +47,14 @@ contract('Classifieds', (accounts) => {
     it('openTrade emits an event to signal trade opening', async () => {
         await erc721token.mint(poster, ERC721id);
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        const tx = await classifieds.openTrade(0, new BigNumber(1e18), { from: poster });
-        assert.equal(tx.logs[0].event, 'TradeStatusChange', 'Should have fired TradeStatusChange.');
-        assert.equal(bytes32ToString(tx.logs[0].args.status), 'Open', 'Status should be "Open".');
+        expectEvent(
+            await classifieds.openTrade(0, ether('1'), { from: poster }),
+            'TradeStatusChange',
+            {
+                ad: new BN('0'),
+                status: stringToBytes32('Open'),
+            },
+        );
     });
 
     /**
@@ -64,41 +63,35 @@ contract('Classifieds', (accounts) => {
     it('getTrade can succesfully retrieve a trade', async () => {
         await erc721token.mint(poster, ERC721id);
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, new BigNumber(1e18), { from: poster });
-        assert.equal((await classifieds.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade fetched.');
-        assert.equal(
-            (await classifieds.getTrade(0))[ITEM].toString(),
-            ERC721id.toString(),
-            'Incorrect trade fetched.',
-        );
-        assert.equal((await classifieds.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade fetched.');
-        assert.equal(bytes32ToString((await classifieds.getTrade(0))[STATUS]), 'Open', 'Incorrect trade fetched.');
+        await classifieds.openTrade(0, ether('1'), { from: poster });
+        const tx = await classifieds.getTrade(0);
+        expect(tx).to.include({
+            [POSTER]: poster,
+            [STATUS]: stringToBytes32('Open')
+        });
+        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
     });
 
     /**
      * @test {Classifieds#executeTrade}
      */
     it('executeTrade can succesfully close a trade', async () => {
-        await erc20token.mint(filler, new BigNumber(1e18));
+        await erc20token.mint(filler, ether('1'));
         await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: filler });
+        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, new BigNumber(1e18), { from: poster });
+        await classifieds.openTrade(0, ether('1'), { from: poster });
         await classifieds.executeTrade(0, { from: filler });
-        assert.equal((await classifieds.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade execution.');
-        assert.equal(
-            (await classifieds.getTrade(0))[ITEM].toString(),
-            ERC721id.toString(),
-            'Incorrect trade execution.',
-        );
-        assert.equal((await classifieds.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade execution.');
-        assert.equal(
-            bytes32ToString((await classifieds.getTrade(0))[STATUS]),
-            'Executed',
-            'Incorrect trade execution.',
-        );
-        assert.equal(await erc721token.ownerOf(ERC721id), filler, 'Incorrect trade execution.');
-        assert.equal((await erc20token.balanceOf(poster)).toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade execution.');
+        const tx = await classifieds.getTrade(0);
+        expect(tx).to.include({
+            [POSTER]: poster,
+            [STATUS]: stringToBytes32('Executed')
+        });
+        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
+        expect(await erc721token.ownerOf(ERC721id)).to.be.equal(filler);
+        chai.expect(await erc20token.balanceOf(poster)).to.be.bignumber.equal(ether('1'));
     });
 
     /**
@@ -107,32 +100,35 @@ contract('Classifieds', (accounts) => {
     it('cancelTrade can succefully cancel a trade', async () => {
         await erc721token.mint(poster, ERC721id);
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, new BigNumber(1e18), { from: poster });
+        await classifieds.openTrade(0, new ether('1'), { from: poster });
         await classifieds.cancelTrade(0, { from: poster });
-        assert.equal((await classifieds.getTrade(0))[POSTER].toString(), poster, 'Incorrect trade cancellation.');
-        assert.equal((await classifieds.getTrade(0))[ITEM].toString(), ERC721id.toString(), 'Incorrect trade cancellation.');
-        assert.equal((await classifieds.getTrade(0))[PRICE].toString(), (new BigNumber(1e18)).toString(), 'Incorrect trade cancellation.');
-        assert.equal(bytes32ToString((await classifieds.getTrade(0))[STATUS]), 'Cancelled', 'Incorrect trade cancellation.');
-        assert.equal(await erc721token.ownerOf(ERC721id), poster, 'Incorrect trade cancellation.');
+        const tx = await classifieds.getTrade(0);
+        expect(tx).to.include({
+            [POSTER]: poster,
+            [STATUS]: stringToBytes32('Cancelled')
+        });
+        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
+        expect(await erc721token.ownerOf(ERC721id)).to.be.equal(poster);
     });
 
     /**
      * @test {Classifieds#cancelTrade}
      */
-    itShouldThrow('cancelTrade cannot cancel a trade which is not Open', async () => {
-        await erc20token.mint(filler, new BigNumber(1e18));
+    it('cancelTrade cannot cancel a trade which is not Open', async () => {
+        await erc20token.mint(filler, ether('1'));
         await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, new BigNumber(1e18), { from: filler });
+        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, new BigNumber(1e18), { from: poster });
+        await classifieds.openTrade(0, ether('1'), { from: poster });
         await classifieds.executeTrade(0, { from: filler });
-        await classifieds.cancelTrade(0, { from: poster });
-    }, 'Trade is not Open.');
+        await expectRevert(classifieds.cancelTrade(0, { from: poster }), 'Trade is not Open.');
+    });
 
 });
 
 function stringToBytes32(text: string) {
-    return web3.utils.fromAscii(text);
+    return web3.utils.padRight(web3.utils.fromAscii(text), 64);
 }
 
 function bytes32ToString(text: string) {
