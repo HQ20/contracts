@@ -1,24 +1,18 @@
-import { BigNumber } from 'bignumber.js';
-// tslint:disable-next-line:no-var-requires
-import { EnergyMarketInstance } from '../../../../types/truffle-contracts';
+// tslint:disable:no-var-requires
+import * as chai from 'chai';
+const { balance, BN, constants, ether, expectEvent, expectRevert, send, time } = require('@openzeppelin/test-helpers');
+import { EnergyMarketInstance } from '../../../types/truffle-contracts';
 
 const EnergyMarket = artifacts.require(
-    './drafts/examples/energy/EnergyMarket.sol',
+    './examples/energy/EnergyMarket.sol',
     ) as Truffle.Contract<EnergyMarketInstance>;
 
-// tslint:disable:no-var-requires
-const chai = require('chai');
-const girino = require('girino');
+chai.use(require('chai-bn')(require('bn.js')));
+chai.should();
 // tslint:enable:no-var-requires
 
-const { expect } = chai;
-
-chai.use(girino);
-
 contract('EnergyMarket', (accounts) => {
-    const owner = accounts[0];
-    const authorized = accounts[1];
-    const unauthorized = accounts[2];
+    const [ owner, authorized, unauthorized ] = accounts;
 
     let energyMarket: EnergyMarketInstance;
 
@@ -39,14 +33,24 @@ contract('EnergyMarket', (accounts) => {
      * @test {EnergyMarket#produce}
      */
     it('Produce energy', async () => {
-        expect(energyMarket.produce(timeSlot, { from: authorized })).to.emit('EnergyProduced').withArgs(authorized);
+        expectEvent(
+            await energyMarket.produce(timeSlot, { from: authorized }),
+            'EnergyProduced',
+            {
+                producer: authorized,
+                time: new BN(timeSlot.toString()),
+            },
+        );
     });
 
     /**
      * @test {EnergyMarket#produce}
      */
     it('Produce throws with unauthorized producer', async () => {
-        expect(energyMarket.produce(timeSlot, { from: unauthorized })).to.revertWith('Unknown meter.');
+        await expectRevert(
+            energyMarket.produce(timeSlot, { from: unauthorized }),
+            'Unknown meter.',
+        );
     });
 
     /**
@@ -57,20 +61,30 @@ contract('EnergyMarket', (accounts) => {
         await energyMarket.approve(
             energyMarket.address, await energyMarket.getConsumptionPrice(1), { from: authorized },
         );
-        expect(energyMarket.consume(timeSlot, { from: authorized })).to.emit('EnergyConsumed').withArgs(authorized);
+        expectEvent(
+            await energyMarket.consume(timeSlot, { from: authorized }),
+            'EnergyConsumed',
+            {
+                consumer: authorized,
+                time: new BN(timeSlot.toString()),
+            },
+        );
     });
 
     /**
      * @test {EnergyMarket#consume}
      */
     it('Consume throws with unauthorized consumer', async () => {
-        expect(energyMarket.consume(timeSlot, { from: unauthorized })).to.revertWith('Unknown meter.');
+        await expectRevert(
+            energyMarket.consume(timeSlot, { from: unauthorized }),
+            'Unknown meter.',
+        );
     });
 
     /**
      * @test {EnergyMarket#consume}
      */
     it('Consume throws if consumer has insufficient balance', async () => {
-        expect(energyMarket.consume(timeSlot, { from: authorized })).to.revert;
+        await expectRevert.unspecified(energyMarket.consume(timeSlot, { from: authorized }));
     });
 });
