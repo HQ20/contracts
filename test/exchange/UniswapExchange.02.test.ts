@@ -97,8 +97,8 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
             'TokenToEthPurchase',
             {
                 buyer: swapper1,
-                tokensIn: tokenAmount,
                 ethOut: await tracker2.delta(),
+                tokensIn: tokenAmount,
             },
         );
     });

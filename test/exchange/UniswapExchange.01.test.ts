@@ -119,7 +119,9 @@ contract('UniswapExchange - Trades', (accounts) => {
      * @test {UniswapExchange#}
      */
     it('Fallback function', async () => {
-        const { transactionHash } = await web3.eth.sendTransaction({ from: swapper1, to: uniswapExchange.address, value: ether('0.5').toString() });
+        const { transactionHash } = await web3.eth.sendTransaction(
+            { from: swapper1, to: uniswapExchange.address, value: ether('0.5').toString() },
+        );
         expectEvent.inTransaction(
             transactionHash,
             uniswapExchange,
@@ -279,14 +281,20 @@ contract('UniswapExchange - Trades', (accounts) => {
         token.approve(uniswapExchange.address, tokenAmount, { from: swapper1 });
         const tracker2 = await balance.tracker(swapper2);
         tracker2.get();
-        const swap = await uniswapExchange.tokenToEthPayment(tokenAmount, minEth, timeout, swapper2, { from: swapper1 });
+        const swap = await uniswapExchange.tokenToEthPayment(
+            tokenAmount,
+            minEth,
+            timeout,
+            swapper2,
+            { from: swapper1 },
+        );
         expectEvent(
             swap,
             'TokenToEthPurchase',
             {
                 buyer: swapper1,
-                tokensIn: tokenAmount,
                 ethOut: await tracker2.delta(),
+                tokensIn: tokenAmount,
             },
         );
     });
@@ -489,12 +497,15 @@ contract('UniswapExchange - Trades', (accounts) => {
         await token.approve(uniswapExchange.address, ether('1'), { from: swapper1 });
         const sharesBefore = await uniswapExchange.getShares(swapper1);
         expectEvent(
-            await uniswapExchange.investLiquidity.sendTransaction(300, { from: swapper1, value: ether('1').toString() }),
+            await uniswapExchange.investLiquidity.sendTransaction(
+                300,
+                { from: swapper1, value: ether('1').toString() },
+            ),
             'Investment',
             {
                 liquidityProvider: swapper1,
                 sharesPurchased: BN(await uniswapExchange.getShares(swapper1)).sub(sharesBefore),
-            }
+            },
         );
     });
 
@@ -539,7 +550,7 @@ contract('UniswapExchange - Trades', (accounts) => {
             {
                 liquidityProvider: initialiser1,
                 sharesBurned: BN(sharesBefore).sub(await uniswapExchange.getShares(initialiser1)),
-            }
+            },
         );
     });
 
