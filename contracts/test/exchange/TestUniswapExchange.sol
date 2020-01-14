@@ -13,7 +13,6 @@ contract TestUniswapExchange is UniswapExchange {
         uint256 minTokensOut
     )
         public
-        exchangeInitialized
     {
         ethToToken(
             buyer,
@@ -30,7 +29,6 @@ contract TestUniswapExchange is UniswapExchange {
         uint256 minEthOut
     )
         public
-        exchangeInitialized
     {
         tokenToEth(
             buyer,
@@ -48,7 +46,6 @@ contract TestUniswapExchange is UniswapExchange {
         uint256 minTokensOut
     )
         public
-        exchangeInitialized
     {
         tokenToTokenOut(
             tokenPurchased,
