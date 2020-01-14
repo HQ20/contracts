@@ -2,7 +2,7 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../../dividend/ERC20Dividendable.sol";
+import "../../token/ERC20Dividendable.sol";
 
 
 /**

@@ -6,7 +6,7 @@ const { balance, BN, constants, ether, expectEvent, expectRevert, send } = requi
 import { TestERC20DividendableInstance } from '../../types/truffle-contracts';
 
 const TestERC20Dividendable = artifacts.require(
-    './test/dividend/TestERC20Dividendable.sol',
+    './test/token/TestERC20Dividendable.sol',
     ) as Truffle.Contract<TestERC20DividendableInstance>;
 
 
