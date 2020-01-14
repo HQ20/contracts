@@ -1,8 +1,11 @@
 import chai = require('chai');
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
-import { TestERC20MintableInstance } from '../../types/truffle-contracts';
-import { TestUniswapExchangeInstance, UniswapFactoryInstance } from '../../types/truffle-contracts';
+import {
+    TestERC20MintableInstance,
+    TestUniswapExchangeInstance,
+    UniswapFactoryInstance,
+} from '../../types/truffle-contracts';
 
 // tslint:disable:max-line-length
 const TestERC20Mintable = artifacts.require('./test/issuance/TestERC20Mintable.sol') as Truffle.Contract<TestERC20MintableInstance>;
