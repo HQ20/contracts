@@ -78,7 +78,7 @@ contract UniswapExchange {
 
     /// EXTERNAL FUNCTIONS\
     /// @notice Initializes the exchange
-    /// @param _tokenAMount the amoun of tokens to inititlaize the exchange with
+    /// @param _tokenAmount the amoun of tokens to inititlaize the exchange with
     function initializeExchange(uint256 _tokenAmount) external payable {
         require(
             invariant == 0 && totalShares == 0,
@@ -99,7 +99,7 @@ contract UniswapExchange {
 
     /// @notice Buyer swaps ETH for Tokens
     /// @param _minTokens Minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _timeout Timeout period before call fails
     function ethToTokenSwap(
         uint256 _minTokens,
         uint256 _timeout
@@ -122,7 +122,7 @@ contract UniswapExchange {
 
     /// @notice Payer pays in ETH, recipient receives Tokens
     /// @param _minTokens Minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _timeout Timeout period before call fails
     /// @param _recipient The recipient of the tokens
     function ethToTokenPayment(
         uint256 _minTokens,
@@ -151,8 +151,8 @@ contract UniswapExchange {
 
     /// @notice Buyer swaps Tokens for ETH
     /// @param _tokenAmount The amount of tokens to swap
-    /// @param _minTokens Minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _minEth Minimum eth to be recieved
+    /// @param _timeout Timeout period before call fails
     function tokenToEthSwap(
         uint256 _tokenAmount,
         uint256 _minEth,
@@ -175,8 +175,8 @@ contract UniswapExchange {
 
     /// @notice Payer pays in Tokens, recipient receives ETH
     /// @param _tokenAmount The amount of tokens to swap
-    /// @param _minTokens Minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _minEth Minimum eth to be recieved
+    /// @param _timeout Timeout period before call fails
     /// @param _recipient The recipient of eth
     function tokenToEthPayment(
         uint256 _tokenAmount,
@@ -207,7 +207,7 @@ contract UniswapExchange {
     /// @param _tokenPurchased The address of the token you wish to trade
     /// @param _tokensSold The amount of tokens you wish to trade
     /// @param _minTokensReceived The minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _timeout Timeout period before call fails
     function tokenToTokenSwap(
         address _tokenPurchased,                  // Must be a token with an attached Uniswap exchange
         uint256 _tokensSold,
@@ -235,7 +235,7 @@ contract UniswapExchange {
     /// @param _recipient The recipient of the tokens
     /// @param _tokensSold The amount of tokens you wish to trade
     /// @param _minTokensReceived The minimum amount of tokens to be recieved
-    /// @param _timeOut Timeout period before call fails
+    /// @param _timeout Timeout period before call fails
     function tokenToTokenPayment(
         address _tokenPurchased,
         address _recipient,
