@@ -2,7 +2,7 @@
 This is an Ethereum project that implements a decentralized exchange in the manner of the uniswap protocol.
 
 ## Description
-The project has two main components: the `UniswapFactory`, which is a factory contract that creates and stores exchanges; and `UniswapExchange`, which is an exchange for a certian ERC20 token.
+The project has two main components: the `UniswapFactory`, which is a factory contract that creates and stores exchanges; and `UniswapExchange`, which is an exchange for a certain ERC20 token.
 
 For more details please refer to the official Uniswap documentation at https://docs.uniswap.io/.
 
@@ -13,7 +13,7 @@ For simplicity this smart contract assumes that only ERC20 tokens that follow th
 
 ### Launch an exchange
 
-0. If you want to laucnh an exchange, the first thing you need is to deploy a `UniswapFactory` (if you haven't already). The `UniswapFactory` contract takes no parameters.
+0. If you want to launch an exchange, the first thing you need is to deploy a `UniswapFactory` (if you haven't already). The `UniswapFactory` contract takes no parameters.
 
 1. Then, you can call the `launchExchange` method from that contract, feeding it as parameter the address of the token you wish to trade using that exchange. For every token that wish to trade, you have to launch a `UniswapExchange` contract associated with that token by calling `launchExchange` on `UniswapFactory`.
 
@@ -41,7 +41,7 @@ For simplicity this smart contract assumes that only ERC20 tokens that follow th
 
 0. You have to approve `UniswapExchange` to use your tokens which you wish to trade with.
 1. Specify the amount of tokens which you wish to trade in a call to `tokenToTokenSwap` on `UniswapExchange`. You will receive your tokens in the same wallet.
-2. If you have another receeipient in mind, please use the `tokenToTokenPayment` method.
+2. If you have another receipient in mind, please use the `tokenToTokenPayment` method.
 
 ### Divest liquidity
 
