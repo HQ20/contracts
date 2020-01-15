@@ -3,20 +3,46 @@ import "./UniswapExchange.sol";
 
 
 interface IUniswapFactory {
+    /**
+     * @notice Launch an exchange
+     * @param _token the token of the exchange to be alunched
+     * @return the address of the launched exchange
+     */
     function launchExchange(
         address _token
     ) external returns (address exchange);
+    /**
+     * @notice Returns the total number of exchanges launched
+     * @return the total number of exchanges launched
+     */
     function getExchangeCount() external view returns (uint exchangeCount);
+
+    /**
+     * @notice Returns the exchange associated with a token
+     * @param _token The address of the token
+     * @return The address of the exchange
+     */
     function tokenToExchangeLookup(
         address _token
     ) external view returns (address payable exchange);
+
+    /**
+     * @notice Returns the token associated with an exchange
+     * @param _exchange The address of the exchange
+     * @return The address of the token
+     */
     function exchangeToTokenLookup(
         address _exchange
     ) external view returns (address token);
+
     event ExchangeLaunch(address indexed exchange, address indexed token);
 }
 
 
+/**
+ * @title UniswapFactory
+ * @notice A factory for UniswapExchanges
+ */
 contract UniswapFactory is IUniswapFactory {
     event ExchangeLaunch(address indexed exchange, address indexed token);
 

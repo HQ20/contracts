@@ -4,6 +4,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./UniswapFactory.sol";
 
 
+/**
+ * @title UniswapExchange
+ * @notice Uniswap style exchange
+ */
 contract UniswapExchange {
     using SafeMath for uint256;
 
@@ -72,7 +76,9 @@ contract UniswapExchange {
         );
     }
 
-    /// EXTERNAL FUNCTIONS
+    /// EXTERNAL FUNCTIONS\
+    /// @notice Initializes the exchange
+    /// @param _tokenAMount the amoun of tokens to inititlaize the exchange with
     function initializeExchange(uint256 _tokenAmount) external payable {
         require(
             invariant == 0 && totalShares == 0,
@@ -91,7 +97,9 @@ contract UniswapExchange {
         token.transferFrom(msg.sender, address(this), _tokenAmount);
     }
 
-    // Buyer swaps ETH for Tokens
+    /// @notice Buyer swaps ETH for Tokens
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
     function ethToTokenSwap(
         uint256 _minTokens,
         uint256 _timeout
@@ -112,7 +120,10 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in ETH, recipient receives Tokens
+    /// @notice Payer pays in ETH, recipient receives Tokens
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
+    /// @param _recipient The recipient of the tokens
     function ethToTokenPayment(
         uint256 _minTokens,
         uint256 _timeout,
@@ -138,7 +149,10 @@ contract UniswapExchange {
         );
     }
 
-    // Buyer swaps Tokens for ETH
+    /// @notice Buyer swaps Tokens for ETH
+    /// @param _tokenAmount The amount of tokens to swap
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
     function tokenToEthSwap(
         uint256 _tokenAmount,
         uint256 _minEth,
@@ -159,7 +173,11 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in Tokens, recipient receives ETH
+    /// @notice Payer pays in Tokens, recipient receives ETH
+    /// @param _tokenAmount The amount of tokens to swap
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
+    /// @param _recipient The recipient of eth
     function tokenToEthPayment(
         uint256 _tokenAmount,
         uint256 _minEth,
@@ -185,7 +203,11 @@ contract UniswapExchange {
         );
     }
 
-    // Buyer swaps Tokens in current exchange for Tokens of provided address
+    /// @notice Buyer swaps Tokens in current exchange for Tokens of provided address
+    /// @param _tokenPurchased The address of the token you wish to trade
+    /// @param _tokensSold The amount of tokens you wish to trade
+    /// @param _minTokensReceived The minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
     function tokenToTokenSwap(
         address _tokenPurchased,                  // Must be a token with an attached Uniswap exchange
         uint256 _tokensSold,
@@ -208,7 +230,12 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in exchange Token, recipient receives Tokens of provided address
+    /// @notice Payer pays in exchange Token, recipient receives Tokens of provided address
+    /// @param _tokenPurchased The address of the token you wish to trade
+    /// @param _recipient The recipient of the tokens
+    /// @param _tokensSold The amount of tokens you wish to trade
+    /// @param _minTokensReceived The minimum amount of tokens to be recieved
+    /// @param _timeOut Timeout period before call fails
     function tokenToTokenPayment(
         address _tokenPurchased,
         address _recipient,
@@ -263,7 +290,8 @@ contract UniswapExchange {
         return true;
     }
 
-    // Invest liquidity and receive market shares
+    /// @notice Invest liquidity and receive market shares
+    /// @param _minShares The minimum amount of shares to be issued
     function investLiquidity(
         uint256 _minShares
     )
@@ -296,7 +324,10 @@ contract UniswapExchange {
         emit Investment(msg.sender, sharesPurchased);
     }
 
-    // Divest market shares and receive liquidity
+    /// @notice Divest market shares and receive liquidity
+    /// @param _sharesBurned The amount of shares to be bruned
+    /// @param _minEth The minimum amount of eth to be recieved
+    /// @param _minTokens The minimum amount of tokens to be recieved
     function divestLiquidity(
         uint256 _sharesBurned,
         uint256 _minEth,
@@ -330,7 +361,8 @@ contract UniswapExchange {
         emit Divestment(msg.sender, _sharesBurned);
     }
 
-    // View share balance of an address
+    /// @notice View share balance of an address
+    /// @param _provider The address of the shareholder
     function getShares(
         address _provider
     )

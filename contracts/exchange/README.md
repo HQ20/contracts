@@ -39,8 +39,9 @@ For simplicity this smart contract assumes that only ERC20 tokens that follow th
 
 ### Trade tokens for tokens
 
+00. The token you wish to trade to must have an associated `UniswapExchange` launched.
 0. You have to approve `UniswapExchange` to use your tokens which you wish to trade with.
-1. Specify the amount of tokens which you wish to trade in a call to `tokenToTokenSwap` on `UniswapExchange`. You will receive your tokens in the same wallet.
+1. Specify the address of the token and the amount of tokens which you wish to trade in a call to `tokenToTokenSwap` on `UniswapExchange`. You will receive your tokens in the same wallet.
 2. If you have another receipient in mind, please use the `tokenToTokenPayment` method.
 
 ### Divest liquidity
