@@ -17,7 +17,7 @@
     </div>
 </div>
 
-> HQ20/contracts is an Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world.
+> HQ20/contracts is a Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world.
 
 ## Installation
 
