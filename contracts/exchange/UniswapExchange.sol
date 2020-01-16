@@ -78,7 +78,7 @@ contract UniswapExchange {
 
     /// EXTERNAL FUNCTIONS\
     /// @notice Initializes the exchange
-    /// @param _tokenAmount the amoun of tokens to inititlaize the exchange with
+    /// @param _tokenAmount the number of tokens to initialize the exchange with
     function initializeExchange(uint256 _tokenAmount) external payable {
         require(
             invariant == 0 && totalShares == 0,
