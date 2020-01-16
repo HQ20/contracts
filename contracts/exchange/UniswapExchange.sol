@@ -4,6 +4,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./UniswapFactory.sol";
 
 
+/**
+ * @title UniswapExchange
+ * @notice Uniswap style exchange
+ */
 contract UniswapExchange {
     using SafeMath for uint256;
 
@@ -73,6 +77,8 @@ contract UniswapExchange {
     }
 
     /// EXTERNAL FUNCTIONS
+    /// @notice Initializes the exchange
+    /// @param _tokenAmount the number of tokens to initialize the exchange with
     function initializeExchange(uint256 _tokenAmount) external payable {
         require(
             invariant == 0 && totalShares == 0,
@@ -88,13 +94,12 @@ contract UniswapExchange {
         invariant = ethPool.mul(tokenPool);
         shares[msg.sender] = 1000;
         totalShares = 1000;
-        require(
-            token.transferFrom(msg.sender, address(this), _tokenAmount),
-            "Initial transferFrom failed."
-        );
+        token.transferFrom(msg.sender, address(this), _tokenAmount);
     }
 
-    // Buyer swaps ETH for Tokens
+    /// @notice Buyer swaps ETH for Tokens
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeout Timeout period before call fails
     function ethToTokenSwap(
         uint256 _minTokens,
         uint256 _timeout
@@ -115,7 +120,10 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in ETH, recipient receives Tokens
+    /// @notice Payer pays in ETH, recipient receives Tokens
+    /// @param _minTokens Minimum amount of tokens to be recieved
+    /// @param _timeout Timeout period before call fails
+    /// @param _recipient The recipient of the tokens
     function ethToTokenPayment(
         uint256 _minTokens,
         uint256 _timeout,
@@ -141,7 +149,10 @@ contract UniswapExchange {
         );
     }
 
-    // Buyer swaps Tokens for ETH
+    /// @notice Buyer swaps Tokens for ETH
+    /// @param _tokenAmount The amount of tokens to swap
+    /// @param _minEth Minimum eth to be recieved
+    /// @param _timeout Timeout period before call fails
     function tokenToEthSwap(
         uint256 _tokenAmount,
         uint256 _minEth,
@@ -162,7 +173,11 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in Tokens, recipient receives ETH
+    /// @notice Payer pays in Tokens, recipient receives ETH
+    /// @param _tokenAmount The amount of tokens to swap
+    /// @param _minEth Minimum eth to be recieved
+    /// @param _timeout Timeout period before call fails
+    /// @param _recipient The recipient of eth
     function tokenToEthPayment(
         uint256 _tokenAmount,
         uint256 _minEth,
@@ -188,7 +203,11 @@ contract UniswapExchange {
         );
     }
 
-    // Buyer swaps Tokens in current exchange for Tokens of provided address
+    /// @notice Buyer swaps Tokens in current exchange for Tokens of provided address
+    /// @param _tokenPurchased The address of the token you wish to trade
+    /// @param _tokensSold The amount of tokens you wish to trade
+    /// @param _minTokensReceived The minimum amount of tokens to be recieved
+    /// @param _timeout Timeout period before call fails
     function tokenToTokenSwap(
         address _tokenPurchased,                  // Must be a token with an attached Uniswap exchange
         uint256 _tokensSold,
@@ -211,7 +230,12 @@ contract UniswapExchange {
         );
     }
 
-    // Payer pays in exchange Token, recipient receives Tokens of provided address
+    /// @notice Payer pays in exchange Token, recipient receives Tokens of provided address
+    /// @param _tokenPurchased The address of the token you wish to trade
+    /// @param _recipient The recipient of the tokens
+    /// @param _tokensSold The amount of tokens you wish to trade
+    /// @param _minTokensReceived The minimum amount of tokens to be recieved
+    /// @param _timeout Timeout period before call fails
     function tokenToTokenPayment(
         address _tokenPurchased,
         address _recipient,
@@ -266,7 +290,8 @@ contract UniswapExchange {
         return true;
     }
 
-    // Invest liquidity and receive market shares
+    /// @notice Invest liquidity and receive market shares
+    /// @param _minShares The minimum amount of shares to be issued
     function investLiquidity(
         uint256 _minShares
     )
@@ -295,14 +320,14 @@ contract UniswapExchange {
         ethPool = ethPool.add(msg.value);
         tokenPool = tokenPool.add(tokensRequired);
         invariant = ethPool.mul(tokenPool);
+        token.transferFrom(msg.sender, address(this), tokensRequired);
         emit Investment(msg.sender, sharesPurchased);
-        require(
-            token.transferFrom(msg.sender, address(this), tokensRequired),
-            "Liquidity transfer failed."
-        );
     }
 
-    // Divest market shares and receive liquidity
+    /// @notice Divest market shares and receive liquidity
+    /// @param _sharesBurned The amount of shares to be bruned
+    /// @param _minEth The minimum amount of eth to be recieved
+    /// @param _minTokens The minimum amount of tokens to be recieved
     function divestLiquidity(
         uint256 _sharesBurned,
         uint256 _minEth,
@@ -331,15 +356,13 @@ contract UniswapExchange {
         } else {
             invariant = ethPool.mul(tokenPool);
         }
-        emit Divestment(msg.sender, _sharesBurned);
-        require(
-            token.transfer(msg.sender, tokensDivested),
-            "Divestment transfer failed."
-        );
+        token.transfer(msg.sender, tokensDivested);
         msg.sender.transfer(ethDivested);
+        emit Divestment(msg.sender, _sharesBurned);
     }
 
-    // View share balance of an address
+    /// @notice View share balance of an address
+    /// @param _provider The address of the shareholder
     function getShares(
         address _provider
     )
@@ -372,11 +395,8 @@ contract UniswapExchange {
         ethPool = newEthPool;
         tokenPool = newTokenPool;
         invariant = newEthPool.mul(newTokenPool);
+        token.transfer(recipient, tokensOut);
         emit EthToTokenPurchase(buyer, ethIn, tokensOut);
-        require(
-            token.transfer(recipient, tokensOut),
-            "ethToToken transfer failed."
-        );
     }
 
     function tokenToEth(
@@ -400,12 +420,9 @@ contract UniswapExchange {
         tokenPool = newTokenPool;
         ethPool = newEthPool;
         invariant = newEthPool.mul(newTokenPool);
-        emit TokenToEthPurchase(buyer, tokensIn, ethOut);
-        require(
-            token.transferFrom(buyer, address(this), tokensIn),
-            "tokenToEth transfer failed."
-        );
+        token.transferFrom(buyer, address(this), tokensIn);
         recipient.transfer(ethOut);
+        emit TokenToEthPurchase(buyer, tokensIn, ethOut);
     }
 
     function tokenToTokenOut(
@@ -433,22 +450,12 @@ contract UniswapExchange {
         uint256 tempTokenPool = newTokenPool.sub(fee);
         uint256 newEthPool = invariant.div(tempTokenPool);
         uint256 ethOut = ethPool.sub(newEthPool);
-        require(
-            ethOut <= ethPool,
-            "Not enough ether in pool."
-        );
         UniswapExchange exchange = UniswapExchange(exchangeAddress);
         emit TokenToEthPurchase(buyer, tokensIn, ethOut);
         tokenPool = newTokenPool;
         ethPool = newEthPool;
         invariant = newEthPool.mul(newTokenPool);
-        require(
-            token.transferFrom(buyer, address(this), tokensIn),
-            "tokenToTokenOut transfer failed."
-        );
-        require(
-            exchange.tokenToTokenIn.value(ethOut)(recipient, minTokensOut),
-            "No idea what this does."
-        );
+        token.transferFrom(buyer, address(this), tokensIn);
+        exchange.tokenToTokenIn.value(ethOut)(recipient, minTokensOut);
     }
 }
