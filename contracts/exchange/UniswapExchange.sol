@@ -76,7 +76,7 @@ contract UniswapExchange {
         );
     }
 
-    /// EXTERNAL FUNCTIONS\
+    /// EXTERNAL FUNCTIONS
     /// @notice Initializes the exchange
     /// @param _tokenAmount the number of tokens to initialize the exchange with
     function initializeExchange(uint256 _tokenAmount) external payable {

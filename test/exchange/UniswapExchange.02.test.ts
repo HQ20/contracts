@@ -7,11 +7,15 @@ import {
     TestUniswapFactoryInstance,
 } from '../../types/truffle-contracts';
 
-// tslint:disable:max-line-length
-const TestERC20Mintable = artifacts.require('./test/issuance/TestERC20Mintable.sol') as Truffle.Contract<TestERC20MintableInstance>;
-const UniswapExchange = artifacts.require('./test/exchange/TestUniswapExchange.sol') as Truffle.Contract<TestUniswapExchangeInstance>;
-const UniswapFactory = artifacts.require('./test/exchange/TestUniswapFactory.sol') as Truffle.Contract<TestUniswapFactoryInstance>;
-// tslint:enable:max-line-length
+const TestERC20Mintable = artifacts.require(
+    './test/issuance/TestERC20Mintable.sol',
+    ) as Truffle.Contract<TestERC20MintableInstance>;
+const UniswapExchange = artifacts.require(
+    './test/exchange/TestUniswapExchange.sol',
+    ) as Truffle.Contract<TestUniswapExchangeInstance>;
+const UniswapFactory = artifacts.require(
+    './test/exchange/TestUniswapFactory.sol',
+    ) as Truffle.Contract<TestUniswapFactoryInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
