@@ -70,6 +70,6 @@
         "tslint": "5.20.1",
         "typechain": "1.0.3",
         "typechain-target-truffle": "1.0.2",
-        "typescript": "3.7.4"
+        "typescript": "3.7.5"
     }
 }
