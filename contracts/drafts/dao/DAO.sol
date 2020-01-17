@@ -7,12 +7,14 @@ import "../../token/ERC20Dividendable.sol";
 
 contract DAO is ERC20Dividendable, IssuanceEth {
 
-    mapping(address => uint256) begAmount;
+    mapping(address => uint256) public begAmount;
     uint256 totalAmounts;
-    mapping(address => mapping(address => uint256)) votesForIdeaByHolder;
-    mapping(address => uint256) totalVotesForIdea;
-    mapping(address => uint256) totalVotesByHolder;
-    mapping(address => address[]) backersForIdea;
+    mapping(address =>
+        mapping(address => uint256)
+    ) public votesForIdeaByHolder;
+    mapping(address => uint256) public totalVotesForIdea;
+    mapping(address => uint256) public totalVotesByHolder;
+    mapping(address => address[]) public backersForIdea;
 
 
     constructor() ERC20Dividendable() IssuanceEth(address(this)) public {
