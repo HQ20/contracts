@@ -12,7 +12,7 @@ import "./../state/StateMachine.sol";
  * @title Issuance
  * @notice Implements a very simple issuance process for tokens
  */
-contract Issuance is Ownable, StateMachine, ReentrancyGuard {
+contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
 
     using SafeMath for uint256;
 
@@ -23,7 +23,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    IERC20 public currencyToken;
     IERC20Mintable public issuanceToken;
 
     address[] public investors;
@@ -35,11 +34,9 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     uint256 nextInvestor;
 
     constructor(
-        address _issuanceToken,
-        address _currencyToken
+        address _issuanceToken
     ) public Ownable() StateMachine() {
         issuanceToken = IERC20Mintable(_issuanceToken);
-        currencyToken = IERC20(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -51,28 +48,26 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
 
     /**
      * @dev Use this function to invest. Must have approved this contract (from the frontend) to spend _amount of currencyToken tokens.
-     * @param _amount The amount of currencyToken tokens that will be invested.
      */
-    function invest(uint256 _amount) external {
+    function () external payable {
         require(
             currentState == "OPEN",
             "Not open for investments."
         );
         require(
-            _amount.mod(issuePrice) == 0,
+            msg.value.mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
-
-        currencyToken.transferFrom(msg.sender, address(this), _amount);
 
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
         }
-        investments[msg.sender] = investments[msg.sender].add(_amount);
 
-        amountRaised = amountRaised.add(_amount);
+        investments[msg.sender] = investments[msg.sender].add(msg.value);
 
-        emit InvestmentAdded(msg.sender, _amount);
+        amountRaised = amountRaised.add(msg.value);
+
+        emit InvestmentAdded(msg.sender, msg.value);
     }
 
     function withdraw() external nonReentrant {
@@ -103,7 +98,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        currencyToken.transfer(msg.sender, amount);
+        msg.sender.transfer(amount);
         emit InvestmentCancelled(msg.sender, amount);
     }
 
@@ -135,12 +130,12 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function transferFunds(address _wallet) public onlyOwner {
+    function transferFunds(address payable _wallet) public onlyOwner {
         require(
             currentState == "LIVE",
             "Cannot transfer funds now."
         );
-        currencyToken.transfer(_wallet, amountRaised);
+        _wallet.transfer(amountRaised);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
