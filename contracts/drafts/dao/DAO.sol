@@ -9,8 +9,11 @@ contract DAO is ERC20Dividendable, IssuanceEth {
 
     mapping(address => uint256) begAmount;
     uint256 totalAmounts;
-    mapping(address => mapping(address => uint256)) individualVotes;
-    mapping(address => uint256) totalVotes;
+    mapping(address => mapping(address => uint256)) votesForIdeaByHolder;
+    mapping(address => uint256) totalVotesForIdea;
+    mapping(address => uint256) totalVotesByHolder;
+    mapping(address => address[]) backersForIdea;
+
 
     constructor() ERC20Dividendable() IssuanceEth(address(this)) public {
         _createState("NEVER");
@@ -33,22 +36,30 @@ contract DAO is ERC20Dividendable, IssuanceEth {
     function voteForIdea(uint256 votes, address idea) public {
         require(currentState == "LIVE", "Founders not defined yet.");
         require(
-            this.balanceOf(msg.sender) - individualVotes[idea][msg.sender] >= votes,
+            this.balanceOf(msg.sender) - totalVotesByHolder[msg.sender] >= votes,
             "Not enough power."
         );
-        individualVotes[idea][msg.sender] += votes;
-        totalVotes[idea] += votes;
+        totalVotesForIdea[idea] += votes;
+        totalVotesByHolder[msg.sender] += votes;
+        votesForIdeaByHolder[idea][msg.sender] += votes;
+        resolveBackerForIdea(idea, msg.sender);
     }
 
     function fundIdea(address payable idea) public {
         require(currentState == "LIVE", "Founders not defined yet.");
         require(
-            totalVotes[idea] >= this.totalSupply().div(2) + 1,
+            totalVotesForIdea[idea] >= this.totalSupply().div(2) + 1,
             "Not enough expressed votes."
         );
         totalAmounts -= begAmount[idea];
-        delete totalVotes[idea];
-        delete individualVotes[idea];
+        for (uint256 i = 0; i < backersForIdea[idea].length; i++) {
+            totalVotesByHolder[backersForIdea[
+                    idea
+                ][i]] -= votesForIdeaByHolder[
+                    idea
+                ][backersForIdea[idea][i]];
+        }
+        delete totalVotesForIdea[idea];
         delete begAmount[idea];
         address(IssuanceEth(idea)).transfer(begAmount[idea]);
     }
@@ -61,6 +72,15 @@ contract DAO is ERC20Dividendable, IssuanceEth {
             ERC20Mintable(address(issuance.issuanceToken())).balanceOf(address(this)),
             address(issuance.issuanceToken())
         );
+    }
+
+    function resolveBackerForIdea(address idea, address backer) internal {
+        for (uint256 i = 0; i < backersForIdea[idea].length; i++) {
+            if (backersForIdea[idea][i] == backer){
+                return;
+            }
+        }
+        backersForIdea[idea].push(backer);
     }
 
 }
