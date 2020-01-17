@@ -2,7 +2,9 @@
 
 This is an Ethereum project that implements a simple Issuance that can be used for an ICO.
 
-## Description
+## IssuanceAdvanced
+
+### Description
 
 This issuance contract accepts investments using an accepted ERC20 token, and it will return to the investor a different ERC20 token if certain conditions are met.
 
@@ -31,7 +33,7 @@ Otherwise, investors are invited to reclaim their investemnts using `cancelInves
 
 At any time during which the `Issuance` is in `OPEN` state, the investors can change their minds and reclaim their investments with `cancelInvestment()`.
 
-## Usage
+### Usage
 ---
 ```
 constructor(
@@ -120,3 +122,7 @@ setMinInvestment(uint256 _minInvestment)
 Setter for _minInvestment. Can only be called during `SETUP`.
 
 ---
+
+## IssuanceEth
+
+It has the same structure and functionality as the `IssuanceAdvanced` contract, however, investments got through the fallback function (i.e., `currencyToken` is ethereum).

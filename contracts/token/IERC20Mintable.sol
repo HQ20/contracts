@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
 
+
 /**
  * @dev Interface of the additional functions added by `ERC20Mintable` to `ERC20`.
  */
