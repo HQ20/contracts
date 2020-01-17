@@ -1,3 +1,5 @@
+const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+
 import { should } from 'chai';
 import { EnumerableSetMockInstance } from '../../../types/truffle-contracts';
 
@@ -39,6 +41,12 @@ contract('EnumerableSet', (accounts) => {
         (await enumerableSet.testTail()).should.be.equal(tail);
     });
 
+    it('can\'t insert the empty address.', async () => {
+        await expectRevert(
+            enumerableSet.testInsert(empty, empty, empty),
+            'EnumerableSet: Cannot insert the empty address',
+        );
+    });
 
     it('inserts the first item.', async () => {
         await enumerableSet.testInsert(empty, head, empty);
@@ -48,6 +56,14 @@ contract('EnumerableSet', (accounts) => {
         (await enumerableSet.testPrev(head)).should.be.equal(empty);
         (await enumerableSet.testHead()).should.be.equal(head);
         (await enumerableSet.testTail()).should.be.equal(head);
+    });
+
+    it('can\'t insert an existing item.', async () => {
+        await enumerableSet.testInsert(empty, head, empty);
+        await expectRevert(
+            enumerableSet.testInsert(empty, head, empty),
+            'EnumerableSet: Cannot insert an existing item',
+        );
     });
 
     it('contains can return false.', async () => {
@@ -99,6 +115,20 @@ contract('EnumerableSet', (accounts) => {
         (await enumerableSet.testNext(tail)).should.be.equal(empty);
         (await enumerableSet.testHead()).should.be.equal(head);
         (await enumerableSet.testTail()).should.be.equal(tail);
+    });
+
+    it('can\'t remove the empty address.', async () => {
+        await expectRevert(
+            enumerableSet.testRemove(empty),
+            'EnumerableSet: Cannot remove the empty address',
+        );
+    });
+
+    it('can\'t remove a non existing item.', async () => {
+        await expectRevert(
+            enumerableSet.testRemove(head),
+            'EnumerableSet: Cannot remove a non existing item',
+        );
     });
 
     it('removes the only item.', async () => {
