@@ -14,7 +14,11 @@
     },
     "files": [
         "/contracts",
-        "/types"
+        "/types",
+        "!contracts/drafts/",
+        "!contracts/examples/",
+        "!contracts/test/",
+        "!contracts/Migrations.sol"
     ],
     "scripts": {
         "deploy:ganache": "truffle deploy --network development",
