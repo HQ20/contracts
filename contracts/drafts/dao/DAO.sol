@@ -47,6 +47,9 @@ contract DAO is ERC20Dividendable, IssuanceEth {
             "Not enough expressed votes."
         );
         totalAmounts -= begAmount[idea];
+        delete totalVotes[idea];
+        delete individualVotes[idea];
+        delete begAmount[idea];
         address(IssuanceEth(idea)).transfer(begAmount[idea]);
     }
 
