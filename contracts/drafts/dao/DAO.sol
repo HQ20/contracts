@@ -17,10 +17,20 @@ contract DAO is ERC20Dividendable, IssuanceEth {
 
     constructor() ERC20Dividendable() IssuanceEth(address(this)) public {
         _createState("NEVER");
+        _createTransition("LIVE", "SETUP");
+        _createTransition("FAILED", "SETUP");
     }
 
     function transferFunds(address payable _wallet) public onlyOwner {
         require(currentState == "NEVER", "You can never do this.");
+    }
+
+    function restartFundingRound() public onlyOwner {
+        require(
+            currentState == "LIVE" || currentState == "FAILED",
+            "Initial funding round not ended."
+        );
+        _transition("SETUP");
     }
 
     function begMoneyForIdea(uint256 amount, address payable idea) public {
