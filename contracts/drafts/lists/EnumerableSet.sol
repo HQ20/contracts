@@ -10,8 +10,6 @@ library EnumerableSet {
 
     event ItemInserted(address prev, address inserted, address next);
     event ItemRemoved(address removed);
-    event NewHead(address item);
-    event NewTail(address item);
 
     struct Set {
         mapping (address => address) next;
