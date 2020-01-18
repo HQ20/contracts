@@ -80,29 +80,29 @@ contract EnumerableSetMock{
     /**
      * @dev Insert an item between another two.
      */
-    function testInsert(address prev, address insert, address next)
+    /* function testInsert(address prev, address insert, address next)
         public
     {
         EnumerableSet._insert(set, prev, insert, next);
-    }
+    } */
 
     /**
      * @dev Internal function to update the Head pointer.
      */
-    function testSetHead(address item)
+    /* function testSetHead(address item)
         public
     {
         EnumerableSet._setHead(set, item);
-    }
+    } */
 
     /**
      * @dev Internal function to update the Tail pointer.
      */
-    function testSetTail(address item)
+    /* function testSetTail(address item)
         public
     {
         EnumerableSet._setTail(set, item);
-    }
+    } */
 
     /**
      * @dev Return a set head.

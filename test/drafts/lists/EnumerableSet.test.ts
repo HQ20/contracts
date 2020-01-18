@@ -21,7 +21,7 @@ contract('EnumerableSet', (accounts) => {
         enumerableSet = await EnumerableSet.new();
     });
 
-    it('set an address as Head.', async () => {
+    /* it('set an address as Head.', async () => {
         const event = (
             await enumerableSet.testSetHead(head)
         ).logs[0];
@@ -39,36 +39,6 @@ contract('EnumerableSet', (accounts) => {
         event.event.should.be.equal('NewTail');
         event.args.item.should.be.equal(tail);
         (await enumerableSet.testTail()).should.be.equal(tail);
-    });
-
-    it('can\'t insert the empty address.', async () => {
-        await expectRevert(
-            enumerableSet.testInsert(empty, empty, empty),
-            'EnumerableSet: Cannot insert the empty address',
-        );
-    });
-
-    it('inserts the first item.', async () => {
-        await enumerableSet.testInsert(empty, head, empty);
-
-        (await enumerableSet.testContains(head)).should.be.true;
-        (await enumerableSet.testNext(head)).should.be.equal(empty);
-        (await enumerableSet.testPrev(head)).should.be.equal(empty);
-        (await enumerableSet.testHead()).should.be.equal(head);
-        (await enumerableSet.testTail()).should.be.equal(head);
-    });
-
-    it('can\'t insert an existing item.', async () => {
-        await enumerableSet.testInsert(empty, head, empty);
-        await expectRevert(
-            enumerableSet.testInsert(empty, head, empty),
-            'EnumerableSet: Cannot insert an existing item',
-        );
-    });
-
-    it('contains can return false.', async () => {
-        await enumerableSet.testInsert(empty, head, empty);
-        (await enumerableSet.testContains(tail)).should.be.false;
     });
 
     it('appends an item.', async () => {
@@ -97,10 +67,35 @@ contract('EnumerableSet', (accounts) => {
         (await enumerableSet.testNext(tail)).should.be.equal(empty);
         (await enumerableSet.testHead()).should.be.equal(head);
         (await enumerableSet.testTail()).should.be.equal(tail);
+    }); */
+
+    it('can\'t append the empty address.', async () => {
+        await expectRevert(
+            enumerableSet.testAppend(empty),
+            'EnumerableSet: Cannot insert the empty address',
+        );
+    });
+
+    it('appends the first item.', async () => {
+        await enumerableSet.testAppend(head);
+
+        (await enumerableSet.testContains(head)).should.be.true;
+        (await enumerableSet.testNext(head)).should.be.equal(empty);
+        (await enumerableSet.testPrev(head)).should.be.equal(empty);
+        (await enumerableSet.testHead()).should.be.equal(head);
+        (await enumerableSet.testTail()).should.be.equal(head);
+    });
+
+    it('can\'t append an existing item.', async () => {
+        await enumerableSet.testAppend(head);
+        await expectRevert(
+            enumerableSet.testAppend(head),
+            'EnumerableSet: Cannot insert an existing item',
+        );
     });
 
     it('append and prepend.', async () => {
-        await enumerableSet.testInsert(empty, middle, empty);
+        await enumerableSet.testAppend(middle);
         await enumerableSet.testPrepend(head);
         await enumerableSet.testAppend(tail);
 
@@ -115,6 +110,11 @@ contract('EnumerableSet', (accounts) => {
         (await enumerableSet.testNext(tail)).should.be.equal(empty);
         (await enumerableSet.testHead()).should.be.equal(head);
         (await enumerableSet.testTail()).should.be.equal(tail);
+    });
+
+    it('contains can return false.', async () => {
+        await enumerableSet.testAppend(head);
+        (await enumerableSet.testContains(tail)).should.be.false;
     });
 
     it('can\'t remove the empty address.', async () => {
@@ -187,9 +187,9 @@ contract('EnumerableSet', (accounts) => {
 
     it('length.', async () => {
         (await enumerableSet.testLength()).toNumber().should.be.equal(0);
-        await enumerableSet.testInsert(empty, head, empty);
+        await enumerableSet.testAppend(head);
         (await enumerableSet.testLength()).toNumber().should.be.equal(1);
-        await enumerableSet.testInsert(head, tail, empty);
+        await enumerableSet.testAppend(tail);
         (await enumerableSet.testLength()).toNumber().should.be.equal(2);
         await enumerableSet.testRemove(head);
         (await enumerableSet.testLength()).toNumber().should.be.equal(1);

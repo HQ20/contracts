@@ -22,7 +22,7 @@ library EnumerableSet {
      * @dev Insert an item as the new tail.
      */
     function append(Set storage set, address item)
-        public
+        internal
     {
         _insert(set, tail(set), item, address(0));
     }
@@ -31,7 +31,7 @@ library EnumerableSet {
      * @dev Insert an item as the new head.
      */
     function prepend(Set storage set, address item)
-        public
+        internal
     {
         _insert(set, address(0), item, head(set));
     }
@@ -40,7 +40,7 @@ library EnumerableSet {
      * @dev Remove an item.
      */
     function remove(Set storage set, address item)
-        public
+        internal
     {
         require(
             item != address(0),
@@ -65,7 +65,7 @@ library EnumerableSet {
      * @dev Returns the Head.
      */
     function head(Set storage set)
-        public
+        internal
         view
         returns (address)
     {
@@ -76,7 +76,7 @@ library EnumerableSet {
      * @dev Returns the Tail.
      */
     function tail(Set storage set)
-        public
+        internal
         view
         returns (address)
     {
@@ -87,7 +87,7 @@ library EnumerableSet {
      * @dev Returns true if the item is in the set.
      */
     function contains(Set storage set, address item)
-        public
+        internal
         view
         returns (bool)
     {
@@ -100,13 +100,13 @@ library EnumerableSet {
      * @dev Return the number of items in the set.
      */
     function length(Set storage set)
-        public
+        internal
         view
         returns (uint256)
     {
         uint256 count = 0;
         address item = head(set);
-        while (item != address(0)) { // TODO: Use tail(set)
+        while (item != address(0)) {
             count += 1;
             item = set.next[item];
         }
@@ -117,7 +117,7 @@ library EnumerableSet {
      * @dev Return an array with all items in the set, from Head to Tail.
      */
     function enumerate(Set storage set)
-        public
+        internal
         view
         returns (address[] memory)
     {
@@ -133,10 +133,10 @@ library EnumerableSet {
     }
 
     /**
-     * @dev Insert an item between another two.
+     * @dev Insert an item between another two..
      */
     function _insert(Set storage set, address prev_, address item, address next_)
-        internal
+        private
     {
         require(
             item != address(0),
@@ -161,7 +161,7 @@ library EnumerableSet {
      * @dev Internal function to update the Head pointer.
      */
     function _setHead(Set storage set, address item)
-        internal
+        private
     {
         set.next[address(0)] = item;
         emit NewHead(item);
@@ -171,7 +171,7 @@ library EnumerableSet {
      * @dev Internal function to update the Tail pointer.
      */
     function _setTail(Set storage set, address item)
-        internal
+        private
     {
         set.prev[address(0)] = item;
         emit NewTail(item);
