@@ -50,10 +50,6 @@ library EnumerableSet {
             contains(set, item) == true,
             "EnumerableSet: Cannot remove a non existing item"
         );
-        if (set.next[item] == address(0))
-            _setTail(set, set.prev[item]);
-        if (set.prev[item] == address(0))
-            _setHead(set, set.next[item]);
         set.next[set.prev[item]] = set.next[item];
         set.prev[set.next[item]] = set.prev[item];
         delete set.next[item];
@@ -146,34 +142,10 @@ library EnumerableSet {
             contains(set, item) == false,
             "EnumerableSet: Cannot insert an existing item"
         );
-        if (prev_ == address(0))
-            _setHead(set, item);
-        if (next_ == address(0))
-            _setTail(set, item);
         set.next[prev_] = item;
         set.next[item] = next_;
         set.prev[next_] = item;
         set.prev[item] = prev_;
         emit ItemInserted(prev_, item, next_);
-    }
-
-    /**
-     * @dev Internal function to update the Head pointer.
-     */
-    function _setHead(Set storage set, address item)
-        private
-    {
-        set.next[address(0)] = item;
-        emit NewHead(item);
-    }
-
-    /**
-     * @dev Internal function to update the Tail pointer.
-     */
-    function _setTail(Set storage set, address item)
-        private
-    {
-        set.prev[address(0)] = item;
-        emit NewTail(item);
     }
 }
