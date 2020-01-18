@@ -11,10 +11,10 @@ contract EnumerableSetMock{
 
     using EnumerableSet for EnumerableSet.Set;
 
-    EnumerableSet.Set public set;
+    EnumerableSet.Set private set;
 
     constructor() public {
-        set = EnumerableSet.Set(address(0), address(0));
+        set = EnumerableSet.Set();
     }
 
     /**
@@ -112,7 +112,7 @@ contract EnumerableSetMock{
         view
         returns (address)
     {
-        return set.head;
+        return EnumerableSet.head(set);
     }
 
     /**
@@ -123,7 +123,7 @@ contract EnumerableSetMock{
         view
         returns (address)
     {
-        return set.tail;
+        return EnumerableSet.tail(set);
     }
 
     /**

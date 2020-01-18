@@ -14,8 +14,6 @@ library EnumerableSet {
     event NewTail(address item);
 
     struct Set {
-        address head;
-        address tail;
         mapping (address => address) next;
         mapping (address => address) prev;
     }
@@ -26,7 +24,7 @@ library EnumerableSet {
     function append(Set storage set, address item)
         public
     {
-        _insert(set, set.tail, item, address(0));
+        _insert(set, tail(set), item, address(0));
     }
 
     /**
@@ -35,7 +33,7 @@ library EnumerableSet {
     function prepend(Set storage set, address item)
         public
     {
-        _insert(set, address(0), item, set.head);
+        _insert(set, address(0), item, head(set));
     }
 
     /**
@@ -64,6 +62,28 @@ library EnumerableSet {
     }
 
     /**
+     * @dev Returns the Head.
+     */
+    function head(Set storage set)
+        public
+        view
+        returns (address)
+    {
+        return set.next[address(0)];
+    }
+
+    /**
+     * @dev Returns the Tail.
+     */
+    function tail(Set storage set)
+        public
+        view
+        returns (address)
+    {
+        return set.prev[address(0)];
+    }
+
+    /**
      * @dev Returns true if the item is in the set.
      */
     function contains(Set storage set, address item)
@@ -71,7 +91,7 @@ library EnumerableSet {
         view
         returns (bool)
     {
-        return set.head == item ||
+        return head(set) == item ||
             set.next[item] != address(0) ||
             set.prev[item] != address(0);
     }
@@ -85,8 +105,8 @@ library EnumerableSet {
         returns (uint256)
     {
         uint256 count = 0;
-        address item = set.head;
-        while (item != address(0)) {
+        address item = head(set);
+        while (item != address(0)) { // TODO: Use tail(set)
             count += 1;
             item = set.next[item];
         }
@@ -103,7 +123,7 @@ library EnumerableSet {
     {
         address[] memory items = new address[](length(set));
         uint256 count = 0;
-        address item = set.head;
+        address item = head(set);
         while (item != address(0)) {
             items[count] = item;
             count += 1;
@@ -143,7 +163,7 @@ library EnumerableSet {
     function _setHead(Set storage set, address item)
         internal
     {
-        set.head = item;
+        set.next[address(0)] = item;
         emit NewHead(item);
     }
 
@@ -153,7 +173,7 @@ library EnumerableSet {
     function _setTail(Set storage set, address item)
         internal
     {
-        set.tail = item;
+        set.prev[address(0)] = item;
         emit NewTail(item);
     }
 }
