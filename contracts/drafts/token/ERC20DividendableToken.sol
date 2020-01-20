@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 
 
 /**
@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
  * @dev Implements an ERC20Mintable token with a dividend distribution procedure for dividendTokens received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
-contract ERC20DividendableToken is ERC20Mintable {
+contract ERC20DividendableToken is ERC20 {
 
     using SafeMath for uint;
 
