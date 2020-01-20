@@ -4,8 +4,8 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./../token/IERC20Mintable.sol";
-import "./../state/StateMachine.sol";
+import "../token/IERC20Mintable.sol";
+import "../state/StateMachine.sol";
 
 
 /**
@@ -47,29 +47,9 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     }
 
     /**
-     * @dev Use this function to invest. Must have approved this contract (from the frontend) to spend _amount of currencyToken tokens.
+     * @notice Use this function to withdraw your issuance tokens
+     * @dev Each user will call this function on his behalf
      */
-    function () external payable {
-        require(
-            currentState == "OPEN",
-            "Not open for investments."
-        );
-        require(
-            msg.value.mod(issuePrice) == 0,
-            "Fractional investments not allowed."
-        );
-
-        if (investments[msg.sender] == 0){
-            investors.push(msg.sender);
-        }
-
-        investments[msg.sender] = investments[msg.sender].add(msg.value);
-
-        amountRaised = amountRaised.add(msg.value);
-
-        emit InvestmentAdded(msg.sender, msg.value);
-    }
-
     function withdraw() external nonReentrant {
         require(
             currentState == "LIVE",
@@ -100,6 +80,30 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         investments[msg.sender] = 0;
         msg.sender.transfer(amount);
         emit InvestmentCancelled(msg.sender, amount);
+    }
+
+    /**
+     * @notice Invest into the issuance by sending ether to this function
+     */
+    function invest() public payable {
+        require(
+            currentState == "OPEN",
+            "Not open for investments."
+        );
+        require(
+            msg.value.mod(issuePrice) == 0,
+            "Fractional investments not allowed."
+        );
+
+        if (investments[msg.sender] == 0){
+            investors.push(msg.sender);
+        }
+
+        investments[msg.sender] = investments[msg.sender].add(msg.value);
+
+        amountRaised = amountRaised.add(msg.value);
+
+        emit InvestmentAdded(msg.sender, msg.value);
     }
 
     /**

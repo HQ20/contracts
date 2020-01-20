@@ -91,4 +91,4 @@ Setter for _issuePrice. Can only be called during `SETUP`.
 
 ## IssuanceEth
 
-It has the same structure and functionality as the `IssuanceAdvanced` contract, however, investments got through the fallback function (i.e., `currencyToken` is ethereum).
+It has the same structure and functionality as the `IssuanceAdvanced` contract, however, investments got through the `invest()` function, which is payable (i.e., `currencyToken` is ethereum).
