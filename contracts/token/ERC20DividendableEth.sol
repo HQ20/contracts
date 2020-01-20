@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 
 /**
  * @title ERC20Dividendable
- * @dev Implements an ERC20Mintable token with a dividend distribution procedure for etehreum received
+ * @dev Implements an ERC20 token with a dividend distribution procedure for etehreum received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
-contract ERC20DividendableEth is ERC20Mintable {
+contract ERC20DividendableEth is ERC20 {
 
     using SafeMath for uint;
 
@@ -22,10 +22,9 @@ contract ERC20DividendableEth is ERC20Mintable {
     constructor() public {}
 
     /**
-     * @dev Fallback function
-     * @notice Send ether to this contract in orther to disburse dividends
+     * @notice Send ether to this function in orther to disburse dividends
      */
-    function () external payable {
+    function increasePool() external payable {
         totalDividends = totalDividends.add(msg.value);
         totalDividendPoints = totalDividends
             .mul(pointMultiplier).div(this.totalSupply());
