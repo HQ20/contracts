@@ -55,8 +55,8 @@ contract('IssuanceEth', (accounts) => {
             await issuanceEth.invest({ from: investor1, value: ether('50').toString() }),
             'InvestmentAdded',
             {
-                investor: investor1,
                 amount: ether('50'),
+                investor: investor1,
             },
         );
     });
@@ -145,9 +145,9 @@ contract('IssuanceEth', (accounts) => {
             await issuanceEth.cancelInvestment({ from: investor1 }),
             'InvestmentCancelled',
             {
-                investor: investor1,
                 amount: ether('60'),
-            }
+                investor: investor1,
+            },
         );
     });
 
