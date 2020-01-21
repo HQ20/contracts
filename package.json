@@ -14,7 +14,11 @@
     },
     "files": [
         "/contracts",
-        "/types"
+        "/types",
+        "!contracts/drafts/",
+        "!contracts/examples/",
+        "!contracts/test/",
+        "!contracts/Migrations.sol"
     ],
     "scripts": {
         "deploy:ganache": "truffle deploy --network development",
@@ -38,11 +42,11 @@
     "devDependencies": {
         "@openzeppelin/contracts": "2.4.0",
         "@openzeppelin/test-helpers": "0.5.4",
-        "@truffle/hdwallet-provider": "1.0.28",
+        "@truffle/hdwallet-provider": "1.0.29",
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.7",
         "@types/mocha": "5.2.7",
-        "@types/node": "13.1.7",
+        "@types/node": "13.1.8",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.0",
@@ -54,7 +58,7 @@
         "ganache-cli": "6.8.2",
         "ganache-time-traveler": "1.0.11",
         "girino": "0.0.1-alpha",
-        "highlight.js": "9.17.1",
+        "highlight.js": "9.18.0",
         "markdown-it": "10.0.0",
         "markdown-it-emoji": "1.4.0",
         "meow": "6.0.0",
@@ -63,7 +67,7 @@
         "pdf-from-html": "0.1.1",
         "soldoc": "0.1.2-beta.6",
         "solidity-coverage": "0.7.1",
-        "truffle": "5.1.8",
+        "truffle": "5.1.9",
         "truffle-typings": "1.0.8",
         "ts-generator": "0.0.8",
         "ts-node": "8.6.2",
