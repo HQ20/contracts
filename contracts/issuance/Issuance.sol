@@ -10,16 +10,25 @@ import "./../state/StateMachine.sol";
 
 /**
  * @title Issuance
- * @notice Implements a very simple issuance process for tokens
+ * @dev Implements a very simple issuance process for tokens
+ *
+ * 1. Initialize contract with issuance token and currency token.
+ * 2. Use `setIssuePrice` to determine how many currency tokens do investors
+ *    have to pay for each currency token.
+ * 3. Use `openIssuance` to allow investors to invest.
+ * 4. Investors can `invest` their currency tokens at will.
+ * 5. Investors can also `cancelInvestment` and get their currency tokens back.
+ * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
+ *    In this case `invest` is not available, but `cancelInvestment` is.
+ * 7. Use `startDistribution` to close the investment phase.
+ * 8. Investors can only `withdraw` their issuance tokens now.
+ * 9. Owner can use `transferFunds` to send collected currency tokens to a wallet.
  */
 contract Issuance is Ownable, StateMachine, ReentrancyGuard {
-
     using SafeMath for uint256;
 
     event IssuanceCreated();
-
     event IssuePriceSet();
-
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
@@ -31,9 +40,12 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
 
     uint256 public amountRaised;
     uint256 public issuePrice;
+    uint256 internal nextInvestor;
 
-    uint256 nextInvestor;
-
+    /**
+     * @dev Initialize the issuance with the token to issue and the token to
+     * accept as payment.
+     */
     constructor(
         address _issuanceToken,
         address _currencyToken
@@ -50,7 +62,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     }
 
     /**
-     * @dev Use this function to invest. Must have approved this contract (from the frontend) to spend _amount of currencyToken tokens.
+     * @dev Use this function to invest. Must have approved this contract
+     * (from the frontend) to spend _amount of currencyToken tokens.
      * @param _amount The amount of currencyToken tokens that will be invested.
      */
     function invest(uint256 _amount) external {
@@ -64,14 +77,11 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
 
         currencyToken.transferFrom(msg.sender, address(this), _amount);
-
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
         }
         investments[msg.sender] = investments[msg.sender].add(_amount);
-
         amountRaised = amountRaised.add(_amount);
-
         emit InvestmentAdded(msg.sender, _amount);
     }
 
