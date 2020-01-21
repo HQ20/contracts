@@ -2,10 +2,10 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "../issuance/IssuanceEth.sol";
-import "../../token/ERC20Dividendable.sol";
+import "../token/ERC20MultiDividendable.sol";
 
 
-contract DAO is ERC20Dividendable, IssuanceEth {
+contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
 
     mapping(address => uint256) public begAmount;
     uint256 totalAmounts;
@@ -17,7 +17,12 @@ contract DAO is ERC20Dividendable, IssuanceEth {
     mapping(address => address[]) public backersForIdea;
 
 
-    constructor() ERC20Dividendable() IssuanceEth(address(this)) public {
+    constructor()
+    ERC20Mintable()
+    ERC20MultiDividendable()
+    IssuanceEth(address(this))
+    public
+    {
         _createState("NEVER");
         _createTransition("LIVE", "SETUP");
         _createTransition("FAILED", "SETUP");
