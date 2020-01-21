@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
 /**
- * @title ERC20DividendableToken
+ * @title ERC20Dividendable
  * @dev Implements an ERC20Mintable token with a dividend distribution procedure for dividendTokens received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
-contract ERC20DividendableToken is ERC20 {
+contract ERC20MultiDividendable is ERC20 {
 
     using SafeMath for uint;
 
