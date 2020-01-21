@@ -122,7 +122,3 @@ setMinInvestment(uint256 _minInvestment)
 Setter for _minInvestment. Can only be called during `SETUP`.
 
 ---
-
-## IssuanceEth
-
-It has the same structure and functionality as the `IssuanceAdvanced` contract, however, investments got through the fallback function (i.e., `currencyToken` is ethereum).
