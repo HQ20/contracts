@@ -2,19 +2,15 @@ import { BigNumber } from 'bignumber.js';
 import { should } from 'chai';
 import { IssuanceInstance, TestERC20MintableInstance } from '../../types/truffle-contracts';
 
-const Issuance = artifacts.require(
-    './drafts/issuance/Issuance.sol',
-    ) as Truffle.Contract<IssuanceInstance>;
-const TestERC20Mintable = artifacts.require(
-        './test/issuance/TestERC20Mintable.sol',
-    ) as Truffle.Contract<TestERC20MintableInstance>;
+const Issuance = artifacts.require('Issuance') as Truffle.Contract<IssuanceInstance>;
+const TestERC20Mintable = artifacts.require('TestERC20Mintable') as Truffle.Contract<TestERC20MintableInstance>;
 
 should();
 
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
-contract('Issuance', (accounts) => {
+contract('IssuanceToken', (accounts) => {
 
     const investor1 = accounts[1];
     const investor2 = accounts[2];
