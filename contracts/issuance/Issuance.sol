@@ -14,7 +14,7 @@ import "./../state/StateMachine.sol";
  *
  * 1. Initialize contract with issuance token and currency token.
  * 2. Use `setIssuePrice` to determine how many currency tokens do investors
- *    have to pay for each currency token.
+ *    have to pay for each issued token.
  * 3. Use `openIssuance` to allow investors to invest.
  * 4. Investors can `invest` their currency tokens at will.
  * 5. Investors can also `cancelInvestment` and get their currency tokens back.

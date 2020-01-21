@@ -1,14 +1,10 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
-const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 import { IssuanceEthInstance, TestERC20MintableInstance } from '../../types/truffle-contracts';
 
-const IssuanceEth = artifacts.require(
-    './issuance/IssuanceEth.sol',
-    ) as Truffle.Contract<IssuanceEthInstance>;
-const TestERC20Mintable = artifacts.require(
-        './test/issuance/TestERC20Mintable.sol',
-    ) as Truffle.Contract<TestERC20MintableInstance>;
+const IssuanceEth = artifacts.require('IssuanceEth') as Truffle.Contract<IssuanceEthInstance>;
+const TestERC20Mintable = artifacts.require('TestERC20Mintable') as Truffle.Contract<TestERC20MintableInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));

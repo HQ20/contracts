@@ -52,14 +52,14 @@ Opens the investing phase, setting the `Issuance` state to `OPEN`.
 ```
 invest(uint256 _amount)
 ```
-Request from investor to invest
+Request from investor to invest.
 
 ---
 
 ```
 cancelInvestment()
 ```
-Request from investor to cancel his investment
+Request from investor to cancel his investment.
 
 ---
 
@@ -73,7 +73,7 @@ Opens the distributing phase, setting the `Issuance` state to `LIVE`.
 ```
 withdraw()
 ```
-Request from investor to withdraw `IssuanceToken`s
+Request from investor to withdraw `IssuanceToken`.
 
 ---
 
@@ -91,4 +91,4 @@ Setter for _issuePrice. Can only be called during `SETUP`.
 
 ## IssuanceEth
 
-It has the same structure and functionality as the `IssuanceAdvanced` contract, however, investments got through the `invest()` function, which is payable (i.e., `currencyToken` is ethereum).
+It has the same structure and functionality as the `Issuance` contract, however, investments are in Ether.

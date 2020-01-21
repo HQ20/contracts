@@ -11,15 +11,24 @@ import "../state/StateMachine.sol";
 /**
  * @title Issuance
  * @notice Implements a very simple issuance process for tokens
+ *
+ * 1. Initialize contract with the issuance token contract address.
+ * 2. Use `setIssuePrice` to determine how many ether (in wei) do investors
+ *    have to pay for each issued token.
+ * 3. Use `openIssuance` to allow investors to invest.
+ * 4. Investors can `invest` their ether at will.
+ * 5. Investors can also `cancelInvestment` and get their ether back.
+ * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
+ *    In this case `invest` is not available, but `cancelInvestment` is.
+ * 7. Use `startDistribution` to close the investment phase.
+ * 8. Investors can only `withdraw` their issued tokens now.
+ * 9. Owner can use `transferFunds` to send collected ether to a wallet.
  */
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
-
     using SafeMath for uint256;
 
     event IssuanceCreated();
-
     event IssuePriceSet();
-
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
@@ -30,8 +39,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
 
     uint256 public amountRaised;
     uint256 public issuePrice;
-
-    uint256 nextInvestor;
+    uint256 internal nextInvestor;
 
     constructor(
         address _issuanceToken
@@ -98,11 +106,8 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
         }
-
         investments[msg.sender] = investments[msg.sender].add(msg.value);
-
         amountRaised = amountRaised.add(msg.value);
-
         emit InvestmentAdded(msg.sender, msg.value);
     }
 
