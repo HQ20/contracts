@@ -74,6 +74,26 @@ chai.should();
 //     });
 
 //     /**
+//      * @test {DAO#getTokensForFundedIdea}
+//      */
+//     it('cannot get tokens for funded idea if DAO not in "LIVE" state', async () => {
+//         await expectRevert(
+//             dao.getTokensForFundedIdea(issuanceEth1.address),
+//             'Founders not defined yet.',
+//         );
+//     });
+
+//     /**
+//      * @test {DAO#getReturnsFromTokensOfFundedIdea}
+//      */
+//     it('cannot get returns from tokens of funded idea if DAO not in "LIVE" state', async () => {
+//         await expectRevert(
+//             dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
+//             'Founders not defined yet.',
+//         );
+//     });
+
+//     /**
 //      * @test {DAO#restartFundingRound}
 //      */
 //     it('cannot get returns for funded idea if DAO not in "LIVE" state', async () => {
@@ -182,6 +202,28 @@ contract('DAO - ideas', (accounts) => {
     /**
      * @test {DAO#begMoneyForIdea} and {DAO#voteIdea} and {DAO#fundIdea} and {DAO#getReturnsForFundedIdea}
      */
+    it('cannot get returns twice for a funded idea', async () => {
+        await dao.begMoneyForIdea(ether('2.4'), issuanceEth1.address);
+        await dao.begMoneyForIdea(ether('0.6'), issuanceEth2.address);
+        await dao.voteForIdea(ether('0.4'), issuanceEth1.address, { from: holder2 });
+        await dao.fundIdea(issuanceEth1.address);
+        await issuanceEth1.startDistribution();
+        await dao.getTokensForFundedIdea(issuanceEth1.address);
+        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address);
+        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder1 });
+        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder2 });
+        await dao.fundIdea(issuanceEth2.address);
+        await issuanceEth2.startDistribution();
+        await dao.getTokensForFundedIdea(issuanceEth2.address);
+        await expectRevert(
+            dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
+            'Cannot get returns again.'
+        );
+    });
+
+    /**
+     * @test {DAO#begMoneyForIdea} and {DAO#voteIdea} and {DAO#fundIdea} and {DAO#getReturnsForFundedIdea}
+     */
     it('can succcesfully get returns for a funded idea', async () => {
         await dao.begMoneyForIdea(ether('2.4'), issuanceEth1.address);
         await dao.begMoneyForIdea(ether('0.6'), issuanceEth2.address);
@@ -195,11 +237,11 @@ contract('DAO - ideas', (accounts) => {
         await dao.fundIdea(issuanceEth2.address);
         await issuanceEth2.startDistribution();
         await dao.getTokensForFundedIdea(issuanceEth2.address);
-        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address);
-        await dao.updateAccount(holder1, issuanceEth1.address);
-        await dao.updateAccount(holder2, issuanceEth1.address);
-        await dao.updateAccount(holder1, issuanceEth2.address);
-        await dao.updateAccount(holder2, issuanceEth2.address);
+        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth2.address);
+        await dao.updateAccount(holder1, issuanceToken1.address);
+        await dao.updateAccount(holder2, issuanceToken1.address);
+        await dao.updateAccount(holder1, issuanceToken2.address);
+        await dao.updateAccount(holder2, issuanceToken2.address);
         BN(await issuanceToken1.balanceOf(holder1)).should.be.bignumber.equal(ether('0.08'));
         BN(await issuanceToken1.balanceOf(holder2)).should.be.bignumber.equal(ether('0.16'));
         BN(await issuanceToken2.balanceOf(holder1)).should.be.bignumber.equal(ether('0.2'));

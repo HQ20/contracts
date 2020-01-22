@@ -47,7 +47,6 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             totalAmounts + amount <= address(this).balance,
             "You beg too much."
         );
-        resolveDividendToken(address(IssuanceEth(idea).issuanceToken()));
         begAmount[idea] = amount;
     }
 
@@ -86,13 +85,19 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     function getTokensForFundedIdea(address idea) public {
         require(currentState == "LIVE", "Founders not defined yet.");
         IssuanceEth issuance = IssuanceEth(idea);
+        ERC20Mintable issuanceToken = ERC20Mintable(
+            address(issuance.issuanceToken())
+        );
         issuance.withdraw();
     }
 
     function getReturnsFromTokensOfFundedIdea(address idea) public {
+        require(currentState == "LIVE", "Founders not defined yet.");
         IssuanceEth issuance = IssuanceEth(idea);
         address dividendToken = address(issuance.issuanceToken());
+        uint256 tokenIndexBefore = tokenIndex;
         resolveDividendToken(dividendToken);
+        require(tokenIndex != tokenIndexBefore, "Cannot get returns again.");
         totalDividends[dividendToken] = totalDividends[dividendToken].add(
                 ERC20Mintable(dividendToken).balanceOf(address(this))
             );
