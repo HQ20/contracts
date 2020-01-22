@@ -217,7 +217,7 @@ contract('DAO - ideas', (accounts) => {
         await dao.getTokensForFundedIdea(issuanceEth2.address);
         await expectRevert(
             dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
-            'Cannot get returns again.'
+            'Cannot get returns again.',
         );
     });
 
