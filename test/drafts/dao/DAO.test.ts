@@ -19,154 +19,154 @@ const TestERC20Mintable = artifacts.require(
 chai.use(require('chai-bn')(require('bn.js')));
 chai.should();
 
-// contract('DAO - pre initial funding cases', (accounts) => {
+contract('DAO - pre initial funding cases', (accounts) => {
 
-//     const [ holder1 ] = accounts;
+    const [ holder1 ] = accounts;
 
-//     let dao: DAOInstance;
-//     let issuanceToken1: TestERC20MintableInstance;
-//     let issuanceEth1: IssuanceEthInstance;
+    let dao: DAOInstance;
+    let issuanceToken1: TestERC20MintableInstance;
+    let issuanceEth1: IssuanceEthInstance;
 
-//     beforeEach(async () => {
-//         dao = await DAO.new();
-//         issuanceToken1 = await TestERC20Mintable.new();
-//         issuanceEth1 = await IssuanceEth.new(issuanceToken1.address);
-//     });
+    beforeEach(async () => {
+        dao = await DAO.new();
+        issuanceToken1 = await TestERC20Mintable.new();
+        issuanceEth1 = await IssuanceEth.new(issuanceToken1.address);
+    });
 
-//     /**
-//      * @test {DAO#restartFundingRound}
-//      */
-//     it('cannot restart funding round if DAO in "SETUP" state', async () => {
-//         await expectRevert(
-//             dao.restartFundingRound(),
-//             'Initial funding round not ended.',
-//         );
-//     });
+    /**
+     * @test {DAO#restartFundingRound}
+     */
+    it('cannot restart funding round if DAO in "SETUP" state', async () => {
+        await expectRevert(
+            dao.restartFundingRound(),
+            'Initial funding round not ended.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#begMoneyForIdea}
-//      */
-//     it('cannot beg money for idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.begMoneyForIdea(ether('1'), issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#begMoneyForIdea}
+     */
+    it('cannot beg money for idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.begMoneyForIdea(ether('1'), issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#voteIdea}
-//      */
-//     it('cannot vote idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.voteForIdea(ether('1'), issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#voteIdea}
+     */
+    it('cannot vote idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.voteForIdea(ether('1'), issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#fundIdea}
-//      */
-//     it('cannot fund idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.fundIdea(issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#fundIdea}
+     */
+    it('cannot fund idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.fundIdea(issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#getTokensForFundedIdea}
-//      */
-//     it('cannot get tokens for funded idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.getTokensForFundedIdea(issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#getTokensForFundedIdea}
+     */
+    it('cannot get tokens for funded idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.getTokensForFundedIdea(issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#getReturnsFromTokensOfFundedIdea}
-//      */
-//     it('cannot get returns from tokens of funded idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#getReturnsFromTokensOfFundedIdea}
+     */
+    it('cannot get returns from tokens of funded idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#restartFundingRound}
-//      */
-//     it('cannot get returns for funded idea if DAO not in "LIVE" state', async () => {
-//         await expectRevert(
-//             dao.getTokensForFundedIdea(issuanceEth1.address),
-//             'Founders not defined yet.',
-//         );
-//     });
+    /**
+     * @test {DAO#restartFundingRound}
+     */
+    it('cannot get returns for funded idea if DAO not in "LIVE" state', async () => {
+        await expectRevert(
+            dao.getTokensForFundedIdea(issuanceEth1.address),
+            'Founders not defined yet.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#transferFunds}
-//      */
-//     it('cannot transfer funds under any circumstances', async () => {
-//         await expectRevert(
-//             dao.transferFunds(holder1),
-//             'You can never do this.',
-//         );
-//     });
-// });
+    /**
+     * @test {DAO#transferFunds}
+     */
+    it('cannot transfer funds under any circumstances', async () => {
+        await expectRevert(
+            dao.transferFunds(holder1),
+            'You can never do this.',
+        );
+    });
+});
 
-// contract('DAO - post initial funding cases', (accounts) => {
+contract('DAO - post initial funding cases', (accounts) => {
 
-//     const [ holder1, holder2 ] = accounts;
+    const [ holder1, holder2 ] = accounts;
 
-//     let dao: DAOInstance;
-//     let issuanceToken1: TestERC20MintableInstance;
-//     let issuanceEth1: IssuanceEthInstance;
+    let dao: DAOInstance;
+    let issuanceToken1: TestERC20MintableInstance;
+    let issuanceEth1: IssuanceEthInstance;
 
-//     beforeEach(async () => {
-//         dao = await DAO.new();
-//         issuanceToken1 = await TestERC20Mintable.new();
-//         issuanceEth1 = await IssuanceEth.new(issuanceToken1.address);
-//         await dao.setIssuePrice(5);
-//         await dao.openIssuance();
-//         await dao.invest({ from: holder1, value: ether('1')});
-//         await dao.invest({ from: holder2, value: ether('1')});
-//         await dao.startDistribution();
-//         await dao.withdraw({ from: holder1 });
-//         await dao.withdraw({ from: holder2 });
-//         await issuanceEth1.setIssuePrice(10);
-//         await issuanceEth1.openIssuance();
-//     });
+    beforeEach(async () => {
+        dao = await DAO.new();
+        issuanceToken1 = await TestERC20Mintable.new();
+        issuanceEth1 = await IssuanceEth.new(issuanceToken1.address);
+        await dao.setIssuePrice(5);
+        await dao.openIssuance();
+        await dao.invest({ from: holder1, value: ether('1')});
+        await dao.invest({ from: holder2, value: ether('1')});
+        await dao.startDistribution();
+        await dao.withdraw({ from: holder1 });
+        await dao.withdraw({ from: holder2 });
+        await issuanceEth1.setIssuePrice(10);
+        await issuanceEth1.openIssuance();
+    });
 
-//     /**
-//      * @test {DAO#begMoneyForIdea}
-//      */
-//     it('cannot beg more money than available', async () => {
-//         await expectRevert(
-//             dao.begMoneyForIdea(ether('3'), issuanceEth1.address),
-//             'You beg too much.',
-//         );
-//     });
+    /**
+     * @test {DAO#begMoneyForIdea}
+     */
+    it('cannot beg more money than available', async () => {
+        await expectRevert(
+            dao.begMoneyForIdea(ether('3'), issuanceEth1.address),
+            'You beg too much.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#voteForIdea}
-//      */
-//     it('cannot vote for idea with insufficient voting power', async () => {
-//         await expectRevert(
-//             dao.voteForIdea(ether('0.3'), issuanceEth1.address),
-//             'Not enough power.',
-//         );
-//     });
+    /**
+     * @test {DAO#voteForIdea}
+     */
+    it('cannot vote for idea with insufficient voting power', async () => {
+        await expectRevert(
+            dao.voteForIdea(ether('0.3'), issuanceEth1.address),
+            'Not enough power.',
+        );
+    });
 
-//     /**
-//      * @test {DAO#fundIdea}
-//      */
-//     it('cannot fund idea with insufficient votes', async () => {
-//         await expectRevert(
-//             dao.fundIdea(issuanceEth1.address),
-//             'Not enough expressed votes.',
-//         );
-//     });
-// });
+    /**
+     * @test {DAO#fundIdea}
+     */
+    it('cannot fund idea with insufficient votes', async () => {
+        await expectRevert(
+            dao.fundIdea(issuanceEth1.address),
+            'Not enough expressed votes.',
+        );
+    });
+});
 
 contract('DAO - ideas', (accounts) => {
 
