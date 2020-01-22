@@ -72,7 +72,7 @@
         "ts-generator": "0.0.8",
         "ts-node": "8.6.2",
         "tslint": "6.0.0",
-        "typechain": "1.0.3",
+        "typechain": "1.0.4",
         "typechain-target-truffle": "1.0.2",
         "typescript": "3.7.5"
     }
