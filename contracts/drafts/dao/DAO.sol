@@ -21,10 +21,10 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     uint256 totalAmounts;
     mapping(address =>
         mapping(address => uint256)
-    ) public votesForIdeaByHolder;
-    mapping(address => uint256) public totalVotesForIdea;
+    ) public votesForVentureByHolder;
+    mapping(address => uint256) public totalVotesForVenture;
     mapping(address => uint256) public totalVotesByHolder;
-    mapping(address => address[]) public backersForIdea;
+    mapping(address => address[]) public backersForVenture;
     event Here();
 
     constructor()
@@ -57,71 +57,71 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     }
 
     /**
-     * @notice Beg money for idea. Can only be used after the original funding round. idea must be of type IssuanceEth.
+     * @notice Beg money for venture. Can only be used after the original funding round. venture must be of type IssuanceEth.
      * @param amount The amount to beg
-     * @param idea The idea to beg for. Must be of type IssuanceEth.
+     * @param venture The venture to beg for. Must be of type IssuanceEth.
      */
-    function begMoneyForIdea(uint256 amount, address idea) public {
+    function begMoneyForVenture(uint256 amount, address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
         require(
             totalAmounts.add(amount) <= address(this).balance,
             "You beg too much."
         );
-        begAmount[idea] = amount;
+        begAmount[venture] = amount;
     }
 
     /**
-     * @notice Vote for idea. Can only be used after the original funding round.
-     * @param votes The amount of tokens to lock for the idea
-     * @param idea The idea to vote for. Must be of type IssuanceEth.
+     * @notice Vote for venture. Can only be used after the original funding round.
+     * @param votes The amount of tokens to lock for the venture
+     * @param venture The venture to vote for. Must be of type IssuanceEth.
      */
-    function voteForIdea(uint256 votes, address idea) public {
+    function voteForVenture(uint256 votes, address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
         require(
             this.balanceOf(msg.sender).sub(totalVotesByHolder[msg.sender]) >= votes,
             "Not enough power."
         );
-        totalVotesForIdea[idea] = totalVotesForIdea[idea].add(votes);
+        totalVotesForVenture[venture] = totalVotesForVenture[venture].add(votes);
         totalVotesByHolder[msg.sender] = totalVotesByHolder[msg.sender].add(
             votes
         );
-        votesForIdeaByHolder[idea][msg.sender] = votesForIdeaByHolder[idea][
+        votesForVentureByHolder[venture][msg.sender] = votesForVentureByHolder[venture][
             msg.sender].add(votes);
-        resolveBackerForIdea(idea, msg.sender);
+        resolveBackerForVenture(venture, msg.sender);
     }
 
     /**
-     * @notice Fund idea. Can only be used after the original funding round, and after voting total is over 50% + 1 of total DAO tokens.
-     * @param idea The idea to fund. Must be of type IssuanceEth.
+     * @notice Fund venture. Can only be used after the original funding round, and after voting total is over 50% + 1 of total DAO tokens.
+     * @param venture The venture to fund. Must be of type IssuanceEth.
      */
-    function fundIdea(address idea) public {
+    function fundVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
         require(
-            totalVotesForIdea[idea] >= this.totalSupply().div(2).add(1),
+            totalVotesForVenture[venture] >= this.totalSupply().div(2).add(1),
             "Not enough expressed votes."
         );
-        uint256 amount = begAmount[idea];
+        uint256 amount = begAmount[venture];
         totalAmounts -= amount;
-        for (uint256 i = 0; i < backersForIdea[idea].length; i++) {
-            totalVotesByHolder[backersForIdea[
-                    idea
-                ][i]] -= votesForIdeaByHolder[
-                    idea
-                ][backersForIdea[idea][i]];
+        for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
+            totalVotesByHolder[backersForVenture[
+                    venture
+                ][i]] -= votesForVentureByHolder[
+                    venture
+                ][backersForVenture[venture][i]];
         }
-        delete totalVotesForIdea[idea];
-        delete begAmount[idea];
+        delete totalVotesForVenture[venture];
+        delete begAmount[venture];
         // solium-disable-next-line security/no-call-value
-        IssuanceEth(idea).invest.value(amount)();
+        IssuanceEth(venture).invest.value(amount)();
     }
 
     /**
-     * @notice Withdraws issuance tokens from funded idea. Can only be used after the original funding round, and after funding the idea.
-     * @param idea The idea to withdraw tokens from. Must be of type IssuanceEth.
+     * @notice Withdraws issuance tokens from funded venture. Can only be used after the original funding round, and after funding the venture.
+     * @param venture The venture to withdraw tokens from. Must be of type IssuanceEth.
      */
-    function getTokensForFundedIdea(address idea) public {
+    function getTokensForFundedVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
-        IssuanceEth issuance = IssuanceEth(idea);
+        IssuanceEth issuance = IssuanceEth(venture);
         ERC20Mintable issuanceToken = ERC20Mintable(
             address(issuance.issuanceToken())
         );
@@ -129,12 +129,12 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     }
 
     /**
-     * @dev Disburses dividends from tokens withdrawn from funded idea. Can only be used after the original funding round, and withdrawing the tokens for funded idea.
-     * @param idea The idea whose issuance tokens to add to the dividends pool. Must be of type IssuanceEth.
+     * @dev Disburses dividends from tokens withdrawn from funded venture. Can only be used after the original funding round, and withdrawing the tokens for funded venture.
+     * @param venture The venture whose issuance tokens to add to the dividends pool. Must be of type IssuanceEth.
      */
-    function getReturnsFromTokensOfFundedIdea(address idea) public {
+    function getReturnsFromTokensOfFundedVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
-        IssuanceEth issuance = IssuanceEth(idea);
+        IssuanceEth issuance = IssuanceEth(venture);
         address dividendToken = address(issuance.issuanceToken());
         uint256 tokenIndexBefore = tokenIndex;
         resolveDividendToken(dividendToken);
@@ -146,13 +146,13 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             .mul(pointMultiplier).div(this.totalSupply());
     }
 
-    function resolveBackerForIdea(address idea, address backer) internal {
-        for (uint256 i = 0; i < backersForIdea[idea].length; i++) {
-            if (backersForIdea[idea][i] == backer){
+    function resolveBackerForVenture(address venture, address backer) internal {
+        for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
+            if (backersForVenture[venture][i] == backer){
                 return;
             }
         }
-        backersForIdea[idea].push(backer);
+        backersForVenture[venture].push(backer);
     }
 
 }

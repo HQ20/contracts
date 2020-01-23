@@ -44,51 +44,51 @@ contract('DAO - pre initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#begMoneyForIdea}
+     * @test {DAO#begMoneyForVenture}
      */
-    it('cannot beg money for idea if DAO not in "LIVE" state', async () => {
+    it('cannot beg money for venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.begMoneyForIdea(ether('1'), issuanceEth1.address),
+            dao.begMoneyForVenture(ether('1'), issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
 
     /**
-     * @test {DAO#voteIdea}
+     * @test {DAO#voteVenture}
      */
-    it('cannot vote idea if DAO not in "LIVE" state', async () => {
+    it('cannot vote venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.voteForIdea(ether('1'), issuanceEth1.address),
+            dao.voteForVenture(ether('1'), issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
 
     /**
-     * @test {DAO#fundIdea}
+     * @test {DAO#fundVenture}
      */
-    it('cannot fund idea if DAO not in "LIVE" state', async () => {
+    it('cannot fund venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.fundIdea(issuanceEth1.address),
+            dao.fundVenture(issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
 
     /**
-     * @test {DAO#getTokensForFundedIdea}
+     * @test {DAO#getTokensForFundedVenture}
      */
-    it('cannot get tokens for funded idea if DAO not in "LIVE" state', async () => {
+    it('cannot get tokens for funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.getTokensForFundedIdea(issuanceEth1.address),
+            dao.getTokensForFundedVenture(issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
 
     /**
-     * @test {DAO#getReturnsFromTokensOfFundedIdea}
+     * @test {DAO#getReturnsFromTokensOfFundedVenture}
      */
-    it('cannot get returns from tokens of funded idea if DAO not in "LIVE" state', async () => {
+    it('cannot get returns from tokens of funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
+            dao.getReturnsFromTokensOfFundedVenture(issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
@@ -96,9 +96,9 @@ contract('DAO - pre initial funding cases', (accounts) => {
     /**
      * @test {DAO#restartFundingRound}
      */
-    it('cannot get returns for funded idea if DAO not in "LIVE" state', async () => {
+    it('cannot get returns for funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.getTokensForFundedIdea(issuanceEth1.address),
+            dao.getTokensForFundedVenture(issuanceEth1.address),
             'DAO needs to be LIVE.',
         );
     });
@@ -138,37 +138,37 @@ contract('DAO - post initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#begMoneyForIdea}
+     * @test {DAO#begMoneyForVenture}
      */
     it('cannot beg more money than available', async () => {
         await expectRevert(
-            dao.begMoneyForIdea(ether('3'), issuanceEth1.address),
+            dao.begMoneyForVenture(ether('3'), issuanceEth1.address),
             'You beg too much.',
         );
     });
 
     /**
-     * @test {DAO#voteForIdea}
+     * @test {DAO#voteForVenture}
      */
-    it('cannot vote for idea with insufficient voting power', async () => {
+    it('cannot vote for venture with insufficient voting power', async () => {
         await expectRevert(
-            dao.voteForIdea(ether('0.3'), issuanceEth1.address),
+            dao.voteForVenture(ether('0.3'), issuanceEth1.address),
             'Not enough power.',
         );
     });
 
     /**
-     * @test {DAO#fundIdea}
+     * @test {DAO#fundVenture}
      */
-    it('cannot fund idea with insufficient votes', async () => {
+    it('cannot fund venture with insufficient votes', async () => {
         await expectRevert(
-            dao.fundIdea(issuanceEth1.address),
+            dao.fundVenture(issuanceEth1.address),
             'Not enough expressed votes.',
         );
     });
 });
 
-contract('DAO - ideas', (accounts) => {
+contract('DAO - ventures', (accounts) => {
 
     const [ holder1, holder2 ] = accounts;
 
@@ -200,44 +200,44 @@ contract('DAO - ideas', (accounts) => {
     });
 
     /**
-     * @test {DAO#begMoneyForIdea} and {DAO#voteIdea} and {DAO#fundIdea} and {DAO#getReturnsForFundedIdea}
+     * @test {DAO#begMoneyForVenture} and {DAO#voteVenture} and {DAO#fundVenture} and {DAO#getReturnsForFundedVenture}
      */
-    it('cannot get returns twice for a funded idea', async () => {
-        await dao.begMoneyForIdea(ether('2.4'), issuanceEth1.address);
-        await dao.begMoneyForIdea(ether('0.6'), issuanceEth2.address);
-        await dao.voteForIdea(ether('0.4'), issuanceEth1.address, { from: holder2 });
-        await dao.fundIdea(issuanceEth1.address);
+    it('cannot get returns twice for a funded venture', async () => {
+        await dao.begMoneyForVenture(ether('2.4'), issuanceEth1.address);
+        await dao.begMoneyForVenture(ether('0.6'), issuanceEth2.address);
+        await dao.voteForVenture(ether('0.4'), issuanceEth1.address, { from: holder2 });
+        await dao.fundVenture(issuanceEth1.address);
         await issuanceEth1.startDistribution();
-        await dao.getTokensForFundedIdea(issuanceEth1.address);
-        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address);
-        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder1 });
-        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder2 });
-        await dao.fundIdea(issuanceEth2.address);
+        await dao.getTokensForFundedVenture(issuanceEth1.address);
+        await dao.getReturnsFromTokensOfFundedVenture(issuanceEth1.address);
+        await dao.voteForVenture(ether('0.2'), issuanceEth2.address, { from: holder1 });
+        await dao.voteForVenture(ether('0.2'), issuanceEth2.address, { from: holder2 });
+        await dao.fundVenture(issuanceEth2.address);
         await issuanceEth2.startDistribution();
-        await dao.getTokensForFundedIdea(issuanceEth2.address);
+        await dao.getTokensForFundedVenture(issuanceEth2.address);
         await expectRevert(
-            dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
+            dao.getReturnsFromTokensOfFundedVenture(issuanceEth1.address),
             'Cannot get returns again.',
         );
     });
 
     /**
-     * @test {DAO#begMoneyForIdea} and {DAO#voteIdea} and {DAO#fundIdea} and {DAO#getReturnsForFundedIdea}
+     * @test {DAO#begMoneyForVenture} and {DAO#voteVenture} and {DAO#fundVenture} and {DAO#getReturnsForFundedVenture}
      */
-    it('can succcesfully get returns for a funded idea', async () => {
-        await dao.begMoneyForIdea(ether('2.4'), issuanceEth1.address);
-        await dao.begMoneyForIdea(ether('0.6'), issuanceEth2.address);
-        await dao.voteForIdea(ether('0.4'), issuanceEth1.address, { from: holder2 });
-        await dao.fundIdea(issuanceEth1.address);
+    it('can succcesfully get returns for a funded venture', async () => {
+        await dao.begMoneyForVenture(ether('2.4'), issuanceEth1.address);
+        await dao.begMoneyForVenture(ether('0.6'), issuanceEth2.address);
+        await dao.voteForVenture(ether('0.4'), issuanceEth1.address, { from: holder2 });
+        await dao.fundVenture(issuanceEth1.address);
         await issuanceEth1.startDistribution();
-        await dao.getTokensForFundedIdea(issuanceEth1.address);
-        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address);
-        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder1 });
-        await dao.voteForIdea(ether('0.2'), issuanceEth2.address, { from: holder2 });
-        await dao.fundIdea(issuanceEth2.address);
+        await dao.getTokensForFundedVenture(issuanceEth1.address);
+        await dao.getReturnsFromTokensOfFundedVenture(issuanceEth1.address);
+        await dao.voteForVenture(ether('0.2'), issuanceEth2.address, { from: holder1 });
+        await dao.voteForVenture(ether('0.2'), issuanceEth2.address, { from: holder2 });
+        await dao.fundVenture(issuanceEth2.address);
         await issuanceEth2.startDistribution();
-        await dao.getTokensForFundedIdea(issuanceEth2.address);
-        await dao.getReturnsFromTokensOfFundedIdea(issuanceEth2.address);
+        await dao.getTokensForFundedVenture(issuanceEth2.address);
+        await dao.getReturnsFromTokensOfFundedVenture(issuanceEth2.address);
         await dao.updateAccount(holder1, issuanceToken1.address);
         await dao.updateAccount(holder2, issuanceToken1.address);
         await dao.updateAccount(holder1, issuanceToken2.address);
