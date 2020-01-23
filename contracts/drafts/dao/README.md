@@ -3,7 +3,7 @@
 The DAO model is analogous to a VC fund. 
 Individual investors invest ether into the fund in exchange of VC shares (DAO tokens).
 The fund invests ether into ventures (coded as IssuanceEth contracts) and receives back company shares (Venture tokens).
-The fund collects revenue from
+The fund collects ether revenue from ventures, investors can collect their share of revenue from the fund.
 
 ## Warning
 
@@ -15,7 +15,7 @@ This contract is rather experimental. Use with caution.
 
 0. You can restart the funding round for the DAO at any time after the initial funding round is over.
 
-1. Beg money for `venture`. You can suggest to the `DAO` an `venture` to fund with `amount` ether. The `venture` contract must be of type `IssuanceEth`.
+1. Propose funding `venture`. You can suggest to the `DAO` an `venture` to fund with `amount` ether. The `venture` contract must be of type `IssuanceEth`.
 
 2. Vote for `venture`. You can vote with your `DAO` tokens. Each token is one vote. After the venture gets funded, the tokens reset (if they were expressed for that venture).
 

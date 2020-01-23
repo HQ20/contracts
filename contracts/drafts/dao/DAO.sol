@@ -17,8 +17,8 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
 
     using SafeMath for uint256;
 
-    mapping(address => uint256) public begAmount;
-    uint256 totalAmounts;
+    mapping(address => uint256) public proposedFundingForVenture;
+    uint256 fundingPool;
     mapping(address =>
         mapping(address => uint256)
     ) public votesForVentureByHolder;
@@ -57,17 +57,17 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     }
 
     /**
-     * @notice Beg money for venture. Can only be used after the original funding round. venture must be of type IssuanceEth.
-     * @param amount The amount to beg
-     * @param venture The venture to beg for. Must be of type IssuanceEth.
+     * @notice Propose funding for venture. Can only be used after the original funding round. venture must be of type IssuanceEth.
+     * @param funding The amount to proposed as funding for the venture.
+     * @param venture The proposed venture. Must be of type IssuanceEth.
      */
-    function begMoneyForVenture(uint256 amount, address venture) public {
+    function proposeVenture(uint256 funding, address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
         require(
-            totalAmounts.add(amount) <= address(this).balance,
-            "You beg too much."
+            fundingPool.add(funding) <= address(this).balance,
+            "Not enough funds."
         );
-        begAmount[venture] = amount;
+        proposedFundingForVenture[venture] = funding;
     }
 
     /**
@@ -100,8 +100,8 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             totalVotesForVenture[venture] >= this.totalSupply().div(2).add(1),
             "Not enough expressed votes."
         );
-        uint256 amount = begAmount[venture];
-        totalAmounts -= amount;
+        uint256 amount = proposedFundingForVenture[venture];
+        fundingPool -= amount;
         for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
             totalVotesByHolder[backersForVenture[
                     venture
@@ -110,7 +110,7 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
                 ][backersForVenture[venture][i]];
         }
         delete totalVotesForVenture[venture];
-        delete begAmount[venture];
+        delete proposedFundingForVenture[venture];
         // solium-disable-next-line security/no-call-value
         IssuanceEth(venture).invest.value(amount)();
     }
