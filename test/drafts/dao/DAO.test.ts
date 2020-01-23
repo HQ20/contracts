@@ -109,7 +109,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot transfer funds under any circumstances', async () => {
         await expectRevert(
             dao.transferFunds(holder1),
-            'You can never do this.',
+            'Ether can only be invested or withdrawn.',
         );
     });
 });

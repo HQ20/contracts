@@ -9,7 +9,9 @@ import "../token/ERC20MultiDividendable.sol";
 /**
  * @title DAO
  * @notice This is an exeprimental DAO (Decentralised Autonomous Organization) implementation. Use with caution.
- * @dev The contract inhertis from ERC20Mintable and IssuanceEth, so it's an issuance that has its own address as issuance token. It also inherits from ERC20MultiDividendable, so it can invest in other IssuanceEth's issuance tokens and distribute them to the investors.
+ * @dev The contract inhertis from ERC20Mintable and IssuanceEth, so it's an issuance that has its own address
+ * as issuance token. It also inherits from ERC20MultiDividendable, so it can invest in other IssuanceEth's
+ * issuance tokens and distribute them to the investors.
  */
 contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
 
@@ -31,17 +33,16 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     IssuanceEth(address(this))
     public
     {
-        _createState("NEVER");
         _createTransition("LIVE", "SETUP");
         _createTransition("FAILED", "SETUP");
         addMinter(address(this));
     }
 
     /**
-     * @notice Blocks the call of transferFunds, inherited from IssuanceEth
+     * @notice Disables removing all Ether funds, inherited from IssuanceEth
      */
     function transferFunds(address payable _wallet) public onlyOwner {
-        require(currentState == "NEVER", "You can never do this.");
+        revert("Ether can only be invested or withdrawn.");
     }
 
     /**
