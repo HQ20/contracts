@@ -49,7 +49,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot beg money for idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.begMoneyForIdea(ether('1'), issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
@@ -59,7 +59,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot vote idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.voteForIdea(ether('1'), issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
@@ -69,7 +69,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot fund idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.fundIdea(issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
@@ -79,7 +79,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot get tokens for funded idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.getTokensForFundedIdea(issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
@@ -89,7 +89,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot get returns from tokens of funded idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.getReturnsFromTokensOfFundedIdea(issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
@@ -99,7 +99,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     it('cannot get returns for funded idea if DAO not in "LIVE" state', async () => {
         await expectRevert(
             dao.getTokensForFundedIdea(issuanceEth1.address),
-            'Founders not defined yet.',
+            'DAO needs to be LIVE.',
         );
     });
 
