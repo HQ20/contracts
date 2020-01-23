@@ -81,12 +81,14 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             this.balanceOf(msg.sender).sub(totalVotesByHolder[msg.sender]) >= votes,
             "Not enough power."
         );
-        totalVotesForVenture[venture] = totalVotesForVenture[venture].add(votes);
+        totalVotesForVenture[venture] = totalVotesForVenture[venture].add(
+            votes
+        );
         totalVotesByHolder[msg.sender] = totalVotesByHolder[msg.sender].add(
             votes
         );
-        votesForVentureByHolder[venture][msg.sender] = votesForVentureByHolder[venture][
-            msg.sender].add(votes);
+        votesForVentureByHolder[venture][msg.sender] = votesForVentureByHolder[
+            venture][msg.sender].add(votes);
         resolveBackerForVenture(venture, msg.sender);
     }
 
@@ -146,7 +148,10 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             .mul(pointMultiplier).div(this.totalSupply());
     }
 
-    function resolveBackerForVenture(address venture, address backer) internal {
+    function resolveBackerForVenture(
+        address venture,
+        address backer
+    ) internal {
         for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
             if (backersForVenture[venture][i] == backer){
                 return;
