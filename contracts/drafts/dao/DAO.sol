@@ -48,7 +48,7 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     /**
      * @notice Restarts the funding round. To be used when new investors board on the DAO. Can only be used after the original funding round.
      */
-    function restartFundingRound() public onlyOwner {
+    function reopenInvestorRound() public onlyOwner {
         require(
             currentState == "LIVE" || currentState == "FAILED",
             "Initial funding round not ended."

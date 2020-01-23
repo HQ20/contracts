@@ -11,9 +11,11 @@ This contract is rather experimental. Use with caution.
 
 ## Usage
 
-00. Invest in this `DAO` and get dao tokens in return. You will use these tokens for voting purposes. 
+1. Investors are accepted into the DAO during the investor rounds. The initial one is executed with `DAO.openIssuance()`, callable only by the DAO owner. After the initial investor round additional investors can be welcomed by opening another investor round. To do that you need to call `DAO.reopenInvestorRound()`
 
-0. You can restart the funding round for the DAO at any time after the initial funding round is over.
+Any individual can invest ether in this DAO by calling `DAO.invest()` during an investor round. Once the investor round is complete, and if the investor round is succesful, they will be allowed to call `DAO.withdraw()` to get their allotted DAO tokens in return.
+
+You will use these tokens for voting purposes. 
 
 1. Propose funding `venture`. You can suggest to the `DAO` an `venture` to fund with `amount` ether. The `venture` contract must be of type `IssuanceEth`.
 

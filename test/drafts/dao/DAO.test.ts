@@ -34,11 +34,11 @@ contract('DAO - pre initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#restartFundingRound}
+     * @test {DAO#reopenInvestorRound}
      */
     it('cannot restart funding round if DAO in "SETUP" state', async () => {
         await expectRevert(
-            dao.restartFundingRound(),
+            dao.reopenInvestorRound(),
             'Initial funding round not ended.',
         );
     });
@@ -94,7 +94,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#restartFundingRound}
+     * @test {DAO#reopenInvestorRound}
      */
     it('cannot get returns for funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
