@@ -122,3 +122,13 @@ setMinInvestment(uint256 _minInvestment)
 Setter for _minInvestment. Can only be called during `SETUP`.
 
 ---
+
+## VentureEth
+
+A hybrid mating of IssuanceEth and ERC20DividendableEth. 
+
+### Description
+
+0. Initialize or inherit the contract. There are no parameters for the constructor.
+1. Use it as a regular `IssuanceEth`, whose `issuanceToken` is its own address. The dividendable qualities are disabled in this phase.
+2. After issuance, you can use the dividendable qualities for any ether sent to `increasePool`.

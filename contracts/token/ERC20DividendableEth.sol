@@ -51,4 +51,5 @@ contract ERC20DividendableEth is ERC20 {
         return this.balanceOf(account)
             .mul(newDividendPoints).div(pointMultiplier);
     }
+
 }
