@@ -51,7 +51,7 @@
         "chai": "4.2.0",
         "chai-bn": "0.2.0",
         "coveralls": "3.0.9",
-        "cross-env": "6.0.3",
+        "cross-env": "7.0.0",
         "directory-tree": "2.2.4",
         "eth-gas-reporter": "0.2.14",
         "ethlint": "1.2.5",
