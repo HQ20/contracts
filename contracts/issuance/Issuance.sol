@@ -21,8 +21,8 @@ import "./../state/StateMachine.sol";
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
  *    In this case `invest` is not available, but `cancelInvestment` is.
  * 7. Use `startDistribution` to close the investment phase.
- * 8. Investors can only `withdraw` their issuance tokens now.
- * 9. Owner can use `transferFunds` to send collected currency tokens to a wallet.
+ * 8. Investors can only `claim` their issuance tokens now.
+ * 9. Owner can use `withdraw` to send collected currency tokens to a wallet.
  */
 contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
@@ -85,10 +85,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         emit InvestmentAdded(msg.sender, _amount);
     }
 
-    function withdraw() external nonReentrant {
+    function claim() external nonReentrant {
         require(
             currentState == "LIVE",
-            "Cannot withdraw now."
+            "Cannot claim now."
         );
         require(
             investments[msg.sender] > 0,
@@ -145,7 +145,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function transferFunds(address _wallet) public onlyOwner {
+    function withdraw(address _wallet) public onlyOwner {
         require(
             currentState == "LIVE",
             "Cannot transfer funds now."

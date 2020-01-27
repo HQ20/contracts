@@ -25,7 +25,7 @@ To open the issuance to investors, the owner must call `openIssuance()`.
 
 The `Issuance` will mint `IssuanceToken`s (which inherit from `ERC20Mintable` and `ERCDetailed`, hence they are ERC20 tokens) to all investors who participated in the ICO (having `invest()`ed more than `minInvestment` and their investment being a multiple of `issuePrice`) during `openingDate` and `closingDate`.
 
-If the `softcap` has been reached, investors are free to `withdraw()` their alloted tokens after the owner of the `Issuance` proceeds to `startDistribution()`.
+If the `softcap` has been reached, investors are free to `claim()` their alloted tokens after the owner of the `Issuance` proceeds to `startDistribution()`.
 
 Otherwise, investors are invited to reclaim their investemnts using `cancelInvestment()` after the owner of the `Issuance` does `cancelAllInvestments()`.
 
@@ -73,9 +73,9 @@ Opens the distributing phase, setting the `Issuance` state to `LIVE`.
 ---
 
 ```
-withdraw()
+claim()
 ```
-Request from investor to withdraw `IssuanceToken`s
+Request from investor to claim `IssuanceToken`s
 
 ---
 
