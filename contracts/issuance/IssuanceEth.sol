@@ -38,6 +38,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
+    uint256 public amountWithdrawn;
     uint256 public issuePrice;
     uint256 internal nextInvestor;
 
@@ -139,12 +140,14 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function withdraw(address payable _wallet) public onlyOwner {
+    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         require(
             currentState == "LIVE",
             "Cannot transfer funds now."
         );
-        _wallet.transfer(amountRaised);
+        uint256 amount = amountRaised - amountWithdrawn;
+        amountWithdrawn = amount;
+        _wallet.transfer(amount);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
