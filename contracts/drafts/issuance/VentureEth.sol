@@ -20,8 +20,8 @@ import "../../token/ERC20DividendableEth.sol";
  * 6. Use `startDistribution` to close the investment phase.
  * 7. Investors can only `withdraw` their issued tokens now.
  * 8. Owner can use `transferFunds` to send collected ether to a wallet.
- * 9.
- * 10.
+ * 9. Clients can `increasePool` of ether
+ * 10. Investors can be return dividends with `updateAccount`
  */
 contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
 
@@ -42,7 +42,7 @@ contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
     }
 
     /**
-     * @notice Send ether to this function in orther to disburse dividends. Venture must be live.
+     * @notice Send ether to this function in orther to disburse dividends. Venture issuance process must have ended.
      */
     function increasePool() external payable afterIssuance {
         totalDividends = totalDividends.add(msg.value);
@@ -61,7 +61,7 @@ contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
     /**
      * @dev Function to update an account
      * @param account The account to update
-     * @notice Will revert if account need not be updated, or venture is not live.
+     * @notice Will revert if account need not be updated, or venture Venture issuance process is not ended.
      */
     function updateAccount(address payable account) public afterIssuance {
         super.updateAccount(account);
