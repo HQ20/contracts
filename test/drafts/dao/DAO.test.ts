@@ -29,16 +29,6 @@ contract('DAO - pre initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#reopenInvestorRound}
-     */
-    it('cannot restart funding round if DAO in "SETUP" state', async () => {
-        await expectRevert(
-            dao.reopenInvestorRound(),
-            'Initial funding round not ended.',
-        );
-    });
-
-    /**
      * @test {DAO#proposeVenture}
      */
     it('cannot propose venture if DAO not in "LIVE" state', async () => {

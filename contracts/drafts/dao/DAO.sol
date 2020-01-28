@@ -22,7 +22,7 @@ contract DAO is VentureEth {
     using SafeMath for uint256;
 
     mapping(address => uint256) public proposedFundingForVenture;
-    uint256 fundingPool;
+    uint256 public fundingPool;
     mapping(address =>
         mapping(address => uint256)
     ) public votesForVentureByHolder;
@@ -30,26 +30,12 @@ contract DAO is VentureEth {
     mapping(address => uint256) public totalVotesByHolder;
     mapping(address => address[]) public backersForVenture;
 
-    constructor() VentureEth() public {
-        _createTransition("LIVE", "SETUP");
-        _createTransition("FAILED", "SETUP");
-    }
+    constructor() VentureEth() public {}
 
     function () external payable {}
 
     function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         revert("Cannot transfer funds.");
-    }
-
-    /**
-     * @notice Restarts the funding round. To be used when new investors board on the DAO. Can only be used after the original funding round.
-     */
-    function reopenInvestorRound() public onlyOwner {
-        require(
-            currentState == "LIVE" || currentState == "FAILED",
-            "Initial funding round not ended."
-        );
-        _transition("SETUP");
     }
 
     /**
@@ -102,14 +88,12 @@ contract DAO is VentureEth {
         );
         uint256 amount = proposedFundingForVenture[venture];
         fundingPool = fundingPool.sub(amount);
+        address backer;
         for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
-            totalVotesByHolder[backersForVenture[
-                    venture
-                ][i]] = totalVotesByHolder[backersForVenture[
-                    venture
-                ][i]].sub(votesForVentureByHolder[
-                    venture
-                ][backersForVenture[venture][i]]);
+            backer = backersForVenture[venture][i];
+            totalVotesByHolder[backer] = totalVotesByHolder[backer].sub(
+                votesForVentureByHolder[venture][backer]
+            );
         }
         delete totalVotesForVenture[venture];
         delete proposedFundingForVenture[venture];
@@ -139,6 +123,11 @@ contract DAO is VentureEth {
             .mul(pointMultiplier).div(this.totalSupply());
     }
 
+    /**
+     * @dev Resolves a backer for a venture, i.e. pushes it at the end of the backersForVenture array if not present already.
+     * @param venture The venture whose backer to resolve
+     * @param backer The backer to resolve for the given venture
+     */
     function resolveBackerForVenture(
         address venture,
         address backer
