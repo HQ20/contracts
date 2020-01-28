@@ -18,10 +18,10 @@ import "../../token/ERC20DividendableEth.sol";
  * 5. The contract owner can `cancelAllInvestments` to close the investment phase.
  *    In this case `invest` is not available, but `cancelInvestment` is.
  * 6. Use `startDistribution` to close the investment phase.
- * 7. Investors can only `withdraw` their issued tokens now.
- * 8. Owner can use `transferFunds` to send collected ether to a wallet.
+ * 7. Investors can only `claim` their issued tokens now.
+ * 8. Owner can use `withdraw` to send collected ether to a wallet.
  * 9. Clients can `increasePool` of ether
- * 10. Investors can be return dividends with `updateAccount`
+ * 10. Investors can be returned dividends with `updateAccount`
  */
 contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
 
