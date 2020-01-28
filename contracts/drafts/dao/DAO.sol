@@ -127,7 +127,7 @@ contract DAO is VentureEth {
     }
 
     /**
-     * @dev Disburses dividends from tokens claimed from funded venture. Can only be used after the original funding round, and after claiming the tokens from a funded venture.
+     * @notice Disburses dividends from tokens claimed from funded venture. Can only be used after the original funding round, and after claiming the tokens from a funded venture.
      * @param venture The venture whose issuance tokens to add to the dividends pool. Must be of type VentureEth.
      */
     function getReturnsFromTokensOfFundedVenture(address venture) public {
