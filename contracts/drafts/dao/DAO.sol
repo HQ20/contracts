@@ -1,19 +1,23 @@
 pragma solidity ^0.5.10;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../../issuance/IssuanceEth.sol";
-import "../token/ERC20MultiDividendable.sol";
+import "../issuance/VentureEth.sol";
 
 
 /**
  * @title DAO
+ * @dev The contract inherits from VentureEth.
  * @notice This is an exeprimental DAO (Decentralised Autonomous Organization) implementation. Use with caution.
- * @dev The contract inhertis from ERC20Mintable and IssuanceEth, so it's an issuance that has its own address
- * as issuance token. It also inherits from ERC20MultiDividendable, so it can invest in other IssuanceEth's
- * issuance tokens and distribute them to the investors.
+ * 1. Issue the DAO tokens through an inital funding round.
+ * 2. Propose a venture, and funding amount.
+ * 3. Vote for a venture. Each DAO token is 1 vote. If venture is funded, tokens are reenabled for voting.
+ * 4. Fund a venture. Votes must total 50% + 1 or more.
+ * 5. Claim the venture tokens.
+ * 6. Increase the DAO pool with returns (if any) on the tokens from a funded venture.
+ * 7. Claim ether dividends from the DAO.
+ * 8. Raise new capital for the DAO by restarting the funding round.
  */
-contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
+contract DAO is VentureEth {
 
     using SafeMath for uint256;
 
@@ -25,24 +29,16 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
     mapping(address => uint256) public totalVotesForVenture;
     mapping(address => uint256) public totalVotesByHolder;
     mapping(address => address[]) public backersForVenture;
-    event Here();
 
-    constructor()
-    ERC20Mintable()
-    ERC20MultiDividendable()
-    IssuanceEth(address(this))
-    public
-    {
+    constructor() VentureEth() public {
         _createTransition("LIVE", "SETUP");
         _createTransition("FAILED", "SETUP");
-        addMinter(address(this));
     }
 
-    /**
-     * @notice Disables removing all Ether funds, inherited from IssuanceEth
-     */
-    function transferFunds(address payable _wallet) public onlyOwner {
-        revert("Ether can only be invested or withdrawn.");
+    function () external payable {}
+
+    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
+        revert("Cannot transfer funds.");
     }
 
     /**
@@ -63,17 +59,19 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
      */
     function proposeVenture(uint256 funding, address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
+        uint256 newFundingPool = fundingPool.add(funding);
         require(
-            fundingPool.add(funding) <= address(this).balance,
+            newFundingPool <= address(this).balance,
             "Not enough funds."
         );
-        proposedFundingForVenture[venture] = funding;
+        fundingPool = newFundingPool;
+        proposedFundingForVenture[address(VentureEth(venture))] = funding;
     }
 
     /**
      * @notice Vote for venture. Can only be used after the original funding round.
      * @param votes The amount of tokens to lock for the venture
-     * @param venture The venture to vote for. Must be of type IssuanceEth.
+     * @param venture The venture to vote for. Must be of type VentureEth.
      */
     function voteForVenture(uint256 votes, address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
@@ -94,7 +92,7 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
 
     /**
      * @notice Fund venture. Can only be used after the original funding round, and after voting total is over 50% + 1 of total DAO tokens.
-     * @param venture The venture to fund. Must be of type IssuanceEth.
+     * @param venture The venture to fund. Must be of type VentureEth.
      */
     function fundVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
@@ -103,48 +101,41 @@ contract DAO is ERC20Mintable, ERC20MultiDividendable, IssuanceEth {
             "Not enough expressed votes."
         );
         uint256 amount = proposedFundingForVenture[venture];
-        fundingPool -= amount;
+        fundingPool = fundingPool.sub(amount);
         for (uint256 i = 0; i < backersForVenture[venture].length; i++) {
             totalVotesByHolder[backersForVenture[
                     venture
-                ][i]] -= votesForVentureByHolder[
+                ][i]] = totalVotesByHolder[backersForVenture[
                     venture
-                ][backersForVenture[venture][i]];
+                ][i]].sub(votesForVentureByHolder[
+                    venture
+                ][backersForVenture[venture][i]]);
         }
         delete totalVotesForVenture[venture];
         delete proposedFundingForVenture[venture];
         // solium-disable-next-line security/no-call-value
-        IssuanceEth(venture).invest.value(amount)();
+        VentureEth(venture).invest.value(amount)();
     }
 
     /**
      * @notice Withdraws issuance tokens from funded venture. Can only be used after the original funding round, and after funding the venture.
-     * @param venture The venture to withdraw tokens from. Must be of type IssuanceEth.
+     * @param venture The venture to withdraw tokens from. Must be of type VentureEth.
      */
     function getTokensForFundedVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
-        IssuanceEth issuance = IssuanceEth(venture);
-        ERC20Mintable issuanceToken = ERC20Mintable(
-            address(issuance.issuanceToken())
-        );
-        issuance.withdraw();
+        VentureEth(venture).claim();
     }
 
     /**
-     * @dev Disburses dividends from tokens withdrawn from funded venture. Can only be used after the original funding round, and withdrawing the tokens for funded venture.
-     * @param venture The venture whose issuance tokens to add to the dividends pool. Must be of type IssuanceEth.
+     * @dev Disburses dividends from tokens withdrawn from funded venture. Can only be used after the original funding round, and after claiming the tokens from a funded venture.
+     * @param venture The venture whose issuance tokens to add to the dividends pool. Must be of type VentureEth.
      */
     function getReturnsFromTokensOfFundedVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
-        IssuanceEth issuance = IssuanceEth(venture);
-        address dividendToken = address(issuance.issuanceToken());
-        uint256 tokenIndexBefore = tokenIndex;
-        resolveDividendToken(dividendToken);
-        require(tokenIndex != tokenIndexBefore, "Cannot get returns again.");
-        totalDividends[dividendToken] = totalDividends[dividendToken].add(
-                ERC20Mintable(dividendToken).balanceOf(address(this))
-            );
-        totalDividendPoints[dividendToken] = totalDividends[dividendToken]
+        totalDividends = totalDividends.add(
+            VentureEth(venture).updateAccount(address(this))
+        );
+        totalDividendPoints = totalDividends
             .mul(pointMultiplier).div(this.totalSupply());
     }
 

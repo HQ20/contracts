@@ -34,11 +34,12 @@ contract ERC20DividendableEth is ERC20 {
      * @param account The account to update
      * @notice Will revert if account need not be updated
      */
-    function updateAccount(address payable account) public {
+    function updateAccount(address payable account) public returns(uint) {
         uint owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
-        account.transfer(owing);
         lastDividendPoints[account] = totalDividendPoints;
+        account.transfer(owing);
+        return owing;
     }
 
     /**
