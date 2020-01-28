@@ -21,8 +21,8 @@ import "../state/StateMachine.sol";
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
  *    In this case `invest` is not available, but `cancelInvestment` is.
  * 7. Use `startDistribution` to close the investment phase.
- * 8. Investors can only `withdraw` their issued tokens now.
- * 9. Owner can use `transferFunds` to send collected ether to a wallet.
+ * 8. Investors can only `claim` their issued tokens now.
+ * 9. Owner can use `withdraw` to send collected ether to a wallet.
  */
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
@@ -38,6 +38,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
+    uint256 public amountWithdrawn;
     uint256 public issuePrice;
     uint256 internal nextInvestor;
 
@@ -55,13 +56,13 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     }
 
     /**
-     * @notice Use this function to withdraw your issuance tokens
+     * @notice Use this function to claim your issuance tokens
      * @dev Each user will call this function on his behalf
      */
-    function withdraw() external nonReentrant {
+    function claim() external nonReentrant {
         require(
             currentState == "LIVE",
-            "Cannot withdraw now."
+            "Cannot claim now."
         );
         require(
             investments[msg.sender] > 0,
@@ -139,12 +140,14 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function transferFunds(address payable _wallet) public onlyOwner {
+    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         require(
             currentState == "LIVE",
             "Cannot transfer funds now."
         );
-        _wallet.transfer(amountRaised);
+        uint256 amount = amountRaised - amountWithdrawn;
+        amountWithdrawn = amount;
+        _wallet.transfer(amount);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {

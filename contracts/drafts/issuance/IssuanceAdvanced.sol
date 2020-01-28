@@ -93,8 +93,8 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
         emit InvestmentAdded(msg.sender, _amount);
     }
 
-    function withdraw() external nonReentrant {
-        require(currentState == "LIVE", "Cannot withdraw now.");
+    function claim() external nonReentrant {
+        require(currentState == "LIVE", "Cannot claim now.");
         require(investments[msg.sender] > 0, "No investments found.");
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
@@ -154,7 +154,7 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function transferFunds(address _wallet) public onlyOwner {
+    function withdraw(address _wallet) public onlyOwner {
         require(currentState == "LIVE", "Cannot transfer funds now.");
         currencyToken.transfer(_wallet, amountRaised);
     }

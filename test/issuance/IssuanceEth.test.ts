@@ -90,42 +90,42 @@ contract('IssuanceEth', (accounts) => {
     });
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {Issuance#claim}
      */
-    it('withdraw sends tokens to investors', async () => {
+    it('claim sends tokens to investors', async () => {
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
         await issuanceEth.startDistribution();
         chai.expect(bytes32ToString(await issuanceEth.currentState())).to.be.equal('LIVE');
-        await issuanceEth.withdraw({ from: investor1 });
-        await issuanceEth.withdraw({ from: investor2 });
+        await issuanceEth.claim({ from: investor1 });
+        await issuanceEth.claim({ from: investor2 });
         BN(await issuanceToken.balanceOf(investor1)).should.be.bignumber.equal(ether('0.1'));
         BN(await issuanceToken.balanceOf(investor2)).should.be.bignumber.equal(ether('0.02'));
     });
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {Issuance#claim}
      */
-    it('cannot withdraw when state is not "LIVE"', async () => {
+    it('cannot claim when state is not "LIVE"', async () => {
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
         await expectRevert(
-            issuanceEth.withdraw({ from: investor1 }),
-            'Cannot withdraw now.',
+            issuanceEth.claim({ from: investor1 }),
+            'Cannot claim now.',
         );
     });
 
     /**
-     * @test {Issuance#withdraw}
+     * @test {Issuance#claim}
      */
-    it('cannot withdraw when not invested', async () => {
+    it('cannot claim when not invested', async () => {
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.startDistribution();
         await expectRevert(
-            issuanceEth.withdraw({ from: investor2 }),
+            issuanceEth.claim({ from: investor2 }),
             'No investments found.',
         );
     });
@@ -187,28 +187,28 @@ contract('IssuanceEth', (accounts) => {
     });
 
     /**
-     * @test {Issuance#transferFunds}
+     * @test {Issuance#withdraw}
      */
-    it('transferFunds should transfer all collected tokens to the wallet of the owner', async () => {
+    it('withdraw should transfer all collected tokens to the wallet of the owner', async () => {
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
         await issuanceEth.startDistribution();
-        await issuanceEth.withdraw({ from: investor1 });
-        await issuanceEth.withdraw({ from: investor2 });
+        await issuanceEth.claim({ from: investor1 });
+        await issuanceEth.claim({ from: investor2 });
         const trackerWallet = await balance.tracker(wallet);
         trackerWallet.get();
-        await issuanceEth.transferFunds(wallet);
+        await issuanceEth.withdraw(wallet);
         (await trackerWallet.delta()).should.be.bignumber.equal(ether('0.6'));
     });
 
     /**
-     * @test {Issuance#transferFunds}
+     * @test {Issuance#withdraw}
      */
     it('cannot transfer funds when issuanceEth state is not "LIVE"', async () => {
         await issuanceEth.openIssuance();
         await expectRevert(
-            issuanceEth.transferFunds(wallet),
+            issuanceEth.withdraw(wallet),
             'Cannot transfer funds now.',
         );
     });

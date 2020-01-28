@@ -163,9 +163,9 @@ contract('IssuanceAdvanced', (accounts) => {
     }, 'Not enough funds collected.');
 
     /**
-     * @test {IssuanceAdvanced#withdraw}
+     * @test {IssuanceAdvanced#claim}
      */
-    it('withdraw sends tokens to investors', async () => {
+    it('claim sends tokens to investors', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.mint(investor2, new BigNumber(50e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -176,16 +176,16 @@ contract('IssuanceAdvanced', (accounts) => {
         await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
         bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
-        await issuance.withdraw({ from: investor1 });
-        await issuance.withdraw({ from: investor2 });
+        await issuance.claim({ from: investor1 });
+        await issuance.claim({ from: investor2 });
         web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('10');
         web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('2');
     });
 
     /**
-     * @test {IssuanceAdvanced#withdraw}
+     * @test {IssuanceAdvanced#claim}
      */
-    itShouldThrow('cannot withdraw when state is not "LIVE"', async () => {
+    itShouldThrow('cannot claim when state is not "LIVE"', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.mint(investor2, new BigNumber(50e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -194,13 +194,13 @@ contract('IssuanceAdvanced', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await advanceTimeAndBlock(4000);
-        await issuance.withdraw({ from: investor1 });
-    }, 'Cannot withdraw now.');
+        await issuance.claim({ from: investor1 });
+    }, 'Cannot claim now.');
 
     /**
-     * @test {IssuanceAdvanced#withdraw}
+     * @test {IssuanceAdvanced#claim}
      */
-    itShouldThrow('cannot withdraw when not invested', async () => {
+    itShouldThrow('cannot claim when not invested', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.mint(investor2, new BigNumber(50e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -209,7 +209,7 @@ contract('IssuanceAdvanced', (accounts) => {
         await issuance.invest(new BigNumber(50e18), { from: investor1 });
         await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
-        await issuance.withdraw({ from: investor2 });
+        await issuance.claim({ from: investor2 });
     }, 'No investments found.');
 
     /**
@@ -271,9 +271,9 @@ contract('IssuanceAdvanced', (accounts) => {
     });
 
     /**
-     * @test {IssuanceAdvanced#transferFunds}
+     * @test {IssuanceAdvanced#withdraw}
      */
-    it('transferFunds should transfer all collected tokens to the wallet of the owner', async () => {
+    it('withdraw should transfer all collected tokens to the wallet of the owner', async () => {
         await currencyToken.mint(investor1, new BigNumber(100e18));
         await currencyToken.mint(investor2, new BigNumber(50e18));
         await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
@@ -283,18 +283,18 @@ contract('IssuanceAdvanced', (accounts) => {
         await issuance.invest(new BigNumber(10e18), { from: investor2 });
         await advanceTimeAndBlock(4000);
         await issuance.startDistribution();
-        await issuance.withdraw({ from: investor1 });
-        await issuance.withdraw({ from: investor2 });
-        await issuance.transferFunds(wallet);
+        await issuance.claim({ from: investor1 });
+        await issuance.claim({ from: investor2 });
+        await issuance.withdraw(wallet);
         web3.utils.fromWei(await currencyToken.balanceOf(wallet), 'ether').should.be.equal('60');
     });
 
     /**
-     * @test {IssuanceAdvanced#transferFunds}
+     * @test {IssuanceAdvanced#withdraw}
      */
     itShouldThrow('cannot transfer funds when issuance state is not "LIVE"', async () => {
         await issuance.openIssuance();
-        await issuance.transferFunds(wallet);
+        await issuance.withdraw(wallet);
     }, 'Cannot transfer funds now.');
 
 
