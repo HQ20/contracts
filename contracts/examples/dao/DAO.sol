@@ -40,7 +40,7 @@ contract DAO is VentureEth {
     /**
      * @notice The withdraw function inherited from VentureEth is disabled. The funds can be transferred exclusively by the vote of the investors.
      */
-    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
+    function withdraw(address payable) public onlyOwner nonReentrant {
         revert("Cannot transfer funds.");
     }
 
