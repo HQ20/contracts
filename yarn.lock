@@ -115,6 +115,11 @@
     "@ethersproject/constants" ">=5.0.0-beta.128"
     "@ethersproject/logger" ">=5.0.0-beta.129"
 
+"@hq20/solidity-parser-antlr@0.4.12-alpha.0":
+  version "0.4.12-alpha.0"
+  resolved "https://registry.yarnpkg.com/@hq20/solidity-parser-antlr/-/solidity-parser-antlr-0.4.12-alpha.0.tgz#4def513caf8c5e76870ad0cd51d301faf0fb7747"
+  integrity sha512-LHyLMFgAJi5U4eakqqUvtpxxIv3AA4QDJbv6//xYgiRqQsTY8BoUayqU82f8dHcZJ44Y6H+yzml/vszEPUOe4g==
+
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -7159,12 +7164,12 @@ sol-explore@1.6.1:
   resolved "https://registry.yarnpkg.com/sol-explore/-/sol-explore-1.6.1.tgz#b59f073c69fe332560d5a10c32ba8ca7f2986cfb"
   integrity sha1-tZ8HPGn+MyVg1aEMMrqMp/KYbPs=
 
-soldoc@0.1.2-beta.6:
-  version "0.1.2-beta.6"
-  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2-beta.6.tgz#004ebf6f46b6b24966bf540237651bc824864d8e"
-  integrity sha512-VKiGNcSjse0PtiroS5CEeThh6gfuoNbnA+y6y3hMROxWKpcFZ47js9cD9xv1Q0L9ckwcnKZs1h4r+BU4VRFA+A==
+soldoc@0.1.2-beta.7:
+  version "0.1.2-beta.7"
+  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2-beta.7.tgz#555da4491f446dae5ca60c5f77e40e5f14fc0fbc"
+  integrity sha512-MRqsVHSu796/+I8mLo9/QfHkqrvtWQMfO5uNfZTB/+cnIkZC4SPoNdQ8kdd+WXFmjR5oCuNPqfqYFEYBcbcHRw==
   dependencies:
-    solidity-parser-antlr "git://github.com/obernardovieira/solidity-parser-antlr.git#80086a4"
+    "@hq20/solidity-parser-antlr" "0.4.12-alpha.0"
 
 solidity-coverage@0.7.1:
   version "0.7.1"
@@ -7197,10 +7202,6 @@ solidity-parser-antlr@0.4.7:
   integrity sha512-iVjNhgqkXw+o+0E+xoLcji+3KuXLe8Rm8omUuVGhsV14+ZsTwQ70nhBRXg8O3t9xwdS0iST1q9NJ5IqHnqpWkA==
   dependencies:
     npm-check-updates "^3.1.11"
-
-"solidity-parser-antlr@git://github.com/obernardovieira/solidity-parser-antlr.git#80086a4":
-  version "0.4.11"
-  resolved "git://github.com/obernardovieira/solidity-parser-antlr.git#80086a48e8a61cbdfdaf01c6d8c8493dd509c704"
 
 solium-plugin-security@0.1.1:
   version "0.1.1"
