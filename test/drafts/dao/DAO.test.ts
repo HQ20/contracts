@@ -59,11 +59,11 @@ contract('DAO - pre initial funding cases', (accounts) => {
     });
 
     /**
-     * @test {DAO#getTokensForFundedVenture}
+     * @test {DAO#claimTokensForFundedVenture}
      */
     it('cannot get tokens for funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.getTokensForFundedVenture(venture1.address),
+            dao.claimTokensForFundedVenture(venture1.address),
             'DAO needs to be LIVE.',
         );
     });
@@ -83,7 +83,7 @@ contract('DAO - pre initial funding cases', (accounts) => {
      */
     it('cannot get returns for funded venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.getTokensForFundedVenture(venture1.address),
+            dao.claimTokensForFundedVenture(venture1.address),
             'DAO needs to be LIVE.',
         );
     });
@@ -189,7 +189,7 @@ contract('DAO - ventures', (accounts) => {
         await venture1.startDistribution();
         await venture1.claim({ from: ventureHolder1 });
         await venture1.claim({ from: ventureHolder2 });
-        await dao.getTokensForFundedVenture(venture1.address);
+        await dao.claimTokensForFundedVenture(venture1.address);
         await venture1.increasePool({ from: ventureClient1, value: ether('1').toString() });
         await venture1.increasePool({ from: ventureClient2, value: ether('2').toString() });
         await dao.getReturnsFromTokensOfFundedVenture(venture1.address);
@@ -197,7 +197,7 @@ contract('DAO - ventures', (accounts) => {
         await dao.voteForVenture(ether('0.2'), venture2.address, { from: holder2 });
         await dao.fundVenture(venture2.address);
         await venture2.startDistribution();
-        await dao.getTokensForFundedVenture(venture2.address);
+        await dao.claimTokensForFundedVenture(venture2.address);
         await venture2.increasePool({ from: ventureClient1, value: ether('1').toString() });
         await venture2.increasePool({ from: ventureClient2, value: ether('1').toString() });
         await dao.getReturnsFromTokensOfFundedVenture(venture2.address);

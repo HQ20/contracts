@@ -102,16 +102,16 @@ contract DAO is VentureEth {
     }
 
     /**
-     * @notice Withdraws issuance tokens from funded venture. Can only be used after the original funding round, and after funding the venture.
-     * @param venture The venture to withdraw tokens from. Must be of type VentureEth.
+     * @notice Claims issuance tokens from funded venture. Can only be used after the original funding round, and after funding the venture.
+     * @param venture The venture to claim tokens from. Must be of type VentureEth.
      */
-    function getTokensForFundedVenture(address venture) public {
+    function claimTokensForFundedVenture(address venture) public {
         require(currentState == "LIVE", "DAO needs to be LIVE.");
         VentureEth(venture).claim();
     }
 
     /**
-     * @dev Disburses dividends from tokens withdrawn from funded venture. Can only be used after the original funding round, and after claiming the tokens from a funded venture.
+     * @notice Disburses dividends from tokens claimed from funded venture. Can only be used after the original funding round, and after claiming the tokens from a funded venture.
      * @param venture The venture whose issuance tokens to add to the dividends pool. Must be of type VentureEth.
      */
     function getReturnsFromTokensOfFundedVenture(address venture) public {
