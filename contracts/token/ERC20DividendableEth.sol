@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
 /**
- * @title ERC20Dividendable
+ * @title ERC20DividendableEth
  * @dev Implements an ERC20 token with a dividend distribution procedure for etehreum received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
@@ -34,11 +34,12 @@ contract ERC20DividendableEth is ERC20 {
      * @param account The account to update
      * @notice Will revert if account need not be updated
      */
-    function updateAccount(address payable account) public {
+    function updateAccount(address payable account) public returns(uint) {
         uint owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
-        account.transfer(owing);
         lastDividendPoints[account] = totalDividendPoints;
+        account.transfer(owing);
+        return owing;
     }
 
     /**
@@ -51,4 +52,5 @@ contract ERC20DividendableEth is ERC20 {
         return this.balanceOf(account)
             .mul(newDividendPoints).div(pointMultiplier);
     }
+
 }
