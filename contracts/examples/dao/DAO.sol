@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../issuance/VentureEth.sol";
+import "./VentureEth.sol";
 
 
 /**
