@@ -32,8 +32,14 @@ contract DAO is VentureEth {
 
     constructor() VentureEth() public {}
 
+    /**
+     * @dev Fallback function. Required when collecting ether dividends from ventures.
+     */
     function () external payable {}
 
+    /**
+     * @notice The withdraw function inherited from VentureEth is disabled. The funds can be transferred exclusively by the vote of the investors.
+     */
     function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         revert("Cannot transfer funds.");
     }
@@ -73,7 +79,7 @@ contract DAO is VentureEth {
         );
         votesForVentureByHolder[venture][msg.sender] = votesForVentureByHolder[
             venture][msg.sender].add(votes);
-        resolveBackerForVenture(venture, msg.sender);
+        addBackerForVenture(venture, msg.sender);
     }
 
     /**
@@ -124,11 +130,11 @@ contract DAO is VentureEth {
     }
 
     /**
-     * @dev Resolves a backer for a venture, i.e. pushes it at the end of the backersForVenture array if not present already.
-     * @param venture The venture whose backer to resolve
-     * @param backer The backer to resolve for the given venture
+     * @dev Adds a backer for a venture, i.e. pushes it at the end of the backersForVenture array if not present already.
+     * @param venture The venture whose backer to add
+     * @param backer The backer to add for the given venture
      */
-    function resolveBackerForVenture(
+    function addBackerForVenture(
         address venture,
         address backer
     ) internal {
