@@ -27,44 +27,7 @@ contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
 
     constructor() public ERC20Mintable()
     ERC20DividendableEth() IssuanceEth(address(this)) {
-        _createState("ENDED");
-        _createTransition("LIVE", "ENDED");
-        _createTransition("FAILED", "ENDED");
         addMinter(address(this));
-    }
-
-    modifier afterIssuance {
-        require(
-            currentState == "ENDED",
-            "Issuance must have ended."
-        );
-        _;
-    }
-
-    /**
-     * @notice Send ether to this function in orther to disburse dividends. Venture issuance process must have ended.
-     */
-    function increasePool() external payable afterIssuance {
-        totalDividends = totalDividends.add(msg.value);
-        totalDividendPoints = totalDividends
-            .mul(pointMultiplier).div(this.totalSupply());
-    }
-
-    /**
-     * @notice Function to transfer all collected tokens to the wallet of the owner.
-     */
-    function transferFunds(address payable _wallet) public onlyOwner {
-        super.transferFunds(_wallet);
-        _transition("ENDED");
-    }
-
-    /**
-     * @dev Function to update an account
-     * @param account The account to update
-     * @notice Will revert if account need not be updated, or venture Venture issuance process is not ended.
-     */
-    function updateAccount(address payable account) public afterIssuance {
-        super.updateAccount(account);
     }
 
 }

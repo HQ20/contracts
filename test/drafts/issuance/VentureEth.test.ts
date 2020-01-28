@@ -12,38 +12,6 @@ const VentureEth = artifacts.require(
 
 should();
 
-contract('VentureEth - before issuance', (accounts) => {
-
-    const [user1, investor1, investor2] = accounts;
-
-    let ventureEth: VentureEthInstance;
-
-    beforeEach(async () => {
-        ventureEth = await VentureEth.new();
-    });
-
-    /**
-     * @test {VentureEth#increasePool}
-     */
-    it('cannot increase pool when state is not "LIVE"', async () => {
-        await expectRevert(
-            ventureEth.increasePool({ from: user1, value: ether('6').toString()}),
-            'Issuance must have ended.',
-        );
-    });
-
-    /**
-     * @test {VentureEth#updateAccount}
-     */
-    it('cannot update account when state is not "LIVE"', async () => {
-        await expectRevert(
-            ventureEth.updateAccount(investor1),
-            'Issuance must have ended.',
-        );
-    });
-});
-
-
 contract('VentureEth - after issuance', (accounts) => {
 
     const [wallet, user1, investor1, investor2] = accounts;
@@ -58,13 +26,13 @@ contract('VentureEth - after issuance', (accounts) => {
         await ventureEth.invest({ from: investor2, value: ether('0.1').toString() });
         await ventureEth.startDistribution();
         (bytes32ToString(await ventureEth.currentState())).should.be.equal('LIVE');
-        await ventureEth.withdraw({ from: investor1 });
-        await ventureEth.withdraw({ from: investor2 });
+        await ventureEth.claim({ from: investor1 });
+        await ventureEth.claim({ from: investor2 });
         BN(await ventureEth.balanceOf(investor1)).should.be.bignumber.equal(ether('0.1'));
         BN(await ventureEth.balanceOf(investor2)).should.be.bignumber.equal(ether('0.02'));
         const tracker = await balance.tracker(wallet, 'wei');
         await tracker.get();
-        await ventureEth.transferFunds(wallet);
+        await ventureEth.withdraw(wallet);
         BN(await tracker.delta()).should.be.bignumber.gte(ether('0.5')).and.bignumber.lte(ether('0.6'));
     });
 
