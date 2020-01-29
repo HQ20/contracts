@@ -7164,10 +7164,10 @@ sol-explore@1.6.1:
   resolved "https://registry.yarnpkg.com/sol-explore/-/sol-explore-1.6.1.tgz#b59f073c69fe332560d5a10c32ba8ca7f2986cfb"
   integrity sha1-tZ8HPGn+MyVg1aEMMrqMp/KYbPs=
 
-soldoc@0.1.2-beta.7:
-  version "0.1.2-beta.7"
-  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2-beta.7.tgz#555da4491f446dae5ca60c5f77e40e5f14fc0fbc"
-  integrity sha512-MRqsVHSu796/+I8mLo9/QfHkqrvtWQMfO5uNfZTB/+cnIkZC4SPoNdQ8kdd+WXFmjR5oCuNPqfqYFEYBcbcHRw==
+soldoc@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/soldoc/-/soldoc-0.1.2.tgz#869ce500f55fea4cf05569cdba4cde50791e8f45"
+  integrity sha512-qfy69HPtt7dxARPsZi6uswaBSd0kinEtYpYI/SLMSvbVoCt8C6uYsLXFx5ejZau/GVKKobdq/C0X72Ua0uakVg==
   dependencies:
     "@hq20/solidity-parser-antlr" "0.4.12-alpha.0"
 
