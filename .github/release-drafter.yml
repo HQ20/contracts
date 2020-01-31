@@ -22,14 +22,16 @@ categories:
   - title: '📝 Documentation updates'
     label: 'documentation'
   - title: '👻 Maintenance'
-    labels: 'internal'
-    labels: 'refactor'
+    labels:
+      - 'internal'
+      - 'refactor'
   - title: '👨‍🔧️ Examples'
-    labels: 'example'
-    labels: 'reusable'
-    labels: 'use case'
+    labels:
+      - 'example'
+      - 'reusable'
+      - 'use case'
   - title: '🚦 Tests'
-    labels: 'test'
+    label: 'test'
 
 exclude-labels:
   - 'dependencies'
