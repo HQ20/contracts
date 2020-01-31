@@ -1,27 +1,21 @@
 dist: xenial
-
 language: node_js
-
 cache: yarn
-
 node_js:
-    - "lts/dubnium"
-
+    - lts/dubnium
 install:
     - yarn
-
 jobs:
   include:
-    - stage: "Tests"
-      script: yarn test:ci
-    -
-      script: yarn coverage:ci
-    -
-      script: yarn lint
+    - stage: Tests
+        script: yarn test:ci
+    - script: yarn coverage:ci
+    - script: yarn lint
     - stage: npm release
-      if: branch = master
-      script: echo "Deploying to npm ..."
-      deploy:
         provider: npm
-        api_key: $NPM_API_KEY
-        on: deploy-npm-release
+        email: admin@techhq.io
+        api_key:
+            secure: FsjrlIQdw9wnQRu8JfQ9ZIrtmsvD/J3LbrvIGqF6LKY2ISyaHFo+CfhDthr+P57ICUSxpPyLwB29HkcEEWUL4dCfmSI/ePW/+EHCmSQ9CXRJIE3971264jZLKy/Sv1gMi8fRw3qNsZ0aE8S7RBrO7TppMoeKc6YI3KayODCtpClU53OJ3g17MpcnG8jkO9O8M1Qnfrv4q7ncJx/eIru7K7Xbs1wAWI3Ds0qKIxBLmvZcGwp/90SgHX9/igd3VQZlTaR/Vf6rWsK8hUFi9o6vFo+DMqPOf0tqA9GXlMJvDQwqOvHXv52INkCg06tuuCZxcVJh1gpBKzJXN2T6p9vmUyVqnN9n/fg6dTiaT28biADAtEbhWp45eyP5yE0lN91esC4xFW5yHgSGJuITUnAK/jAVc081YAATFone7QyH1G2uXpIIOUpy5GGHZHWvSOPvG1drjs+W8zTrq4Iq3yGt2FExocsjK+vjeLMVa1cM0uN6Yj7oxpNO6WZsG5zhwPsHPF8lR/wpLTGHAUy7gaR9Os9aRUtxBoeGYCgJf/HcUEnXFn5dbYoQkjKr3gxSYKkyCmQ1NjbHdHJoIbLh+kNW2kxVD/hKjtXf94l9VGdF+c7T5JoEiVLp1kOxxN66PqBBlQ3nZTjUndJAZRvp78a4XzkY3UABOWa0UUFjlytICyE=
+        on:
+            tags: true
+            repo: HQ20/contracts
