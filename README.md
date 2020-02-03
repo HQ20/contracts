@@ -24,7 +24,21 @@
 Use the package manager [yarn](https://yarnpkg.com) to install dependencies.
 
 ```bash
-$ yarn
+$ yarn add @hq20/contracts
+```
+
+## Usage
+
+```solidity
+pragma solidity ^0.5.10;
+import "@hq20/contracts/contracts/access/RBAC.sol"
+
+
+contract MyContract is RBAC {
+	constructor() public RBAC(msg.sender) {
+		// do something
+	}
+}
 ```
 
 ## Directories
@@ -65,20 +79,6 @@ contracts ──┬─── examples ────── access
             ├─── access
             ├─── lists
             └─── state
-```
-
-## Usage
-
-```solidity
-pragma solidity ^0.5.10;
-import "@hq20/contracts/contracts/access/RBAC.sol"
-
-
-contract MyContract is RBAC {
-	constructor() public RBAC(msg.sender) {
-		// do something
-	}
-}
 ```
 
 ## Contributing
