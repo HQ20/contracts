@@ -75,5 +75,8 @@
         "typechain": "1.0.4",
         "typechain-target-truffle": "1.0.2",
         "typescript": "3.7.5"
+    },
+    "dependencies": {
+        "@hq20/fixidity": "^0.1.0-alpha.0"
     }
 }
