@@ -77,7 +77,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             "Not open for investments."
         );
         require(
-            _amount.mod((uint256)(FixidityLib.fromFixed(FixidityLib.abs(issuePrice)))) == 0,
+            _amount.mod(uint256(issuePrice.abs().fromFixed())) == 0,
             "Fractional investments not allowed."
         );
 
@@ -104,25 +104,13 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         if (issuePrice > 0) {
             issuanceToken.mint(
                 msg.sender,
-                (uint256)(
-                    FixidityLib.fromFixed(
-                        FixidityLib.newFixed((int256)(amount)).divide(
-                            FixidityLib.newFixed(issuePrice)
-                        )
-                    )
-                )
+                uint256(int256(amount).newFixed().divide(issuePrice.newFixed()).fromFixed())
             );
         }
         else {
             issuanceToken.mint(
                 msg.sender,
-                (uint256)(
-                    FixidityLib.fromFixed(
-                        FixidityLib.newFixed((int256)(amount)).multiply(
-                            FixidityLib.newFixed(issuePrice)
-                        )
-                    )
-                )
+                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed()).fromFixed())
             );
         }
     }
