@@ -28,7 +28,7 @@ contract('IssuanceToken', (accounts) => {
             currencyToken.address,
         );
         await issuanceToken.addMinter(issuance.address);
-        await issuance.setIssuePrice(5);
+        // await issuance.setIssuePrice(5);
     });
 
     /**
