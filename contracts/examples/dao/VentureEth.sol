@@ -1,9 +1,9 @@
 pragma solidity ^0.5.10;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../issuance/IssuanceEth.sol";
 import "../../token/ERC20DividendableEth.sol";
+import "../../token/ERC20MintableDetailed.sol";
 
 
 /**
@@ -11,10 +11,7 @@ import "../../token/ERC20DividendableEth.sol";
  * @notice Implements a venture
  *
  * 1. Use `setIssuePrice` to determine how many ether do investors
- *    have to pay for each issued token. The `issuePrice` parameter works like this:
- *    - issuePrice > 0 : issuanceToken.mintAmount = investedAmount / issuePrice;
-      - issuePrice < 0 : issuanceToken.mintAmount = investedAmount * (-1) * issuePrice;
-      - issuePrice = 0 : revert.
+ *    have to pay for each issued token.
  * 2. Use `openIssuance` to allow investors to invest.
  * 3. Investors can `invest` their ether at will.
  * 4. Investors can also `cancelInvestment` and get their ether back.
@@ -26,10 +23,17 @@ import "../../token/ERC20DividendableEth.sol";
  * 9. Clients can `increasePool` of ether
  * 10. Investors can be returned dividends with `updateAccount`
  */
-contract VentureEth is ERC20Mintable, ERC20DividendableEth, IssuanceEth {
+contract VentureEth is
+ERC20MintableDetailed,
+ERC20DividendableEth,
+IssuanceEth {
 
-    constructor() public ERC20Mintable()
-    ERC20DividendableEth() IssuanceEth(address(this)) {
+    constructor(string memory name, string memory symbol, uint8 decimals)
+    public
+    ERC20MintableDetailed(name, symbol, decimals)
+    ERC20DividendableEth()
+    IssuanceEth(address(this))
+    {
         addMinter(address(this));
     }
 

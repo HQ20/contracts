@@ -3,14 +3,14 @@ import * as chai from 'chai';
 const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
 
-import { IssuanceAdvancedInstance, TestERC20MintableInstance } from '../../../types/truffle-contracts';
+import { IssuanceAdvancedInstance, ERC20MintableDetailedInstance } from '../../../types/truffle-contracts';
 
 const IssuanceAdvanced = artifacts.require(
     './drafts/issuance/IssuanceAdvanced.sol',
     ) as Truffle.Contract<IssuanceAdvancedInstance>;
-const TestERC20Mintable = artifacts.require(
-        './test/issuance/TestERC20Mintable.sol',
-    ) as Truffle.Contract<TestERC20MintableInstance>;
+const ERC20MintableDetailed = artifacts.require(
+        'ERC20MintableDetailed',
+    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
 
 chai.use(require('chai-bn')(require('bn.js')));
 chai.should();
@@ -25,19 +25,20 @@ contract('IssuanceAdvanced', (accounts) => {
     const wallet = accounts[3];
 
     let issuance: IssuanceAdvancedInstance;
-    let currencyToken: TestERC20MintableInstance;
-    let issuanceToken: TestERC20MintableInstance;
+    let currencyToken: ERC20MintableDetailedInstance;
+    let issuanceToken: ERC20MintableDetailedInstance;
 
     beforeEach(async () => {
         const snapShot = await takeSnapshot();
         snapshotId = snapShot.result;
-        currencyToken = await TestERC20Mintable.new();
-        issuanceToken = await TestERC20Mintable.new();
+        currencyToken = await ERC20MintableDetailed.new('CurrencyToken', 'CURT', 18);
+        issuanceToken = await ERC20MintableDetailed.new('IssuanceToken', 'ISST', 17);
         issuance = await IssuanceAdvanced.new(
             issuanceToken.address,
             currencyToken.address,
         );
         await issuanceToken.addMinter(issuance.address);
+        await issuance.setIssuePrice(ether('5'));
         await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
         await issuance.setClosingDate(Math.floor((new Date()).getTime() / 1000) + 3600);
         await issuance.setSoftCap(ether('50'));
@@ -52,7 +53,6 @@ contract('IssuanceAdvanced', (accounts) => {
      * @test {IssuanceAdvanced#openIssuance}
      */
     it('openIssuance can succefully open the Issuance', async () => {
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
     });
@@ -61,7 +61,6 @@ contract('IssuanceAdvanced', (accounts) => {
      * @test {IssuanceAdvanced#openIssuance}
      */
     it('cannot open issuance outside allotted timeframe', async () => {
-        await issuance.setIssuePrice(5);
         await advanceTimeAndBlock(4000);
         await expectRevert(
             issuance.openIssuance(),
@@ -75,7 +74,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('invest should succesfully invest', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         expectEvent(
             await issuance.invest(ether('50'), { from: investor1 }),
@@ -93,7 +91,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot invest if state is not "OPEN"', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await expectRevert(
             issuance.invest(ether('50'), { from: investor1 }),
             'Not open for investments.',
@@ -106,7 +103,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot invest outisde allotted timespan', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await advanceTimeAndBlock(4000);
         await expectRevert(
@@ -121,7 +117,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot invest with fractional investments', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await expectRevert(
             issuance.invest(new BN('1000000000000000001'), { from: investor1 }),
@@ -135,7 +130,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot invest with investment below minimum threshold', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await expectRevert(
             issuance.invest(ether('5'), { from: investor1 }),
@@ -151,7 +145,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -168,7 +161,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -186,7 +178,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('10'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -205,7 +196,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -214,29 +204,8 @@ contract('IssuanceAdvanced', (accounts) => {
         bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
         await issuance.claim({ from: investor1 });
         await issuance.claim({ from: investor2 });
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('10');
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('2');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#claim}
-     */
-    it('claim sends tokens to investors, with negative issue price', async () => {
-        await currencyToken.mint(investor1, ether('100'));
-        await currencyToken.mint(investor2, ether('50'));
-        await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-        await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(-5);
-        await issuance.openIssuance();
-        await issuance.invest(ether('50'), { from: investor1 });
-        await issuance.invest(ether('10'), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
-        await issuance.claim({ from: investor1 });
-        await issuance.claim({ from: investor2 });
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('250');
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('50');
+        web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('1');
+        web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('0.2');
     });
 
     /**
@@ -247,7 +216,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -266,7 +234,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await advanceTimeAndBlock(4000);
@@ -283,7 +250,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cancelInvestment should cancel an investor investments', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('60'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor1 });
@@ -303,7 +269,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('60'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor1 });
@@ -321,7 +286,6 @@ contract('IssuanceAdvanced', (accounts) => {
     it('cannot cancel investment when not invested', async () => {
         await currencyToken.mint(investor1, ether('100'));
         await currencyToken.approve(issuance.address, ether('60'), { from: investor1 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await expectRevert(
             issuance.cancelInvestment({ from: investor1 }),
@@ -337,7 +301,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -357,7 +320,6 @@ contract('IssuanceAdvanced', (accounts) => {
         await currencyToken.mint(investor2, ether('50'));
         await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
         await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await issuance.invest(ether('50'), { from: investor1 });
         await issuance.invest(ether('10'), { from: investor2 });
@@ -373,7 +335,6 @@ contract('IssuanceAdvanced', (accounts) => {
      * @test {IssuanceAdvanced#withdraw}
      */
     it('cannot transfer funds when issuance state is not "LIVE"', async () => {
-        await issuance.setIssuePrice(5);
         await issuance.openIssuance();
         await expectRevert(
             issuance.withdraw(wallet),
@@ -382,15 +343,7 @@ contract('IssuanceAdvanced', (accounts) => {
     });
 
     it('setIssuePrice sets the issue price', async () => {
-        await issuance.setIssuePrice(5);
-        (await issuance.issuePrice()).toString().should.be.equal('5');
-    });
-
-    it('setIssuePrice cannot set the issue price to be zero', async () => {
-        await expectRevert(
-            issuance.setIssuePrice(0),
-            'Cannot set issuePrice to be zero.',
-        );
+        BN(await issuance.issuePrice()).toString().should.be.bignumber.equal(ether('5'));
     });
 
     it('setOpeningDate sets the opening date', async () => {

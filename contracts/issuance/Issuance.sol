@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./../token/IERC20Mintable.sol";
+import "../token/ERC20MintableDetailed.sol";
 import "./../state/StateMachine.sol";
 
 
@@ -15,10 +15,7 @@ import "./../state/StateMachine.sol";
  *
  * 1. Initialize contract with issuance token and currency token.
  * 2. Use `setIssuePrice` to determine how many currency tokens do investors
- *    have to pay for each issued token. The `issuePrice` parameter works like this:
- *    - issuePrice > 0 : issuanceToken.mintAmount = currencyToken.investedAmount / issuePrice;
-      - issuePrice < 0 : issuanceToken.mintAmount = currencyToken.investedAmount * (-1) * issuePrice;
-      - issuePrice = 0 : revert.
+ *    have to pay for each issued token.
  * 3. Use `openIssuance` to allow investors to invest.
  * 4. Investors can `invest` their currency tokens at will.
  * 5. Investors can also `cancelInvestment` and get their currency tokens back.
@@ -38,13 +35,13 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentCancelled(address investor, uint256 amount);
 
     IERC20 public currencyToken;
-    IERC20Mintable public issuanceToken;
+    ERC20MintableDetailed public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
-    int256 public issuePrice;
+    uint256 public issuePrice;
     uint256 internal nextInvestor;
 
     /**
@@ -55,7 +52,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
-        issuanceToken = IERC20Mintable(_issuanceToken);
+        issuanceToken = ERC20MintableDetailed(_issuanceToken);
         currencyToken = IERC20(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");
@@ -76,12 +73,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN",
             "Not open for investments."
         );
-        if (issuePrice > 0){
-            require(
-                _amount.mod(uint256(issuePrice)) == 0,
-                "Fractional investments not allowed."
-            );
-        }
+        require(
+            _amount.mod(issuePrice) == 0,
+            "Fractional investments not allowed."
+        );
         currencyToken.transferFrom(msg.sender, address(this), _amount);
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
@@ -102,18 +97,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        if (issuePrice > 0) {
-            issuanceToken.mint(
-                msg.sender,
-                uint256(int256(amount).newFixed().divide(issuePrice.newFixed()).fromFixed())
-            );
-        }
-        else {
-            issuanceToken.mint(
-                msg.sender,
-                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed().abs()).fromFixed())
-            );
-        }
+        issuanceToken.mint(
+            msg.sender,
+            // formula here
+        );
     }
 
     /**
@@ -139,7 +126,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      */
     function openIssuance() public onlyOwner {
         require(
-            issuePrice != 0,
+            issuePrice > 0,
             "Issue price not set."
         );
         _transition("OPEN");
@@ -170,12 +157,11 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         currencyToken.transfer(_wallet, amountRaised);
     }
 
-    function setIssuePrice(int256 _issuePrice) public onlyOwner {
+    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
         require(
             currentState == "SETUP",
             "Cannot setup now."
         );
-        require(_issuePrice != 0, "Cannot set issuePrice to be zero.");
         issuePrice = _issuePrice;
         emit IssuePriceSet();
     }

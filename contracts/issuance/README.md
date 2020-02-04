@@ -11,10 +11,7 @@ This issuance contract accepts investments using an accepted ERC20 token, and it
 The issuance is governed by the following parameters:
 * `currencyToken`: The token that is accepted in payment for investments.
 * `issuanceToken`: The token that will be issued if conditions are met.
-* `issuePrice`:  The amount of currency tokens that are required to buy one issued token. The `issuePrice` parameter works like this:
-    - issuePrice > 0 : issuanceToken.mintAmount = currencyToken.investedAmount / issuePrice;
-    - issuePrice < 0 : issuanceToken.mintAmount = currencyToken.investedAmount * (-1) * issuePrice;
-    - issuePrice = 0 : revert.
+* `issuePrice`:  The amount of currency tokens that are required to buy one issued token.
 
 ```
 SETUP ─── OPEN ─┬─ LIVE

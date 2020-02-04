@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./../../token/IERC20Mintable.sol";
+import "../../token/ERC20MintableDetailed.sol";
 import "./../../state/StateMachine.sol";
 
 
@@ -30,13 +30,13 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentCancelled(address investor, uint256 amount);
 
     IERC20 public currencyToken;
-    IERC20Mintable public issuanceToken;
+    ERC20MintableDetailed public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
-    int256 public issuePrice;
+    uint256 public issuePrice;
     uint256 public softCap;
     uint256 public minInvestment;
 
@@ -49,7 +49,7 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
         address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
-        issuanceToken = IERC20Mintable(_issuanceToken);
+        issuanceToken = ERC20MintableDetailed(_issuanceToken);
         currencyToken = IERC20(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");
@@ -102,18 +102,10 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
         require(investments[msg.sender] > 0, "No investments found.");
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        if (issuePrice > 0) {
-            issuanceToken.mint(
-                msg.sender,
-                uint256(int256(amount).newFixed().divide(issuePrice.newFixed()).fromFixed())
-            );
-        }
-        else {
-            issuanceToken.mint(
-                msg.sender,
-                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed().abs()).fromFixed())
-            );
-        }
+        issuanceToken.mint(
+            msg.sender,
+            // formula here
+        );
     }
 
     /**
@@ -174,9 +166,8 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
         currencyToken.transfer(_wallet, amountRaised);
     }
 
-    function setIssuePrice(int256 _issuePrice) public onlyOwner {
+    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
         require(currentState == "SETUP", "Cannot setup now.");
-        require(_issuePrice != 0, "Cannot set issuePrice to be zero.");
         issuePrice = _issuePrice;
         emit IssuePriceSet();
     }
