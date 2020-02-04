@@ -9,13 +9,16 @@ This is an Ethereum project that implements a simple Issuance that can be used f
 This issuance contract accepts investments using an accepted ERC20 token, and it will return to the investor a different ERC20 token if certain conditions are met.
 
 The issuance is governed by the following parameters:
-`currencyToken`: The token that is accepted in payment for investments.
-`issuanceToken`: The token that will be issued if conditions are met.
-`openingDate`: The time at which investments start being accepted.
-`closingDate`: The time at which investments stop being accepted, and distribution of issued tokens is possible.
-`issuePrice`:  The amount of currency tokens that are required to buy one issued token.
-`softCap`: The minimum mount of currency that needs to be raised for tokens to be distributed.
-`minInvestment`: The minimum amount of currency that can be invested in one go.
+* `currencyToken`: The token that is accepted in payment for investments.
+* `issuanceToken`: The token that will be issued if conditions are met.
+* `openingDate`: The time at which investments start being accepted.
+* `closingDate`: The time at which investments stop being accepted, and distribution of issued tokens is possible.
+* `issuePrice`:  The amount of currency tokens that are required to buy one issued token. The `issuePrice` parameter works like this:
+    - issuePrice > 0 : issuanceToken.mintAmount = currencyToken.investedAmount / issuePrice;
+    - issuePrice < 0 : issuanceToken.mintAmount = currencyToken.investedAmount * (-1) * issuePrice;
+    - issuePrice = 0 : revert.
+* `softCap`: The minimum mount of currency that needs to be raised for tokens to be distributed.
+* `minInvestment`: The minimum amount of currency that can be invested in one go.
 
                ,-> LIVE
 SETUP -> OPEN -
