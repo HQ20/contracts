@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
 
+import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -14,7 +15,10 @@ import "../state/StateMachine.sol";
  *
  * 1. Initialize contract with the issuance token contract address.
  * 2. Use `setIssuePrice` to determine how many ether (in wei) do investors
- *    have to pay for each issued token.
+ *    have to pay for each issued token. The `issuePrice` parameter works like this:
+ *    - issuePrice > 0 : issuanceToken.mintAmount = investedAmount / issuePrice;
+      - issuePrice < 0 : issuanceToken.mintAmount = investedAmount * (-1) * issuePrice;
+      - issuePrice = 0 : revert.
  * 3. Use `openIssuance` to allow investors to invest.
  * 4. Investors can `invest` their ether at will.
  * 5. Investors can also `cancelInvestment` and get their ether back.
@@ -26,6 +30,7 @@ import "../state/StateMachine.sol";
  */
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
+    using FixidityLib for int256;
 
     event IssuanceCreated();
     event IssuePriceSet();
@@ -39,7 +44,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
 
     uint256 public amountRaised;
     uint256 public amountWithdrawn;
-    uint256 public issuePrice;
+    int256 public issuePrice;
     uint256 internal nextInvestor;
 
     constructor(
@@ -70,7 +75,18 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        issuanceToken.mint(msg.sender, amount.div(issuePrice));
+        if (issuePrice > 0) {
+            issuanceToken.mint(
+                msg.sender,
+                uint256(int256(amount).newFixed().divide(issuePrice.newFixed()).fromFixed())
+            );
+        }
+        else {
+            issuanceToken.mint(
+                msg.sender,
+                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed().abs()).fromFixed())
+            );
+        }
     }
 
     /**
@@ -99,11 +115,12 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN",
             "Not open for investments."
         );
-        require(
-            msg.value.mod(issuePrice) == 0,
-            "Fractional investments not allowed."
-        );
-
+        if (issuePrice > 0){
+            require(
+                msg.value.mod(uint256(issuePrice)) == 0,
+                "Fractional investments not allowed."
+            );
+        }
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
         }
@@ -117,7 +134,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
      */
     function openIssuance() public onlyOwner {
         require(
-            issuePrice > 0,
+            issuePrice != 0,
             "Issue price not set."
         );
         _transition("OPEN");
@@ -150,11 +167,12 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         _wallet.transfer(amount);
     }
 
-    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
+    function setIssuePrice(int256 _issuePrice) public onlyOwner {
         require(
             currentState == "SETUP",
             "Cannot setup now."
         );
+        require(_issuePrice != 0, "Cannot set issuePrice to be zero.");
         issuePrice = _issuePrice;
         emit IssuePriceSet();
     }

@@ -76,11 +76,12 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "OPEN",
             "Not open for investments."
         );
-        require(
-            _amount.mod(uint256(issuePrice.abs().fromFixed())) == 0,
-            "Fractional investments not allowed."
-        );
-
+        if (issuePrice > 0){
+            require(
+                _amount.mod(uint256(issuePrice)) == 0,
+                "Fractional investments not allowed."
+            );
+        }
         currencyToken.transferFrom(msg.sender, address(this), _amount);
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
@@ -110,7 +111,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         else {
             issuanceToken.mint(
                 msg.sender,
-                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed()).fromFixed())
+                uint256(int256(amount).newFixed().multiply(issuePrice.newFixed().abs()).fromFixed())
             );
         }
     }
@@ -138,7 +139,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      */
     function openIssuance() public onlyOwner {
         require(
-            issuePrice > 0,
+            issuePrice != 0,
             "Issue price not set."
         );
         _transition("OPEN");
@@ -174,7 +175,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "SETUP",
             "Cannot setup now."
         );
-        require(issuePrice != 0, "Cannot set issuePrice to be zero.");
+        require(_issuePrice != 0, "Cannot set issuePrice to be zero.");
         issuePrice = _issuePrice;
         emit IssuePriceSet();
     }

@@ -23,14 +23,12 @@ contract('IssuanceEth', (accounts) => {
         issuanceToken = await TestERC20Mintable.new();
         issuanceEth = await IssuanceEth.new(issuanceToken.address);
         await issuanceToken.addMinter(issuanceEth.address);
-        await issuanceEth.setIssuePrice(5);
     });
 
     /**
      * @test {Issuance#invest}
      */
     it('cannot open issuanceEth without issue price', async () => {
-        await issuanceEth.setIssuePrice(0);
         await expectRevert(issuanceEth.openIssuance(), 'Issue price not set.');
     });
 
@@ -38,6 +36,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#openIssuance}
      */
     it('openIssuance can succefully open the Issuance', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         chai.expect(bytes32ToString(await issuanceEth.currentState())).to.be.equal('OPEN');
     });
@@ -46,6 +45,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#invest}
      */
     it('invest should succesfully invest', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         expectEvent(
             await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() }),
@@ -61,6 +61,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#invest}
      */
     it('cannot invest if state is not "OPEN"', async () => {
+        await issuanceEth.setIssuePrice(5);
         await expectRevert(
             issuanceEth.invest({ from: investor1, value: ether('0.5').toString() }),
             'Not open for investments.',
@@ -71,6 +72,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#invest}
      */
     it('cannot invest with fractional investments', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await expectRevert(
             issuanceEth.invest({ from: investor1, value: ether('0.5').add(new BN('1')).toString() }),
@@ -82,6 +84,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#startDistribution}
      */
     it('startDistribution can succesfully close the Issuance', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -93,6 +96,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#claim}
      */
     it('claim sends tokens to investors', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -107,7 +111,24 @@ contract('IssuanceEth', (accounts) => {
     /**
      * @test {Issuance#claim}
      */
+    it('claim sends tokens to investors, with negative issue price', async () => {
+        await issuanceEth.setIssuePrice(-5);
+        await issuanceEth.openIssuance();
+        await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
+        await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
+        await issuanceEth.startDistribution();
+        chai.expect(bytes32ToString(await issuanceEth.currentState())).to.be.equal('LIVE');
+        await issuanceEth.claim({ from: investor1 });
+        await issuanceEth.claim({ from: investor2 });
+        BN(await issuanceToken.balanceOf(investor1)).should.be.bignumber.equal(ether('2.5'));
+        BN(await issuanceToken.balanceOf(investor2)).should.be.bignumber.equal(ether('0.5'));
+    });
+
+    /**
+     * @test {Issuance#claim}
+     */
     it('cannot claim when state is not "LIVE"', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -121,6 +142,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#claim}
      */
     it('cannot claim when not invested', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.startDistribution();
@@ -134,6 +156,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     it('cancelInvestment should cancel an investor investments', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor1, value: ether('0.1').toString() });
@@ -151,6 +174,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     it('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -165,6 +189,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#cancelInvestment}
      */
     it('cannot cancel investment when not invested', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await expectRevert(
             issuanceEth.cancelInvestment({ from: investor1 }),
@@ -176,6 +201,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#cancelAllInvestments}
      */
     it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -190,6 +216,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#withdraw}
      */
     it('withdraw should transfer all collected tokens to the wallet of the owner', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await issuanceEth.invest({ from: investor1, value: ether('0.5').toString() });
         await issuanceEth.invest({ from: investor2, value: ether('0.1').toString() });
@@ -206,6 +233,7 @@ contract('IssuanceEth', (accounts) => {
      * @test {Issuance#withdraw}
      */
     it('cannot transfer funds when issuanceEth state is not "LIVE"', async () => {
+        await issuanceEth.setIssuePrice(5);
         await issuanceEth.openIssuance();
         await expectRevert(
             issuanceEth.withdraw(wallet),

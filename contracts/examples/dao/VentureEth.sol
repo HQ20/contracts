@@ -10,8 +10,11 @@ import "../../token/ERC20DividendableEth.sol";
  * @title VentureEth
  * @notice Implements a venture
  *
- * 1. Use `setIssuePrice` to determine how many ether (in wei) do investors
- *    have to pay for each issued token.
+ * 1. Use `setIssuePrice` to determine how many ether do investors
+ *    have to pay for each issued token. The `issuePrice` parameter works like this:
+ *    - issuePrice > 0 : issuanceToken.mintAmount = investedAmount / issuePrice;
+      - issuePrice < 0 : issuanceToken.mintAmount = investedAmount * (-1) * issuePrice;
+      - issuePrice = 0 : revert.
  * 2. Use `openIssuance` to allow investors to invest.
  * 3. Investors can `invest` their ether at will.
  * 4. Investors can also `cancelInvestment` and get their ether back.
