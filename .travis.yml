@@ -2,22 +2,21 @@ dist: xenial
 language: node_js
 cache: yarn
 node_js:
-    - lts/dubnium
+- lts/dubnium
 install:
-    - yarn
+- yarn
 jobs:
   include:
-    - stage: Tests
-      script: yarn test:ci
-    -
-      script: yarn coverage:ci
-    -
-      script: yarn lint
-    - stage: npm release
-      provider: npm
-      email: admin@techhq.io
-      api_key:
-        secure: FsjrlIQdw9wnQRu8JfQ9ZIrtmsvD/J3LbrvIGqF6LKY2ISyaHFo+CfhDthr+P57ICUSxpPyLwB29HkcEEWUL4dCfmSI/ePW/+EHCmSQ9CXRJIE3971264jZLKy/Sv1gMi8fRw3qNsZ0aE8S7RBrO7TppMoeKc6YI3KayODCtpClU53OJ3g17MpcnG8jkO9O8M1Qnfrv4q7ncJx/eIru7K7Xbs1wAWI3Ds0qKIxBLmvZcGwp/90SgHX9/igd3VQZlTaR/Vf6rWsK8hUFi9o6vFo+DMqPOf0tqA9GXlMJvDQwqOvHXv52INkCg06tuuCZxcVJh1gpBKzJXN2T6p9vmUyVqnN9n/fg6dTiaT28biADAtEbhWp45eyP5yE0lN91esC4xFW5yHgSGJuITUnAK/jAVc081YAATFone7QyH1G2uXpIIOUpy5GGHZHWvSOPvG1drjs+W8zTrq4Iq3yGt2FExocsjK+vjeLMVa1cM0uN6Yj7oxpNO6WZsG5zhwPsHPF8lR/wpLTGHAUy7gaR9Os9aRUtxBoeGYCgJf/HcUEnXFn5dbYoQkjKr3gxSYKkyCmQ1NjbHdHJoIbLh+kNW2kxVD/hKjtXf94l9VGdF+c7T5JoEiVLp1kOxxN66PqBBlQ3nZTjUndJAZRvp78a4XzkY3UABOWa0UUFjlytICyE=
-      on:
-        tags: true
-        repo: HQ20/contracts
+  - stage: Tests
+    script: yarn test:ci
+  - script: yarn coverage:ci
+  - script: yarn lint
+
+deploy:
+  provider: npm
+  email: hq20
+  api_key:
+    secure: aCuj6pMtpNz+vwTTMkfgb2V7Vp1xFCRWkyQTMapJNHm9RyEaPUlAOKE3ifp5lVNFS1Az0xDJm3ud91iNKM7VgIIc49XFzKX5Qjp2sT+b7gJHQLwXZFWg9+/vj8KgicYj1Dj8/rDSggzTCnMX7iY1U1VJv2ngelhmv7RHg8tg7LYt56WViK9iGr82AW7fop22OqhzGuy2fvcTasNWciRzWND3QX3me82oAV1yAluHDH9Sp+2KU0CFALFG4ZEpLSeQVuFlVqI021pufc8h94Ii4vA5Fyky+nZk8V1eUeplZcOUiC3nKMGZWm3BTyv81vZYN/nGP4sJ5ExqsHZrt/IPz7FkJQGtEjGYLy+qspSsMbtJdY4CXs+4QJxU9xZmsaczYezRcNUXubBP1O5XrqDE/zWG2lpmdczrQQahklrDxSWzagh1PyNCNOtUJNla2WuJiXIfqzDt6s02RxpWoebJwLaGxhHtjJbAHrtjG012vy1F7J2NJ9qFk4OdHfJgR1mAdjXQUfdRr7V4GZx4M9ljfLgYoatIXwVUO/t6YE7NEoJ2FynCBzERInMtMluK26xZrJjZPGAIQkE0kcNWjQHTW1AgXs5NG/Ef5J+a5YO3kz4fIT0ydnYfTJ40YKeKrGsW5euIbAf1X1AmB0s7LOK3RWepKj+sDWn1xvi5MA82tMc=
+  on:
+    tags: true
+    repo: HQ20/contracts
