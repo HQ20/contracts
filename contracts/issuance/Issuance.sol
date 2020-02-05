@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../token/ERC20MintableDetailed.sol";
 import "./../state/StateMachine.sol";
+import "../utils/SafeCast.sol";
 
 
 /**
@@ -27,6 +28,7 @@ import "./../state/StateMachine.sol";
 contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
     using FixidityLib for int256;
+    using SafeCast for *;
 
     event IssuanceCreated();
     event IssuePriceSet();
@@ -96,15 +98,19 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
+        int256 investedFixed = amount.safeUintToInt().newFixed(
+                currencyToken.decimals()
+            );
+        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(
+                currencyToken.decimals()
+            );
+        int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
+        uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
+                issuanceToken.decimals()
+            ).safeIntToUint();
         issuanceToken.mint(
             msg.sender,
-            safeIntToUint(
-                safeUintToInt(amount).newFixed(currencyToken.decimals())
-                .divide(
-                    safeUintToInt(issuePrice).newFixed(currencyToken.decimals())
-                )
-                .fromFixed(issuanceToken.decimals())
-            )
+            issuanceTokens
         );
     }
 
@@ -169,21 +175,5 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         issuePrice = _issuePrice;
         emit IssuePriceSet();
-    }
-
-    function safeIntToUint(int256 x) internal pure returns(uint256) {
-        require(
-            x >= 0,
-            "Cannot cast negative signed integer to unsigned integer."
-        );
-        return uint256(x);
-    }
-
-    function safeUintToInt(uint256 x) internal pure returns(int256) {
-        require(
-            x <= safeIntToUint(FixidityLib.maxInt256()),
-            "Cannot cast overflowing unsigned integer to signed integer."
-        );
-        return int256(x);
     }
 }
