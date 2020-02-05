@@ -24,8 +24,8 @@ contract('DAO - pre initial funding cases', (accounts) => {
     let venture1: VentureEthInstance;
 
     beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 18);
-        venture1 = await VentureEth.new('VentureToken', 'VNT', 18);
+        dao = await DAO.new('DAOToken', 'DAO', 16);
+        venture1 = await VentureEth.new('VentureToken', 'VNT', 16);
     });
 
     /**
@@ -107,16 +107,16 @@ contract('DAO - post initial funding cases', (accounts) => {
     let venture1: VentureEthInstance;
 
     beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 18);
-        venture1 = await VentureEth.new('VentureToken', 'VNT', 18);
-        await dao.setIssuePrice(ether('5'));
+        dao = await DAO.new('DAOToken', 'DAO', 16);
+        venture1 = await VentureEth.new('VentureToken', 'VNT', 16);
+        await dao.setIssuePrice(ether('0.05'));
         await dao.openIssuance();
         await dao.invest({ from: holder1, value: ether('1').toString() });
         await dao.invest({ from: holder2, value: ether('1').toString() });
         await dao.startDistribution();
         await dao.claim({ from: holder1 });
         await dao.claim({ from: holder2 });
-        await venture1.setIssuePrice(ether('10'));
+        await venture1.setIssuePrice(ether('0.1'));
         await venture1.openIssuance();
     });
 
@@ -160,18 +160,18 @@ contract('DAO - ventures', (accounts) => {
     let venture2: VentureEthInstance;
 
     beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 18);
-        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 18);
-        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 18);
-        await dao.setIssuePrice(ether('5'));
+        dao = await DAO.new('DAOToken', 'DAO', 16);
+        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 16);
+        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 16);
+        await dao.setIssuePrice(ether('0.05'));
         await dao.openIssuance();
         await dao.invest({ from: holder1, value: ether('1').toString() });
         await dao.invest({ from: holder2, value: ether('2').toString() });
         await dao.startDistribution();
         await dao.claim({ from: holder1 });
         await dao.claim({ from: holder2 });
-        await venture1.setIssuePrice(ether('10'));
-        await venture2.setIssuePrice(ether('1'));
+        await venture1.setIssuePrice(ether('0.1'));
+        await venture2.setIssuePrice(ether('0.01'));
         await venture1.openIssuance();
         await venture2.openIssuance();
     });

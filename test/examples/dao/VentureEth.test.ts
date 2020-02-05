@@ -19,8 +19,8 @@ contract('VentureEth - after issuance', (accounts) => {
     let ventureEth: VentureEthInstance;
 
     beforeEach(async () => {
-        ventureEth = await VentureEth.new('VentureToken', 'VNT', 18);
-        await ventureEth.setIssuePrice(ether('5'));
+        ventureEth = await VentureEth.new('VentureToken', 'VNT', 16);
+        await ventureEth.setIssuePrice(ether('0.05'));
         await ventureEth.openIssuance();
         await ventureEth.invest({ from: investor1, value: ether('0.5').toString() });
         await ventureEth.invest({ from: investor2, value: ether('0.1').toString() });

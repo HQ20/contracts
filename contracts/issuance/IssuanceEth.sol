@@ -74,7 +74,13 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         investments[msg.sender] = 0;
         issuanceToken.mint(
             msg.sender,
-            // formula here
+            safeIntToUint(
+                safeUintToInt(amount).newFixed(18)
+                .divide(
+                    safeUintToInt(issuePrice).newFixed(18)
+                )
+                .fromFixed(issuanceToken.decimals())
+            )
         );
     }
 
@@ -161,5 +167,21 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         );
         issuePrice = _issuePrice;
         emit IssuePriceSet();
+    }
+
+    function safeIntToUint(int256 x) internal pure returns(uint256) {
+        require(
+            x >= 0,
+            "Cannot cast negative signed integer to unsigned integer."
+        );
+        return uint256(x);
+    }
+
+    function safeUintToInt(uint256 x) internal pure returns(int256) {
+        require(
+            x <= safeIntToUint(FixidityLib.maxInt256()),
+            "Cannot cast overflowing unsigned integer to signed integer."
+        );
+        return int256(x);
     }
 }

@@ -4,7 +4,9 @@ const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin
 import { IssuanceInstance, ERC20MintableDetailedInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require('Issuance') as Truffle.Contract<IssuanceInstance>;
-const ERC20MintableDetailed = artifacts.require('TestERC20Mintable') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const ERC20MintableDetailed = artifacts.require(
+        'ERC20MintableDetailed'
+    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -35,6 +37,7 @@ contract('IssuanceToken', (accounts) => {
      * @test {Issuance#openIssuance}
      */
     it('cannot open issuance without setting issue price', async () => {
+        await issuance.setIssuePrice(ether('0'));
         await expectRevert(
             issuance.openIssuance(),
             'Issue price not set.'

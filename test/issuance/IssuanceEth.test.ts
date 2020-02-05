@@ -4,7 +4,9 @@ const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin
 import { IssuanceEthInstance, ERC20MintableDetailedInstance } from '../../types/truffle-contracts';
 
 const IssuanceEth = artifacts.require('IssuanceEth') as Truffle.Contract<IssuanceEthInstance>;
-const ERC20MintableDetailed = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const ERC20MintableDetailed = artifacts.require(
+        'ERC20MintableDetailed'
+    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -23,7 +25,7 @@ contract('IssuanceEth', (accounts) => {
         issuanceToken = await ERC20MintableDetailed.new('IssuanceToken', 'ISST', 17);
         issuanceEth = await IssuanceEth.new(issuanceToken.address);
         await issuanceToken.addMinter(issuanceEth.address);
-        await issuanceEth.setIssuePrice(ether('5'));
+        await issuanceEth.setIssuePrice(ether('0.05'));
     });
 
     /**
@@ -100,8 +102,8 @@ contract('IssuanceEth', (accounts) => {
         chai.expect(bytes32ToString(await issuanceEth.currentState())).to.be.equal('LIVE');
         await issuanceEth.claim({ from: investor1 });
         await issuanceEth.claim({ from: investor2 });
-        BN(await issuanceToken.balanceOf(investor1)).should.be.bignumber.equal(ether('0.01'));
-        BN(await issuanceToken.balanceOf(investor2)).should.be.bignumber.equal(ether('0.002'));
+        BN(await issuanceToken.balanceOf(investor1)).should.be.bignumber.equal(ether('1'));
+        BN(await issuanceToken.balanceOf(investor2)).should.be.bignumber.equal(ether('0.2'));
     });
 
     /**

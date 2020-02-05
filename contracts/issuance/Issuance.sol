@@ -2,7 +2,6 @@ pragma solidity ^0.5.10;
 
 import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../token/ERC20MintableDetailed.sol";
@@ -13,7 +12,7 @@ import "./../state/StateMachine.sol";
  * @title Issuance
  * @dev Implements a very simple issuance process for tokens
  *
- * 1. Initialize contract with issuance token and currency token.
+ * 1. Initialize contract with issuance token and currency token. Both tokens must inherit from ERC20Minatble and ERC20Detailed.
  * 2. Use `setIssuePrice` to determine how many currency tokens do investors
  *    have to pay for each issued token.
  * 3. Use `openIssuance` to allow investors to invest.
@@ -34,7 +33,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    IERC20 public currencyToken;
+    ERC20MintableDetailed public currencyToken;
     ERC20MintableDetailed public issuanceToken;
 
     address[] public investors;
@@ -53,7 +52,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         address _currencyToken
     ) public Ownable() StateMachine() {
         issuanceToken = ERC20MintableDetailed(_issuanceToken);
-        currencyToken = IERC20(_currencyToken);
+        currencyToken = ERC20MintableDetailed(_currencyToken);
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -99,7 +98,13 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         investments[msg.sender] = 0;
         issuanceToken.mint(
             msg.sender,
-            // formula here
+            safeIntToUint(
+                safeUintToInt(amount).newFixed(currencyToken.decimals())
+                .divide(
+                    safeUintToInt(issuePrice).newFixed(currencyToken.decimals())
+                )
+                .fromFixed(issuanceToken.decimals())
+            )
         );
     }
 
@@ -164,5 +169,21 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         issuePrice = _issuePrice;
         emit IssuePriceSet();
+    }
+
+    function safeIntToUint(int256 x) internal pure returns(uint256) {
+        require(
+            x >= 0,
+            "Cannot cast negative signed integer to unsigned integer."
+        );
+        return uint256(x);
+    }
+
+    function safeUintToInt(uint256 x) internal pure returns(int256) {
+        require(
+            x <= safeIntToUint(FixidityLib.maxInt256()),
+            "Cannot cast overflowing unsigned integer to signed integer."
+        );
+        return int256(x);
     }
 }
