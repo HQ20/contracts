@@ -40,7 +40,7 @@
         "@openzeppelin/contracts": "2.4.x"
     },
     "devDependencies": {
-        "@openzeppelin/contracts": "2.4.0",
+        "@openzeppelin/contracts": "2.5.0",
         "@openzeppelin/test-helpers": "0.5.4",
         "@truffle/hdwallet-provider": "1.0.30",
         "@types/bignumber.js": "5.0.0",
