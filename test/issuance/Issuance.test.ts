@@ -40,14 +40,14 @@ contract('Issuance', (accounts) => {
         await issuanceToken.addMinter(issuance.address);
         await currencyToken.mint(investor1, balance1);
         await currencyToken.mint(investor2, balance2);
+        await currencyToken.approve(issuance.address, investment1, { from: investor1 });
+        await currencyToken.approve(issuance.address, investment2, { from: investor2 });
     });
 
     /**
      * @test {Issuance#invest}
      */
     it('cannot invest if state is not "OPEN"', async () => {
-        await currencyToken.mint(investor1, balance1);
-        await currencyToken.approve(issuance.address, investment1, { from: investor1 });
         await expectRevert(
             issuance.invest(investment1, { from: investor1 }),
             'Not open for investments.',
@@ -110,7 +110,6 @@ contract('Issuance', (accounts) => {
          */
         it('fractional investments are not accepted', async () => {
             const fractionalInvestment = BN(investment1) + 1;
-            await currencyToken.approve(issuance.address, fractionalInvestment, { from: investor1 });
             await expectRevert(
                 issuance.invest(fractionalInvestment, { from: investor1 }),
                 'Fractional investments not allowed.',
@@ -121,7 +120,6 @@ contract('Issuance', (accounts) => {
          * @test {Issuance#invest}
          */
         it('investments are accepted', async () => {
-            await currencyToken.approve(issuance.address, investment1, { from: investor1 });
             expectEvent(
                 await issuance.invest(investment1, { from: investor1 }),
                 'InvestmentAdded',
@@ -135,8 +133,6 @@ contract('Issuance', (accounts) => {
         describe('once invested', () => {
 
             beforeEach(async () => {
-                await currencyToken.approve(issuance.address, investment1, { from: investor1 });
-                await currencyToken.approve(issuance.address, investment2, { from: investor2 });
                 await issuance.invest(investment1, { from: investor1 });
                 await issuance.invest(investment2, { from: investor2 });
             });
