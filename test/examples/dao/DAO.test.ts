@@ -110,14 +110,14 @@ contract('DAO - post initial funding cases', (accounts) => {
         dao = await DAO.new('DAOToken', 'DAO', 16);
         venture1 = await VentureEth.new('VentureToken', 'VNT', 16);
         await dao.setIssuePrice(ether('0.05'));
-        await dao.openIssuance();
+        await dao.startIssuance();
         await dao.invest({ from: holder1, value: ether('1').toString() });
         await dao.invest({ from: holder2, value: ether('1').toString() });
         await dao.startDistribution();
         await dao.claim({ from: holder1 });
         await dao.claim({ from: holder2 });
         await venture1.setIssuePrice(ether('0.1'));
-        await venture1.openIssuance();
+        await venture1.startIssuance();
     });
 
     /**
@@ -164,7 +164,7 @@ contract('DAO - ventures', (accounts) => {
         venture1 = await VentureEth.new('VentureToken1', 'VNT1', 16);
         venture2 = await VentureEth.new('VentureToken2', 'VNT2', 16);
         await dao.setIssuePrice(ether('0.05'));
-        await dao.openIssuance();
+        await dao.startIssuance();
         await dao.invest({ from: holder1, value: ether('1').toString() });
         await dao.invest({ from: holder2, value: ether('2').toString() });
         await dao.startDistribution();
@@ -172,8 +172,8 @@ contract('DAO - ventures', (accounts) => {
         await dao.claim({ from: holder2 });
         await venture1.setIssuePrice(ether('0.1'));
         await venture2.setIssuePrice(ether('0.01'));
-        await venture1.openIssuance();
-        await venture2.openIssuance();
+        await venture1.startIssuance();
+        await venture2.startIssuance();
     });
 
     /**

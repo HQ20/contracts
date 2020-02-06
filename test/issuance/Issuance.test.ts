@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { IssuanceInstance, ERC20MintableDetailedInstance } from '../../types/truffle-contracts';
+import { ERC20MintableDetailedInstance, IssuanceInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require('Issuance') as Truffle.Contract<IssuanceInstance>;
 const ERC20MintableDetailed = artifacts.require(
@@ -16,7 +16,15 @@ contract('Issuance', (accounts) => {
 
     const investor1 = accounts[1];
     const investor2 = accounts[2];
-    const wallet = accounts[3];
+    const notInvestor = accounts[3];
+    const beneficiary = accounts[4];
+    const issuePrice = ether('5');
+    const balance1 = ether('100');
+    const balance2 = ether('50');
+    const investment1 = ether('50');
+    const investment2 = ether('10');
+    const claimed1 = '1';
+    const claimed2 = '0.2';
 
     let issuance: IssuanceInstance;
     let currencyToken: ERC20MintableDetailedInstance;
@@ -30,238 +38,223 @@ contract('Issuance', (accounts) => {
             currencyToken.address,
         );
         await issuanceToken.addMinter(issuance.address);
+        await currencyToken.mint(investor1, balance1);
+        await currencyToken.mint(investor2, balance2);
     });
 
     /**
-     * @test {Issuance#openIssuance}
+     * @test {Issuance#invest}
      */
-    it('cannot open issuance without setting issue price', async () => {
-        await issuance.setIssuePrice(ether('0'));
+    it('cannot invest if state is not "OPEN"', async () => {
+        await currencyToken.mint(investor1, balance1);
+        await currencyToken.approve(issuance.address, investment1, { from: investor1 });
         await expectRevert(
-            issuance.openIssuance(),
-            'Issue price not set.'
+            issuance.invest(investment1, { from: investor1 }),
+            'Not open for investments.',
         );
     });
 
-    describe('Open issuance', () => {
+    /**
+     * @test {Issuance#startIssuance}
+     */
+    it('cannot start issuance without setting issue price', async () => {
+        await expectRevert(
+            issuance.startIssuance(),
+            'Issue price not set.',
+        );
+    });
+
+    it('can set issue price', async () => {
+        await issuance.setIssuePrice(issuePrice);
+        BN(await issuance.issuePrice()).should.be.bignumber.equal(issuePrice);
+    });
+
+    /**
+     * @test {Issuance#startIssuance}
+     */
+    it('can start the issuance process', async () => {
+        await issuance.setIssuePrice(issuePrice);
+        await issuance.startIssuance();
+        bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
+    });
+
+    describe('after opening issuance', () => {
 
         beforeEach(async () => {
-            await issuance.setIssuePrice(ether('5'));
+            await issuance.setIssuePrice(issuePrice);
+            await issuance.startIssuance();
         });
 
         /**
-         * @test {Issuance#openIssuance}
+         * @test {Issuance#withdraw}
          */
-        it('openIssuance can succefully open the Issuance', async () => {
-            await issuance.openIssuance();
-            bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
+        it('the beneficiary cannot withdraw funds yet', async () => {
+            await expectRevert(
+                issuance.withdraw(beneficiary),
+                'Cannot withdraw funds now.',
+            );
         });
 
-        describe('Invest', () => {
+        /**
+         * @test {Issuance#cancelInvestment}
+         */
+        it('investors cannot cancel investments if not invested', async () => {
+            await expectRevert(
+                issuance.cancelInvestment({ from: investor1 }),
+                'No investments found.',
+            );
+        });
+
+        /**
+         * @test {Issuance#invest}
+         */
+        it('fractional investments are not accepted', async () => {
+            const fractionalInvestment = BN(investment1) + 1;
+            await currencyToken.approve(issuance.address, fractionalInvestment, { from: investor1 });
+            await expectRevert(
+                issuance.invest(fractionalInvestment, { from: investor1 }),
+                'Fractional investments not allowed.',
+            );
+        });
+
+        /**
+         * @test {Issuance#invest}
+         */
+        it('investments are accepted', async () => {
+            await currencyToken.approve(issuance.address, investment1, { from: investor1 });
+            expectEvent(
+                await issuance.invest(investment1, { from: investor1 }),
+                'InvestmentAdded',
+                {
+                    investor: investor1,
+                    amount: investment1
+                },
+            );
+        });
+
+        describe('once invested', () => {
 
             beforeEach(async () => {
-                await issuance.openIssuance();
+                await currencyToken.approve(issuance.address, investment1, { from: investor1 });
+                await currencyToken.approve(issuance.address, investment2, { from: investor2 });
+                await issuance.invest(investment1, { from: investor1 });
+                await issuance.invest(investment2, { from: investor2 });
             });
 
             /**
-             * @test {Issuance#invest}
+             * @test {Issuance#claim}
              */
-            it('invest should succesfully invest', async () => {
-                await currencyToken.mint(investor1, ether('100'));
-                await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
+            it('investors cannot claim tokens yet', async () => {
+                await expectRevert(
+                    issuance.claim({ from: investor1 }),
+                    'Cannot claim now.',
+                );
+            });
+
+            /**
+             * @test {Issuance#cancelInvestment}
+             */
+            it('investors can cancel their investments', async () => {
                 expectEvent(
-                    await issuance.invest(ether('50'), { from: investor1 }),
-                    'InvestmentAdded',
+                    await issuance.cancelInvestment({ from: investor1 }),
+                    'InvestmentCancelled',
                     {
                         investor: investor1,
-                        amount: ether('50')
+                        amount: investment1,
                     },
                 );
             });
 
-            describe('Start distribution', () => {
-
-                beforeEach(async () => {
-                    await currencyToken.mint(investor1, ether('100'));
-                    await currencyToken.mint(investor2, ether('50'));
-                    await currencyToken.approve(issuance.address, ether('100'), { from: investor1 });
-                    await currencyToken.approve(issuance.address, ether('50'), { from: investor2 });
-                    await issuance.invest(ether('50'), { from: investor1 });
-                    await issuance.invest(ether('10'), { from: investor2 });
-                });
-                /**
-                 * @test {Issuance#startDistribution}
-                 */
-                it('startDistribution can succesfully close the Issuance', async () => {
-                    await issuance.startDistribution();
-                    bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
-                });
-
-                describe('Claim & Withdraw', () => {
-
-                    beforeEach(async () => {
-                        await issuance.startDistribution();
-                    });
-
-                    /**
-                     * @test {Issuance#claim}
-                     */
-                    it('claim sends tokens to investors', async () => {
-                        await issuance.claim({ from: investor1 });
-                        await issuance.claim({ from: investor2 });
-                        web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('1');
-                        web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('0.2');
-                    });
-
-                    /**
-                     * @test {Issuance#withdraw}
-                     */
-                    it('withdraw should transfer all collected tokens to the wallet of the owner', async () => {
-                        await issuance.claim({ from: investor1 });
-                        await issuance.claim({ from: investor2 });
-                        await issuance.withdraw(wallet);
-                        web3.utils.fromWei(await currencyToken.balanceOf(wallet), 'ether').should.be.equal('60');
-                    });
-
-                    describe('Cancel fail', () => {
-
-                        /**
-                         * @test {Issuance#cancelInvestment}
-                         */
-                        it('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
-                            await expectRevert(
-                                issuance.cancelInvestment({ from: investor1 }),
-                                'Cannot cancel now.',
-                            );
-                        });
-
-                    });
-
-                });
-
-                describe('Claim fail', () => {
-
-                    /**
-                     * @test {Issuance#claim}
-                     */
-                    it('cannot claim when state is not "LIVE"', async () => {
-                        await expectRevert(
-                            issuance.claim({ from: investor1 }),
-                            'Cannot claim now.',
-                        );
-                    });
-
-                });
-
-                describe('Cancel', () => {
-                    /**
-                     * @test {Issuance#cancelInvestment}
-                     */
-                    it('cancelInvestment should cancel an investor investments', async () => {
-                        await issuance.invest(ether('10'), { from: investor1 });
-                        expectEvent(
-                            await issuance.cancelInvestment({ from: investor1 }),
-                            'InvestmentCancelled',
-                            {
-                                investor: investor1,
-                                amount: ether('60'),
-                            },
-                        );
-                    });
-
-                    /**
-                     * @test {Issuance#cancelAllInvestments}
-                     */
-                    it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
-                        await issuance.cancelAllInvestments();
-                        bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
-                        await issuance.cancelInvestment({ from: investor1 });
-                        await issuance.cancelInvestment({ from: investor2 });
-                        web3.utils.fromWei(await currencyToken.balanceOf(investor1), 'ether').should.be.equal('100');
-                        web3.utils.fromWei(await currencyToken.balanceOf(investor2), 'ether').should.be.equal('50');
-                    });
-
-                });
-
-                describe('Withdraw fail', () => {
-                    /**
-                     * @test {Issuance#withdraw}
-                     */
-                    it('cannot transfer funds when issuance state is not "LIVE"', async () => {
-                        await expectRevert(
-                            issuance.withdraw(wallet),
-                            'Cannot transfer funds now.',
-                        );
-                    });
-
-                });
-
+            /**
+             * @test {Issuance#cancelAllInvestments}
+             */
+            it('the issuance process can be cancelled', async () => {
+                await issuance.cancelAllInvestments();
+                bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
             });
 
-            describe('Not invested', () => {
-                /**
-                 * @test {Issuance#claim}
-                 */
-                it('cannot claim when not invested', async () => {
-                    await currencyToken.mint(investor1, ether('100'));
-                    await currencyToken.mint(investor2, ether('50'));
-                    await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                    await currencyToken.approve(issuance.address, ether('10'), { from: investor2 });
-                    await issuance.invest(ether('50'), { from: investor1 });
+            /**
+             * @test {Issuance#startDistribution}
+             */
+            it('distribution can start', async () => {
+                await issuance.startDistribution();
+                bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
+            });
+
+            describe('once distribution starts', () => {
+
+                beforeEach(async () => {
                     await issuance.startDistribution();
-                    await expectRevert(
-                        issuance.claim({ from: investor2 }),
-                        'No investments found.',
-                    );
                 });
 
                 /**
                  * @test {Issuance#cancelInvestment}
                  */
-                it('cannot cancel investment when not invested', async () => {
-                    await currencyToken.mint(investor1, ether('100'));
-                    await currencyToken.approve(issuance.address, ether('60'), { from: investor1 });
+                it('investments cannot be cancelled', async () => {
                     await expectRevert(
                         issuance.cancelInvestment({ from: investor1 }),
+                        'Cannot cancel now.',
+                    );
+                });
+
+                /**
+                 * @test {Issuance#claim}
+                 */
+                it('investors cannot claim when not invested', async () => {
+                    await expectRevert(
+                        issuance.claim({ from: notInvestor }),
                         'No investments found.',
                     );
                 });
 
+                /**
+                 * @test {Issuance#claim}
+                 */
+                it('investors can claim tokens for their investments', async () => {
+                    await issuance.claim({ from: investor1 });
+                    await issuance.claim({ from: investor2 });
+                    web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal(claimed1);
+                    web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal(claimed2);
+                });
+
+                /**
+                 * @test {Issuance#withdraw}
+                 */
+                it('the beneficiary can withdraw all collected funds', async () => {
+                    await issuance.withdraw(beneficiary);
+                    BN(await currencyToken.balanceOf(beneficiary)).should.be.bignumber.equal(
+                        BN(investment1).add(BN(investment2))
+                    );
+                });
             });
 
+            describe('once the issuance process is cancelled', () => {
+                beforeEach(async () => {
+                    await issuance.cancelAllInvestments();
+                });
+
+                /**
+                 * @test {Issuance#cancelAllInvestments}
+                 */
+                it('investors can claim their investments back', async () => {
+                    await issuance.cancelInvestment({ from: investor1 });
+                    await issuance.cancelInvestment({ from: investor2 });
+                    BN(await currencyToken.balanceOf(investor1)).should.be.bignumber.equal(balance1);
+                    BN(await currencyToken.balanceOf(investor2)).should.be.bignumber.equal(balance2);
+                });
+
+                /**
+                 * @test {Issuance#withdraw}
+                 */
+                it('the beneficiary cannot withdraw funds', async () => {
+                    await expectRevert(
+                        issuance.withdraw(beneficiary),
+                        'Cannot withdraw funds now.',
+                    );
+                });
+            });
         });
-
-        describe('Invest fail', () => {
-
-            /**
-             * @test {Issuance#invest}
-             */
-            it('cannot invest if state is not "OPEN"', async () => {
-                await currencyToken.mint(investor1, ether('100'));
-                await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                await expectRevert(
-                    issuance.invest(ether('50'), { from: investor1 }),
-                    'Not open for investments.',
-                );
-            });
-
-            /**
-             * @test {Issuance#invest}
-             */
-            it('cannot invest with fractional investments', async () => {
-                await currencyToken.mint(investor1, ether('100'));
-                await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                await issuance.openIssuance();
-                await expectRevert(
-                    issuance.invest(new BN('1000000000000000001'), { from: investor1 }),
-                    'Fractional investments not allowed.',
-                );
-            });
-
-        });
-
     });
-
 });
 
 function bytes32ToString(text: string) {

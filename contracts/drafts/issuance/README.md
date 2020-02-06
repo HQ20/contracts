@@ -23,7 +23,7 @@ SETUP -> OPEN -
 
 First set the issuance parameters using the `set*` functions.
 
-To open the issuance to investors, the owner must call `openIssuance()`.
+To open the issuance to investors, the owner must call `startIssuance()`.
 
 The `Issuance` will mint `IssuanceToken`s (which inherit from `ERC20Mintable` and `ERCDetailed`, hence they are ERC20 tokens) to all investors who participated in the ICO (having `invest()`ed more than `minInvestment` and their investment being a multiple of `issuePrice`) during `openingDate` and `closingDate`.
 
@@ -47,7 +47,7 @@ Initializes the `Issuance` with the `_issuanceName`, `_issuanceSymbol` and `_iss
 
 ---
 ```
-openIssuance()
+startIssuance()
 ```
 Opens the investing phase, setting the `Issuance` state to `OPEN`.
 

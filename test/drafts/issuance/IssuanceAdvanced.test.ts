@@ -84,20 +84,20 @@ contract('IssuanceAdvanced', (accounts) => {
             });
 
             /**
-             * @test {IssuanceAdvanced#openIssuance}
+             * @test {IssuanceAdvanced#startIssuance}
              */
-            it('openIssuance can succefully open the Issuance', async () => {
-                await issuance.openIssuance();
+            it('startIssuance can succefully open the Issuance', async () => {
+                await issuance.startIssuance();
                 bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
             });
 
             /**
-             * @test {IssuanceAdvanced#openIssuance}
+             * @test {IssuanceAdvanced#startIssuance}
              */
             it('cannot open issuance outside allotted timeframe', async () => {
                 await advanceTimeAndBlock(4000);
                 await expectRevert(
-                    issuance.openIssuance(),
+                    issuance.startIssuance(),
                     'Not the right time.',
                 );
             });
@@ -105,7 +105,7 @@ contract('IssuanceAdvanced', (accounts) => {
             describe('Invest', () => {
 
                 beforeEach(async () => {
-                    await issuance.openIssuance();
+                    await issuance.startIssuance();
                     await currencyToken.mint(investor1, ether('100'));
                     await currencyToken.approve(issuance.address, ether('100'), { from: investor1 });
                 });
@@ -317,7 +317,7 @@ contract('IssuanceAdvanced', (accounts) => {
                 it('cannot invest outisde allotted timespan', async () => {
                     await currencyToken.mint(investor1, ether('100'));
                     await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                    await issuance.openIssuance();
+                    await issuance.startIssuance();
                     await advanceTimeAndBlock(4000);
                     await expectRevert(
                         issuance.invest(ether('50'), { from: investor1 }),
@@ -331,7 +331,7 @@ contract('IssuanceAdvanced', (accounts) => {
                 it('cannot invest with fractional investments', async () => {
                     await currencyToken.mint(investor1, ether('100'));
                     await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                    await issuance.openIssuance();
+                    await issuance.startIssuance();
                     await expectRevert(
                         issuance.invest(new BN('1000000000000000001'), { from: investor1 }),
                         'Fractional investments not allowed.',
@@ -344,7 +344,7 @@ contract('IssuanceAdvanced', (accounts) => {
                 it('cannot invest with investment below minimum threshold', async () => {
                     await currencyToken.mint(investor1, ether('100'));
                     await currencyToken.approve(issuance.address, ether('50'), { from: investor1 });
-                    await issuance.openIssuance();
+                    await issuance.startIssuance();
                     await expectRevert(
                         issuance.invest(ether('5'), { from: investor1 }),
                         'Investment below minimum threshold.',
@@ -358,10 +358,10 @@ contract('IssuanceAdvanced', (accounts) => {
                  * @test {IssuanceAdvanced#withdraw}
                  */
                 it('cannot transfer funds when issuance state is not "LIVE"', async () => {
-                    await issuance.openIssuance();
+                    await issuance.startIssuance();
                     await expectRevert(
                         issuance.withdraw(wallet),
-                        'Cannot transfer funds now.',
+                        'Cannot withdraw funds now.',
                     );
                 });
 

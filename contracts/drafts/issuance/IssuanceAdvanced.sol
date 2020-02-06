@@ -137,7 +137,7 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function openIssuance() public onlyOwner {
+    function startIssuance() public onlyOwner {
         require(
             // solium-disable-next-line security/no-block-members
             now >= openingDate && now <= closingDate,
@@ -173,7 +173,7 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
     function withdraw(address _wallet) public onlyOwner {
-        require(currentState == "LIVE", "Cannot transfer funds now.");
+        require(currentState == "LIVE", "Cannot withdraw funds now.");
         currencyToken.transfer(_wallet, amountRaised);
     }
 

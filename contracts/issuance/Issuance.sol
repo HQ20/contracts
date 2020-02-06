@@ -16,7 +16,7 @@ import "../utils/SafeCast.sol";
  * 1. Initialize contract with issuance token and currency token. Both tokens must inherit from ERC20Minatble and ERC20Detailed.
  * 2. Use `setIssuePrice` to determine how many currency tokens do investors
  *    have to pay for each issued token.
- * 3. Use `openIssuance` to allow investors to invest.
+ * 3. Use `startIssuance` to allow investors to invest.
  * 4. Investors can `invest` their currency tokens at will.
  * 5. Investors can also `cancelInvestment` and get their currency tokens back.
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
@@ -135,7 +135,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function openIssuance() public onlyOwner {
+    function startIssuance() public onlyOwner {
         require(
             issuePrice > 0,
             "Issue price not set."
@@ -163,7 +163,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     function withdraw(address _wallet) public onlyOwner {
         require(
             currentState == "LIVE",
-            "Cannot transfer funds now."
+            "Cannot withdraw funds now."
         );
         currencyToken.transfer(_wallet, amountRaised);
     }

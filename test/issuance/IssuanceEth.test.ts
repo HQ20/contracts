@@ -32,7 +32,7 @@ contract('IssuanceEth', (accounts) => {
      */
     it('cannot open issuanceEth without issue price', async () => {
         await issuanceEth.setIssuePrice(0);
-        await expectRevert(issuanceEth.openIssuance(), 'Issue price not set.');
+        await expectRevert(issuanceEth.startIssuance(), 'Issue price not set.');
     });
 
     describe('Open issuance', () => {
@@ -42,17 +42,17 @@ contract('IssuanceEth', (accounts) => {
         });
 
         /**
-         * @test {Issuance#openIssuance}
+         * @test {Issuance#startIssuance}
          */
-        it('openIssuance can succefully open the Issuance', async () => {
-            await issuanceEth.openIssuance();
+        it('startIssuance can succefully open the Issuance', async () => {
+            await issuanceEth.startIssuance();
             chai.expect(bytes32ToString(await issuanceEth.currentState())).to.be.equal('OPEN');
         });
 
         describe('Invest', () => {
 
             beforeEach(async () => {
-                await issuanceEth.openIssuance();
+                await issuanceEth.startIssuance();
             });
 
             /**
@@ -180,7 +180,7 @@ contract('IssuanceEth', (accounts) => {
                     it('cannot transfer funds when issuanceEth state is not "LIVE"', async () => {
                         await expectRevert(
                             issuanceEth.withdraw(wallet),
-                            'Cannot transfer funds now.',
+                            'Cannot withdraw funds now.',
                         );
                     });
 
@@ -231,7 +231,7 @@ contract('IssuanceEth', (accounts) => {
              * @test {Issuance#invest}
              */
             it('cannot invest with fractional investments', async () => {
-                await issuanceEth.openIssuance();
+                await issuanceEth.startIssuance();
                 await expectRevert(
                     issuanceEth.invest({ from: investor1, value: ether('0.5').add(new BN('1')).toString() }),
                     'Fractional investments not allowed.',

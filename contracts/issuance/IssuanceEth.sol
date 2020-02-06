@@ -17,7 +17,7 @@ import "../utils/SafeCast.sol";
  * 1. Initialize contract with the issuance token contract address. This address must inherit from `ERC20Mintable` and `ERC20Detailed`.
  * 2. Use `setIssuePrice` to determine how many ether (in wei) do investors
  *    have to pay for each issued token.
- * 3. Use `openIssuance` to allow investors to invest.
+ * 3. Use `startIssuance` to allow investors to invest.
  * 4. Investors can `invest` their ether at will.
  * 5. Investors can also `cancelInvestment` and get their ether back.
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
@@ -127,7 +127,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function openIssuance() public onlyOwner {
+    function startIssuance() public onlyOwner {
         require(
             issuePrice > 0,
             "Issue price not set."
@@ -155,7 +155,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         require(
             currentState == "LIVE",
-            "Cannot transfer funds now."
+            "Cannot withdraw funds now."
         );
         uint256 amount = amountRaised - amountWithdrawn;
         amountWithdrawn = amount;

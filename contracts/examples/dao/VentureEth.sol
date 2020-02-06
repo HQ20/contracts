@@ -12,7 +12,7 @@ import "../../token/ERC20MintableDetailed.sol";
  *
  * 1. Use `setIssuePrice` to determine how many ether do investors
  *    have to pay for each issued token.
- * 2. Use `openIssuance` to allow investors to invest.
+ * 2. Use `startIssuance` to allow investors to invest.
  * 3. Investors can `invest` their ether at will.
  * 4. Investors can also `cancelInvestment` and get their ether back.
  * 5. The contract owner can `cancelAllInvestments` to close the investment phase.
