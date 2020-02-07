@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
 import "./Roles.sol";
+import "./Renounceable.sol";
 
 
 /**
@@ -7,7 +8,7 @@ import "./Roles.sol";
  * @author Alberto Cuesta Canada
  * @notice Implements a two-role Roles
  */
-contract TwoTiered is Roles {
+contract TwoTiered is Roles, Renounceable {
 
     bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
     bytes32 public constant USER_ROLE_ID = "USER";
@@ -56,8 +57,8 @@ contract TwoTiered is Roles {
         _removeMember(account, USER_ROLE_ID);
     }
 
-    /// @dev Remove an account from the admin role. Restricted to admins.
-    function removeAdmin(address account) public onlyAdmin {
-        _removeMember(account, ADMIN_ROLE_ID);
+    /// @dev Remove oneself from the admin role.
+    function renounceAdmin() public {
+        renounceMembership(ADMIN_ROLE_ID);
     }
 }

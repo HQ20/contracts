@@ -43,7 +43,7 @@ In `TwoTiered.sol`:
 * function `addUser(address account)`: Adds `account` as an user.
 * function `removeUser(address account)`: Removes `account` as an user.
 * function `addAdmin(address account)`: Adds `account` as an admin.
-* function `removeAdmin(address account)`: Removes `account` as an admin.
+* function `renounceAdmin()`: Removes the caller as an admin.
 
 
 # Hierarchy
