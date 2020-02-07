@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { RenounceableMockInstance } from '../../types/truffle-contracts';
 
-const Renounceable = artifacts.require('./access/mocks/RenounceableMock.sol') as Truffle.Contract<RenounceableMockInstance>;
+const Renounceable = artifacts.require('RenounceableMock') as Truffle.Contract<RenounceableMockInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires

@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { TwoTieredInstance } from '../../types/truffle-contracts';
 
-const TwoTiered = artifacts.require('./access/TwoTiered.sol') as Truffle.Contract<TwoTieredInstance>;
+const TwoTiered = artifacts.require('TwoTiered') as Truffle.Contract<TwoTieredInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires

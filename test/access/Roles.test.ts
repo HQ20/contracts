@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { RolesMockInstance } from '../../types/truffle-contracts';
 
-const Roles = artifacts.require('./access/mocks/RolesMock.sol') as Truffle.Contract<RolesMockInstance>;
+const Roles = artifacts.require('RolesMock') as Truffle.Contract<RolesMockInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires

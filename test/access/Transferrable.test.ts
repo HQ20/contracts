@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { TransferrableMockInstance } from '../../types/truffle-contracts';
 
-const Transferrable = artifacts.require('./access/mocks/TransferrableMock.sol') as Truffle.Contract<TransferrableMockInstance>;
+const Transferrable = artifacts.require('TransferrableMock') as Truffle.Contract<TransferrableMockInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires

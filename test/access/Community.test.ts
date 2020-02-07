@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { CommunityInstance } from '../../types/truffle-contracts';
 
-const Community = artifacts.require('./access/Community.sol') as Truffle.Contract<CommunityInstance>;
+const Community = artifacts.require('Community') as Truffle.Contract<CommunityInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
