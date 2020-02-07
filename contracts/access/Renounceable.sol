@@ -9,6 +9,7 @@ import "./Roles.sol";
  */
 contract Renounceable is Roles {
 
+    /// @dev Remove oneself from the role specified.
     function renounceMembership(bytes32 roleId) public {
         _removeMember(msg.sender, roleId);
     }
