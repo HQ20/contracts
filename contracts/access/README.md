@@ -15,7 +15,7 @@ In `RBAC.sol`:
 
 # SuperAdmin
 
-This is an Ethereum project that implements a simple two-tier access control system.
+This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system.
 
 ## Usage
 
@@ -29,3 +29,12 @@ In `SuperAdmin.sol`:
 * function `removeUser(address account)`: Removes `account` as an user.
 * function `addAdmin(address account)`: Adds `account` as an admin.
 * function `removeAdmin(address account)`: Removes `account` as an admin.
+
+# Transferrable
+
+This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system. It can be used along with `SuperAdmin.sol`.
+
+## Usage
+
+In `Transferrable.sol`:
+* function `transferMembership(address to, bytes32 roleId)`: Transfers the role denoted by `roleId` to account `to`. 

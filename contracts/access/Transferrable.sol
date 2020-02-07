@@ -9,7 +9,7 @@ import "./RBAC.sol";
  */
 contract Transferrable is RBAC {
 
-    function transferRole(address to, bytes32 roleId) public {
+    function transferMembership(address to, bytes32 roleId) public {
         _removeMember(msg.sender, roleId);
         _addMember(to, roleId);
     }
