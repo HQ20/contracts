@@ -41,7 +41,3 @@ In `RBAC.sol`:
 * function `removeMember(address _member, bytes32 _roleId)`: Removes `_member` as a member from the role denoted by `_roleId`.
 * function `hasRole(address _member, bytes32 _roleId)`: Returns `true` if `_member` is a member of the role denoted by `_roleId`, and `false` otherwise. Reverts if a role denoted by `_roleId` doesn't exist.
 * function `enumerateMembers(bytes32 _roleId)`: Returns all members from the role denoted by `_roleId`.
-
-In `RBACExtended.sol`:
-* bytes32[] public roleList: An iterable array with all the roles ever created.
-* function `rolesForMember(address _member)`: Returns an array with all the roles held by the `_member`. The array is padded with NO_ROLE at the end.
