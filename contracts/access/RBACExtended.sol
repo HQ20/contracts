@@ -11,13 +11,6 @@ contract RBACExtended is RBAC {
     bytes32[] public roleList;
 
     /**
-     * @dev The contract initializer. It adds NO_ROLE as with role id 0x0, and ROOT_ROLE with role id 'ROOT'.
-     */
-    constructor(address _root) public RBAC(_root) {
-        roleList.push(ROOT_ROLE);
-    }
-
-    /**
      * @dev Return the role list.
      */
     function getRoles()
@@ -53,14 +46,12 @@ contract RBACExtended is RBAC {
     /**
      * @dev A method to create a new role.
      * @param _roleId The id for role that is being created
-     * @param _adminRoleId The role that is allowed to add and remove members from
-     * the role being created.
      * @return The role id.
      */
-    function addRole(bytes32 _roleId, bytes32 _adminRoleId)
+    function addRole(bytes32 _roleId)
         public
     {
-        super.addRole(_roleId, _adminRoleId);
+        super.addRole(_roleId);
         roleList.push(_roleId);
     }
 }

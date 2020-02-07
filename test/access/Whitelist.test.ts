@@ -25,26 +25,6 @@ contract('Whitelist', (accounts) => {
     });
 
     /**
-     * @test {Whitelist#addMember}
-     */
-    it('addMember adds a member to the whitelist.', async () => {
-        await whitelist.addMember(user1, { from: root });
-        assert.isTrue(await whitelist.isMember(user1));
-    });
-
-    /**
-     * @test {Whitelist#addMember}
-     */
-    itShouldThrow(
-        'addMember throws if the member already belongs to the whitelist.',
-        async () => {
-            await whitelist.addMember(user1, { from: root });
-            await whitelist.addMember(user1, { from: root });
-        },
-        'Address is member already.',
-    );
-
-    /**
      * @test {Whitelist#removeMember}
      */
     itShouldThrow(
@@ -56,12 +36,35 @@ contract('Whitelist', (accounts) => {
     );
 
     /**
-     * @test {Whitelist#removeMember}
+     * @test {Whitelist#addMember} and {Whitelist#isMember}
      */
-    it('removeMember removes a member from a role.', async () => {
+    it('addMember adds a member to the whitelist.', async () => {
         await whitelist.addMember(user1, { from: root });
         assert.isTrue(await whitelist.isMember(user1));
-        await whitelist.removeMember(user1, { from: root });
-        assert.isFalse(await whitelist.isMember(user1));
+    });
+
+    describe('with existing members', () => {
+        beforeEach(async () => {
+            await whitelist.addMember(user1, { from: root });
+        });
+
+        /**
+         * @test {Whitelist#addMember}
+         */
+        itShouldThrow(
+            'addMember throws if the member already belongs to the whitelist.',
+            async () => {
+                await whitelist.addMember(user1, { from: root });
+            },
+            'Address is member already.',
+        );
+
+        /**
+         * @test {Whitelist#removeMember}
+         */
+        it('removeMember removes a member from the whitelist.', async () => {
+            await whitelist.removeMember(user1, { from: root });
+            assert.isFalse(await whitelist.isMember(user1));
+        });
     });
 });

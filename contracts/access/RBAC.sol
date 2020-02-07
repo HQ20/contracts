@@ -1,5 +1,5 @@
 pragma solidity ^0.5.10;
-
+import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 /**
  * @title RBAC
@@ -7,12 +7,11 @@ pragma solidity ^0.5.10;
  * @notice Implements runtime configurable Role Based Access Control.
  */
 contract RBAC {
+    using EnumerableSet for EnumerableSet.AddressSet;
     event RoleCreated(bytes32 roleId);
     event RoleRemoved(bytes32 roleId);
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
-
-    bytes32 public constant ROOT_ROLE = "ROOT";
 
     /**
      * @notice A role, which will be used to group users.
@@ -23,22 +22,10 @@ contract RBAC {
      */
     struct Role {
         bool exists;
-        bytes32 adminRoleId;
-        mapping (address => bool) members;
+        EnumerableSet.AddressSet members;
     }
 
     mapping (bytes32 => Role) internal roles;
-
-    /**
-     * @notice The contract initializer. It adds NO_ROLE as with role id 0x0, and ROOT_ROLE with role id 'ROOT'.
-     */
-    constructor(address _root) public {
-        roles[ROOT_ROLE] = Role({ exists: true, adminRoleId: ROOT_ROLE });
-
-        emit RoleCreated(ROOT_ROLE);
-        roles[ROOT_ROLE].members[_root] = true;
-        emit MemberAdded(_root, ROOT_ROLE);
-    }
 
     /**
      * @notice A method to verify if a role exists.
@@ -66,24 +53,24 @@ contract RBAC {
         returns(bool)
     {
         require(roleExists(_roleId), "Role doesn't exist.");
-        return roles[_roleId].members[_member];
+        return roles[_roleId].members.contains(_member);
     }
 
     /**
      * @notice A method to create a new role.
      * @param _roleId The id for role that is being created
-     * @param _adminRoleId The role that is allowed to add and remove members from
-     * the role being created.
      */
-    function addRole(bytes32 _roleId, bytes32 _adminRoleId)
+    function addRole(bytes32 _roleId)
         public
     {
-        // require(_roleId != NO_ROLE, "Reserved role id.");
         require(!roleExists(_roleId), "Role already exists.");
-        require(roleExists(_adminRoleId), "Admin role doesn't exist.");
-        require(hasRole(msg.sender, _adminRoleId), "Not admin of role.");
 
-        roles[_roleId] = Role({ exists: true, adminRoleId: _adminRoleId });
+        roles[_roleId] = Role({
+            exists: true,
+            members: EnumerableSet.AddressSet({
+                values: new address[](0)
+            })
+        });
         emit RoleCreated(_roleId);
     }
 
@@ -97,15 +84,11 @@ contract RBAC {
     {
         require(roleExists(_roleId), "Role doesn't exist.");
         require(
-            hasRole(msg.sender, roles[_roleId].adminRoleId),
-            "User can't add members."
-        );
-        require(
             !hasRole(_member, _roleId),
             "Address is member of role."
         );
 
-        roles[_roleId].members[_member] = true;
+        roles[_roleId].members.add(_member);
         emit MemberAdded(_member, _roleId);
     }
 
@@ -119,15 +102,11 @@ contract RBAC {
     {
         require(roleExists(_roleId), "Role doesn't exist.");
         require(
-            hasRole(msg.sender, roles[_roleId].adminRoleId),
-            "User can't remove members."
-        );
-        require(
             hasRole(_member, _roleId),
             "Address is not member of role."
         );
 
-        delete roles[_roleId].members[_member];
+        roles[_roleId].members.remove(_member);
         emit MemberRemoved(_member, _roleId);
     }
 }

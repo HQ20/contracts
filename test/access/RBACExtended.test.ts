@@ -12,10 +12,10 @@ contract('RBACExtended', (accounts) => {
 
 
     beforeEach(async () => {
-        rbac = await RBAC.new(root);
+        rbac = await RBAC.new();
         for (let i = 0; i < 10; i++) {
             const roleId = stringToBytes32('ROLE_' + i);
-            await rbac.addRole(roleId, ROOT_ROLE, { from: root });
+            await rbac.addRole(roleId);
         }
     });
 
@@ -24,10 +24,9 @@ contract('RBACExtended', (accounts) => {
      */
     it('Retrieve list of roles.', async () => {
         const roles = await rbac.getRoles();
-        roles.length.should.be.equal(11);
-        bytes32ToString(roles[0]).should.be.equal('ROOT');
+        roles.length.should.be.equal(10);
         for (let i = 0; i < 10; i++) {
-            bytes32ToString(roles[i + 1]).should.be.equal('ROLE_' + i);
+            bytes32ToString(roles[i]).should.be.equal('ROLE_' + i);
         }
     });
 
@@ -44,7 +43,7 @@ contract('RBACExtended', (accounts) => {
      */
     it('Retrieve roles for user.', async () => {
         const role5 = 'ROLE_5';
-        await rbac.addMember(user1, stringToBytes32(role5), { from: root });
+        await rbac.addMember(user1, stringToBytes32(role5));
         const roles = await rbac.rolesForMember(user1);
         bytes32ToString(roles[0]).should.be.equal(role5);
     });
@@ -55,7 +54,7 @@ contract('RBACExtended', (accounts) => {
     it('Retrieve many roles for user.', async () => {
         for (let i = 0; i < 10; i++) {
             const roleId = stringToBytes32('ROLE_' + i);
-            await rbac.addMember(user1, roleId, { from: root });
+            await rbac.addMember(user1, roleId);
         }
 
         const roles = await rbac.rolesForMember(user1);
