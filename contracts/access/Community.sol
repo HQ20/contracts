@@ -1,14 +1,14 @@
 pragma solidity ^0.5.10;
-import "./RBAC.sol";
+import "./Roles.sol";
 import "./Renounceable.sol";
 
 
 /**
  * @title Community
  * @author Alberto Cuesta Canada
- * @notice Implements a single role RBAC
+ * @notice Implements a single role Roles
  */
-contract Community is RBAC, Renounceable {
+contract Community is Roles, Renounceable {
 
     bytes32 public constant COMMUNITY_ROLE_ID = "COMMUNITY";
 
@@ -30,7 +30,7 @@ contract Community is RBAC, Renounceable {
         _addMember(account, COMMUNITY_ROLE_ID);
     }
 
-    function leaveCommunity() public { // RBAC will check membership.
+    function leaveCommunity() public { // Roles will check membership.
         renounceMembership(COMMUNITY_ROLE_ID);
     }
 }

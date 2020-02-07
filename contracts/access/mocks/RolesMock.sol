@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
-import "../RBAC.sol";
+import "../Roles.sol";
 
 
-contract RBACMock is RBAC {
+contract RolesMock is Roles {
 
     function addRole(bytes32 roleId) public {
         _addRole(roleId);

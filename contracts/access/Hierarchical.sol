@@ -1,13 +1,13 @@
 pragma solidity ^0.5.10;
-import "./RBAC.sol";
+import "./Roles.sol";
 
 
 /**
  * @title Hierarchical
  * @author Alberto Cuesta Canada
- * @notice Implements a dynamical role structure for RBAC
+ * @notice Implements a dynamical role structure for Roles
  */
-contract Hierarchical is RBAC {
+contract Hierarchical is Roles {
 
     bytes32 public constant ROOT_ROLE_ID = "ROOT";
     // adminRoles[roleId] is admin role of roleId.

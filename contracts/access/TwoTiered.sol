@@ -1,13 +1,13 @@
 pragma solidity ^0.5.10;
-import "./RBAC.sol";
+import "./Roles.sol";
 
 
 /**
  * @title TwoTiered
  * @author Alberto Cuesta Canada
- * @notice Implements a two-role RBAC
+ * @notice Implements a two-role Roles
  */
-contract TwoTiered is RBAC {
+contract TwoTiered is Roles {
 
     bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
     bytes32 public constant USER_ROLE_ID = "USER";

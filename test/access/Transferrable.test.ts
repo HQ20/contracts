@@ -8,20 +8,20 @@ should();
 const { itShouldThrow } = require('./../utils');
 
 contract('Transferrable', (accounts) => {
-    let rbac: TransferrableMockInstance;
+    let roles: TransferrableMockInstance;
     const ADDED_ROLE = web3.utils.fromAscii('ADDED');
     const user1 = accounts[1];
     const user2 = accounts[2];
 
     beforeEach(async () => {
-        rbac = await Transferrable.new();
-        await rbac.addRole(ADDED_ROLE);
-        await rbac.addMember(user1, ADDED_ROLE);
+        roles = await Transferrable.new();
+        await roles.addRole(ADDED_ROLE);
+        await roles.addMember(user1, ADDED_ROLE);
     });
 
     it('transfers role membership to another account', async () => {
-        await rbac.transferMembership(user2, ADDED_ROLE, { from: user1 });
-        assert.isFalse(await rbac.hasRole(user1, ADDED_ROLE));
-        assert.isTrue(await rbac.hasRole(user2, ADDED_ROLE));
+        await roles.transferMembership(user2, ADDED_ROLE, { from: user1 });
+        assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
+        assert.isTrue(await roles.hasRole(user2, ADDED_ROLE));
     });
 });

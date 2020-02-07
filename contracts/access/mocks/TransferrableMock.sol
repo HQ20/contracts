@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
-import "./RBACMock.sol";
+import "./RolesMock.sol";
 import "../Transferrable.sol";
 
 
-contract TransferrableMock is RBACMock, Transferrable {
+contract TransferrableMock is RolesMock, Transferrable {
 }

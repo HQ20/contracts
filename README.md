@@ -31,11 +31,11 @@ $ yarn add @hq20/contracts
 
 ```solidity
 pragma solidity ^0.5.10;
-import "@hq20/contracts/contracts/access/RBAC.sol"
+import "@hq20/contracts/contracts/access/Roles.sol"
 
 
-contract MyContract is RBAC {
-	constructor() public RBAC(msg.sender) {
+contract MyContract is Roles {
+	constructor() public Roles(msg.sender) {
 		// do something
 	}
 }

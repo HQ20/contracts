@@ -1,10 +1,10 @@
-# Role Based Access Control
+# Roles
 
 This is an Ethereum project that implements runtime configurable access control. It is expected to be used as a data layer for you to code your own permissioning rules on top. For this reason all transactional methods are internal.
 
 ## Usage
 
-In `RBAC.sol`:
+In `Roles.sol`:
 * function `roleExists(bytes32 roleId)`: Returns `true` if a role with id `roleId` exists.
 * function `hasRole(address account, bytes32 roleId)`: Returns `true` if `account` is a member of the role denoted by `roleId`, and `false` otherwise. Reverts if a role denoted by `roleId` doesn't exist.
 * function `enumerateMembers(bytes32 roleId)`: Returns all members from the role denoted by `roleId`.
@@ -15,7 +15,7 @@ In `RBAC.sol`:
 
 # Community
 
-This is an Ethereum project extending `RBAC.sol` that implements a single-group access control system.
+This is an Ethereum project extending `Roles.sol` that implements a single-group access control system.
 
 ## Usage
 
@@ -30,7 +30,7 @@ In `Community.sol`:
 
 # TwoTiered
 
-This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system.
+This is an Ethereum project extending `Roles.sol` that implements a simple two-tier access control system.
 
 ## Usage
 
@@ -48,7 +48,7 @@ In `TwoTiered.sol`:
 
 # Renounceable
 
-This is an Ethereum project extending `RBAC.sol` that allows members to renounce from their roles.
+This is an Ethereum project extending `Roles.sol` that allows members to renounce from their roles.
 
 ## Usage
 
@@ -58,7 +58,7 @@ In `Renounceable.sol`:
 
 # Transferrable
 
-This is an Ethereum project extending `RBAC.sol` that allows members to renounce from their roles in favour of others.
+This is an Ethereum project extending `Roles.sol` that allows members to renounce from their roles in favour of others.
 
 ## Usage
 

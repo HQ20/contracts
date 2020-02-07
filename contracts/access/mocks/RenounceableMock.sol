@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
-import "./RBACMock.sol";
+import "./RolesMock.sol";
 import "../Renounceable.sol";
 
 
-contract RenounceableMock is RBACMock, Renounceable {
+contract RenounceableMock is RolesMock, Renounceable {
 }

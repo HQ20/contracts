@@ -3,11 +3,11 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 
 /**
- * @title RBAC
+ * @title Roles
  * @author Alberto Cuesta Canada
  * @notice Implements runtime configurable Role Based Access Control.
  */
-contract RBAC {
+contract Roles {
     using EnumerableSet for EnumerableSet.AddressSet;
     event RoleCreated(bytes32 roleId);
     event RoleRemoved(bytes32 roleId);
