@@ -1,14 +1,14 @@
 import { should } from 'chai';
-import { RBACInstance } from '../../types/truffle-contracts';
+import { RBACMockInstance } from '../../types/truffle-contracts';
 
-const RBAC = artifacts.require('./access/RBAC.sol') as Truffle.Contract<RBACInstance>;
+const RBAC = artifacts.require('./access/mocks/RBACMock.sol') as Truffle.Contract<RBACMockInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
 contract('RBAC', (accounts) => {
-    let rbac: RBACInstance;
+    let rbac: RBACMockInstance;
     const ADDED_ROLE = web3.utils.fromAscii('ADDED');
     const user1 = accounts[1];
     const user2 = accounts[2];

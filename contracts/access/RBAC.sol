@@ -1,6 +1,7 @@
 pragma solidity ^0.5.10;
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
+
 /**
  * @title RBAC
  * @author Alberto Cuesta Canada
@@ -25,100 +26,100 @@ contract RBAC {
         EnumerableSet.AddressSet members;
     }
 
-    mapping (bytes32 => Role) internal roles;
+    mapping (bytes32 => Role) private _roles;
 
     /**
      * @notice A method to verify if a role exists.
-     * @param _roleId The id of the role being verified.
+     * @param roleId The id of the role being verified.
      * @return True or false.
      * @dev roleExists of NO_ROLE returns false.
      */
-    function roleExists(bytes32 _roleId)
+    function roleExists(bytes32 roleId)
         public
         view
         returns(bool)
     {
-        return (roles[_roleId].exists);
+        return (_roles[roleId].exists);
     }
 
     /**
      * @notice A method to verify whether an member is a member of a role
-     * @param _member The member to verify.
-     * @param _roleId The role to look into.
+     * @param account The member to verify.
+     * @param roleId The role to look into.
      * @return Whether the member is a member of the role.
      */
-    function hasRole(address _member, bytes32 _roleId)
+    function hasRole(address account, bytes32 roleId)
         public
         view
         returns(bool)
     {
-        require(roleExists(_roleId), "Role doesn't exist.");
-        return roles[_roleId].members.contains(_member);
+        require(roleExists(roleId), "Role doesn't exist.");
+        return _roles[roleId].members.contains(account);
+    }
+
+    /**
+     * @notice A method to enumerate the members from a role
+     * @param roleId The role to remove the member from.
+     */
+    function enumerateMembers(bytes32 roleId)
+        public
+        returns (address[] memory)
+    {
+        require(roleExists(roleId), "Role doesn't exist.");
+        return _roles[roleId].members.enumerate();
     }
 
     /**
      * @notice A method to create a new role.
-     * @param _roleId The id for role that is being created
+     * @param roleId The id for role that is being created
      */
-    function addRole(bytes32 _roleId)
-        public
+    function _addRole(bytes32 roleId)
+        internal
     {
-        require(!roleExists(_roleId), "Role already exists.");
+        require(!roleExists(roleId), "Role already exists.");
 
-        roles[_roleId] = Role({
+        _roles[roleId] = Role({
             exists: true,
             members: EnumerableSet.AddressSet({
                 values: new address[](0)
             })
         });
-        emit RoleCreated(_roleId);
+        emit RoleCreated(roleId);
     }
 
     /**
      * @notice A method to add a member to a role
-     * @param _member The member to add as a member.
-     * @param _roleId The role to add the member to.
+     * @param account The member to add as a member.
+     * @param roleId The role to add the member to.
      */
-    function addMember(address _member, bytes32 _roleId)
-        public
+    function _addMember(address account, bytes32 roleId)
+        internal
     {
-        require(roleExists(_roleId), "Role doesn't exist.");
+        require(roleExists(roleId), "Role doesn't exist.");
         require(
-            !hasRole(_member, _roleId),
+            !hasRole(account, roleId),
             "Address is member of role."
         );
 
-        roles[_roleId].members.add(_member);
-        emit MemberAdded(_member, _roleId);
+        _roles[roleId].members.add(account);
+        emit MemberAdded(account, roleId);
     }
 
     /**
      * @notice A method to remove a member from a role
-     * @param _member The member to remove as a member.
-     * @param _roleId The role to remove the member from.
+     * @param account The member to remove as a member.
+     * @param roleId The role to remove the member from.
      */
-    function removeMember(address _member, bytes32 _roleId)
-        public
+    function _removeMember(address account, bytes32 roleId)
+        internal
     {
-        require(roleExists(_roleId), "Role doesn't exist.");
+        require(roleExists(roleId), "Role doesn't exist.");
         require(
-            hasRole(_member, _roleId),
+            hasRole(account, roleId),
             "Address is not member of role."
         );
 
-        roles[_roleId].members.remove(_member);
-        emit MemberRemoved(_member, _roleId);
-    }
-
-    /**
-     * @notice A method to enumerate the members from a role
-     * @param _roleId The role to remove the member from.
-     */
-    function enumerateMembers(bytes32 _roleId)
-        public
-        returns (address[] memory)
-    {
-        require(roleExists(_roleId), "Role doesn't exist.");
-        return roles[_roleId].members.enumerate();
+        _roles[roleId].members.remove(account);
+        emit MemberRemoved(account, roleId);
     }
 }
