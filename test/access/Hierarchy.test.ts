@@ -1,6 +1,7 @@
 import { should } from 'chai';
 import { HierarchyInstance } from '../../types/truffle-contracts';
-const { /* expectEvent, */ expectRevert } = require('@openzeppelin/test-helpers');
+// tslint:disable:no-var-requires
+const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 const Hierarchy = artifacts.require('Hierarchy') as Truffle.Contract<HierarchyInstance>;
 should();
@@ -75,21 +76,22 @@ contract('Hierarchy', (accounts) => {
      * @test {Hierarchy#addMember}
      */
     it('adds a role.', async () => {
-        /* expectEvent(
+        expectEvent(
             await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root }),
             'AdminRoleSet',
             {
                 roleId: ADDED_ROLE_ID,
                 adminRoleId: ROOT_ROLE_ID,
-            }
-        ); */
-        await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root });
+            },
+        );
         assert.isTrue(await hierarchy.roleExists(ADDED_ROLE_ID));
     });
 });
 
 function stringToBytes32(text: string) {
-    return web3.utils.fromAscii(text);
+    let result = web3.utils.fromAscii(text);
+    while (result.length < 66) result += '0'; // 0x + 64 digits
+    return result
 }
 
 function bytes32ToString(text: string) {

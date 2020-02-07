@@ -1,5 +1,6 @@
 import { should } from 'chai';
 import { TwoTieredInstance } from '../../types/truffle-contracts';
+// tslint:disable:no-var-requires
 const { expectRevert } = require('@openzeppelin/test-helpers');
 
 const TwoTiered = artifacts.require('TwoTiered') as Truffle.Contract<TwoTieredInstance>;

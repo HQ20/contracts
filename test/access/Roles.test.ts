@@ -1,6 +1,7 @@
 import { should } from 'chai';
 import { RolesMockInstance } from '../../types/truffle-contracts';
-const { /* expectEvent, */ expectRevert } = require('@openzeppelin/test-helpers');
+// tslint:disable:no-var-requires
+const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 const Roles = artifacts.require('RolesMock') as Truffle.Contract<RolesMockInstance>;
 should();
@@ -8,9 +9,8 @@ should();
 
 contract('Roles', (accounts) => {
     let roles: RolesMockInstance;
-    const ADDED_ROLE = web3.utils.fromAscii('ADDED');
+    const ADDED_ROLE = stringToBytes32('ADDED');
     const user1 = accounts[1];
-    const user2 = accounts[2];
 
     beforeEach(async () => {
         roles = await Roles.new();
@@ -42,10 +42,11 @@ contract('Roles', (accounts) => {
     });
 
     it('adds a new role.', async () => {
-        const roleId = (
+        const event = (
             await roles.addRole(ADDED_ROLE)
-        ).logs[0].args.roleId;
-        assert.isTrue(await roles.roleExists(roleId));
+        ).logs[0];
+        assert.equal(event.event, 'RoleAdded');
+        assert.isTrue(await roles.roleExists(event.args.roleId));
     });
 
     describe('with existing roles', () => {
@@ -69,7 +70,14 @@ contract('Roles', (accounts) => {
         });
 
         it('adds a member to a role.', async () => {
-            await roles.addMember(user1, ADDED_ROLE);
+            await expectEvent(
+                await roles.addMember(user1, ADDED_ROLE),
+                'MemberAdded',
+                {
+                    roleId: ADDED_ROLE,
+                    member: user1,
+                },
+            );
             assert.isTrue(await roles.hasRole(user1, ADDED_ROLE));
         });
 
@@ -86,7 +94,14 @@ contract('Roles', (accounts) => {
             });
 
             it('removes a member from a role.', async () => {
-                await roles.removeMember(user1, ADDED_ROLE);
+                expectEvent(
+                    await roles.removeMember(user1, ADDED_ROLE),
+                    'MemberRemoved',
+                    {
+                        roleId: ADDED_ROLE,
+                        member: user1,
+                    },
+                );
                 assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
             });
 
@@ -94,3 +109,9 @@ contract('Roles', (accounts) => {
         });
     });
 });
+
+function stringToBytes32(text: string) {
+    let result = web3.utils.fromAscii(text);
+    while (result.length < 66) result += '0'; // 0x + 64 digits
+    return result
+}

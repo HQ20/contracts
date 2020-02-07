@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
  */
 contract Roles {
     using EnumerableSet for EnumerableSet.AddressSet;
-    event RoleCreated(bytes32 roleId);
+    event RoleAdded(bytes32 roleId);
     event RoleRemoved(bytes32 roleId);
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
@@ -84,7 +84,7 @@ contract Roles {
                 values: new address[](0)
             })
         });
-        emit RoleCreated(roleId);
+        emit RoleAdded(roleId);
     }
 
     /**
