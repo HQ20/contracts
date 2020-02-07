@@ -29,7 +29,8 @@ import "../utils/SafeCast.sol";
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
     using FixidityLib for int256;
-    using SafeCast for *;
+    using SafeCast for int256;
+    using SafeCast for uint256;
 
     event IssuanceCreated();
     event IssuePriceSet();
