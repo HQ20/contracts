@@ -9,22 +9,20 @@ const { itShouldThrow } = require('./../utils');
 
 contract('RBAC', (accounts) => {
     let rbac: RBACInstance;
-    const root = accounts[1];
-    // const NO_ROLE = '0x0';
     const ADDED_ROLE = web3.utils.fromAscii('ADDED');
-    const user1 = accounts[2];
-    const user2 = accounts[3];
+    const user1 = accounts[1];
+    const user2 = accounts[2];
 
     beforeEach(async () => {
         rbac = await RBAC.new();
     });
 
-    it('roleExists returns false for non existing roles', async () => {
+    it('replies whether a role does not exist', async () => {
         assert.isFalse(await rbac.roleExists(ADDED_ROLE));
     });
 
     itShouldThrow(
-        'addMember throws on non existing roles',
+        'does not add members to non existing roles',
         async () => {
             await rbac.addMember(user1, ADDED_ROLE);
         },
@@ -32,7 +30,7 @@ contract('RBAC', (accounts) => {
     );
 
     itShouldThrow(
-        'removeMember throws on non existing roles',
+        'does not remove members from non existing roles',
         async () => {
             await rbac.removeMember(user1, ADDED_ROLE);
         },
@@ -40,14 +38,14 @@ contract('RBAC', (accounts) => {
     );
 
     itShouldThrow(
-        'hasRole throws for non existing roles.',
+        'does not check membership for non existing roles.',
         async () => {
             await rbac.hasRole(user1, ADDED_ROLE);
         },
         'Role doesn\'t exist.',
     );
 
-    it('addRole adds a new role.', async () => {
+    it('adds a new role.', async () => {
         const roleId = (
             await rbac.addRole(ADDED_ROLE)
         ).logs[0].args.roleId;
@@ -59,23 +57,23 @@ contract('RBAC', (accounts) => {
             await rbac.addRole(ADDED_ROLE);
         });
 
-        it('roleExists returns true for existing roles', async () => {
+        it('replies whether a role exists.', async () => {
             assert.isTrue(await rbac.roleExists(ADDED_ROLE));
         });
 
-        it('hasRole returns false for non existing memberships', async () => {
+        it('replies if a member doe not belong to a role.', async () => {
             assert.isFalse(await rbac.hasRole(user1, ADDED_ROLE));
         });
 
         itShouldThrow(
-            'removeMember throws if the member doesn\'t belong to the role.',
+            'does not remove a member from a the role it does not belong to.',
             async () => {
                 await rbac.removeMember(user1, ADDED_ROLE);
             },
             'Address is not member of role.',
         );
 
-        it('addMember adds a member to a role.', async () => {
+        it('adds a member to a role.', async () => {
             await rbac.addMember(user1, ADDED_ROLE);
             assert.isTrue(await rbac.hasRole(user1, ADDED_ROLE));
         });
@@ -86,17 +84,19 @@ contract('RBAC', (accounts) => {
             });
 
             itShouldThrow(
-                'addMember throws if the member already belongs to the role.',
+                'does not add a member to a role he already belongs to.',
                 async () => {
                     await rbac.addMember(user1, ADDED_ROLE);
                 },
                 'Address is member of role.',
             );
 
-            it('removeMember removes a member from a role.', async () => {
+            it('removes a member from a role.', async () => {
                 await rbac.removeMember(user1, ADDED_ROLE);
                 assert.isFalse(await rbac.hasRole(user1, ADDED_ROLE));
             });
+
+            // Test rbac.enumerateMembers(ADDED_ROLE)
         });
     });
 });

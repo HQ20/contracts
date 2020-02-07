@@ -109,4 +109,16 @@ contract RBAC {
         roles[_roleId].members.remove(_member);
         emit MemberRemoved(_member, _roleId);
     }
+
+    /**
+     * @notice A method to enumerate the members from a role
+     * @param _roleId The role to remove the member from.
+     */
+    function enumerateMembers(bytes32 _roleId)
+        public
+        returns (address[] memory)
+    {
+        require(roleExists(_roleId), "Role doesn't exist.");
+        return roles[_roleId].members.enumerate();
+    }
 }
