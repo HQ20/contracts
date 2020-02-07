@@ -3,11 +3,11 @@ import "./RBAC.sol";
 
 
 /**
- * @title SuperAdmin
+ * @title TwoTiered
  * @author Alberto Cuesta Canada
  * @notice Implements a two-role RBAC
  */
-contract SuperAdmin is RBAC {
+contract TwoTiered is RBAC {
 
     bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
     bytes32 public constant USER_ROLE_ID = "USER";

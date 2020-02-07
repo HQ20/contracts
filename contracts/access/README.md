@@ -13,15 +13,15 @@ In `RBAC.sol`:
 * function `_removeMember(address account, bytes32 roleId)`: Removes `account` as a member from the role denoted by `roleId`.
 
 
-# SuperAdmin
+# TwoTiered
 
 This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system.
 
 ## Usage
 
-In `SuperAdmin.sol`:
+In `TwoTiered.sol`:
 
-* constructor `(address root)`: The address deploying SuperAdmin.sol will be the first admin. Only admins can execute transactional methods.
+* constructor `(address root)`: The address deploying TwoTiered.sol will be the first admin. Only admins can execute transactional methods.
 
 * function `isUser(address account)`: Returns `true` if `account` is an user, and `false` otherwise.
 * function `isAdmin(address account)`: Returns `true` if `account` is an admin, and `false` otherwise.

@@ -1,92 +1,92 @@
 import { should } from 'chai';
-import { SuperAdminInstance } from '../../types/truffle-contracts';
+import { TwoTieredInstance } from '../../types/truffle-contracts';
 
-const SuperAdmin = artifacts.require('./access/SuperAdmin.sol') as Truffle.Contract<SuperAdminInstance>;
+const TwoTiered = artifacts.require('./access/TwoTiered.sol') as Truffle.Contract<TwoTieredInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
-/** @test {SuperAdmin} contract */
-contract('SuperAdmin', (accounts) => {
-    let superAdmin: SuperAdminInstance;
+/** @test {TwoTiered} contract */
+contract('TwoTiered', (accounts) => {
+    let twoTiered: TwoTieredInstance;
     const root = accounts[0];
     const user1 = accounts[1];
 
     beforeEach(async () => {
-        superAdmin = await SuperAdmin.new(root);
+        twoTiered = await TwoTiered.new(root);
     });
 
     /**
-     * @test {SuperAdmin#isUser}
+     * @test {TwoTiered#isUser}
      */
     it('isUser returns false for non existing users', async () => {
-        assert.isFalse(await superAdmin.isUser(user1));
+        assert.isFalse(await twoTiered.isUser(user1));
     });
 
     /**
-     * @test {SuperAdmin#addUser}
+     * @test {TwoTiered#addUser}
      */
     itShouldThrow(
         'addUser throws if not called by an admin account.',
         async () => {
-            await superAdmin.addUser(user1, { from: user1 });
+            await twoTiered.addUser(user1, { from: user1 });
         },
         'Restricted to admins.',
     );
 
     /**
-     * @test {SuperAdmin#removeUser}
+     * @test {TwoTiered#removeUser}
      */
     itShouldThrow(
         'removeUser throws if not called by an admin account.',
         async () => {
-            await superAdmin.removeUser(user1, { from: user1 });
+            await twoTiered.removeUser(user1, { from: user1 });
         },
         'Restricted to admins.',
     );
 
     /**
-     * @test {SuperAdmin#removeUser}
+     * @test {TwoTiered#removeUser}
      */
     itShouldThrow(
         'removeUser throws if the account is not an user.',
         async () => {
-            await superAdmin.removeUser(user1, { from: root });
+            await twoTiered.removeUser(user1, { from: root });
         },
         'Address is not member of role.',
     );
 
     /**
-     * @test {SuperAdmin#addUser} and {SuperAdmin#isUser}
+     * @test {TwoTiered#addUser} and {TwoTiered#isUser}
      */
     it('addUser adds an account as an user.', async () => {
-        await superAdmin.addUser(user1, { from: root });
-        assert.isTrue(await superAdmin.isUser(user1));
+        await twoTiered.addUser(user1, { from: root });
+        assert.isTrue(await twoTiered.isUser(user1));
     });
 
     describe('with existing users', () => {
         beforeEach(async () => {
-            await superAdmin.addUser(user1, { from: root });
+            await twoTiered.addUser(user1, { from: root });
         });
 
         /**
-         * @test {SuperAdmin#addUser}
+         * @test {TwoTiered#addUser}
          */
         itShouldThrow(
             'addUser throws if the account is already an user.',
             async () => {
-                await superAdmin.addUser(user1, { from: root });
+                await twoTiered.addUser(user1, { from: root });
             },
             'Address is member of role.',
         );
 
         /**
-         * @test {SuperAdmin#removeUser}
+         * @test {TwoTiered#removeUser}
          */
         it('removeUser removes an user.', async () => {
-            await superAdmin.removeUser(user1, { from: root });
-            assert.isFalse(await superAdmin.isUser(user1));
+            await twoTiered.removeUser(user1, { from: root });
+            assert.isFalse(await twoTiered.isUser(user1));
         });
     });
 });
