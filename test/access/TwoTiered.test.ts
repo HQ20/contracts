@@ -47,17 +47,6 @@ contract('TwoTiered', (accounts) => {
     );
 
     /**
-     * @test {TwoTiered#removeUser}
-     */
-    itShouldThrow(
-        'removeUser throws if the account is not an user.',
-        async () => {
-            await twoTiered.removeUser(user1, { from: root });
-        },
-        'Address is not member of role.',
-    );
-
-    /**
      * @test {TwoTiered#addUser} and {TwoTiered#isUser}
      */
     it('addUser adds an account as an user.', async () => {
@@ -69,17 +58,6 @@ contract('TwoTiered', (accounts) => {
         beforeEach(async () => {
             await twoTiered.addUser(user1, { from: root });
         });
-
-        /**
-         * @test {TwoTiered#addUser}
-         */
-        itShouldThrow(
-            'addUser throws if the account is already an user.',
-            async () => {
-                await twoTiered.addUser(user1, { from: root });
-            },
-            'Address is member of role.',
-        );
 
         /**
          * @test {TwoTiered#removeUser}

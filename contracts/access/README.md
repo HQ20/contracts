@@ -13,6 +13,21 @@ In `RBAC.sol`:
 * function `_removeMember(address account, bytes32 roleId)`: Removes `account` as a member from the role denoted by `roleId`.
 
 
+# Community
+
+This is an Ethereum project extending `RBAC.sol` that implements a single-group access control system.
+
+## Usage
+
+In `Community.sol`:
+
+* constructor `(address root)`: The address deploying Community.sol will be the first member. Only members can execute transactional methods.
+
+* function `isMember(address account)`: Returns `true` if `account` is an member, and `false` otherwise.
+* function `addMember(address account)`: Adds `account` as a member.
+* function `leaveCommunity()`: Removes the caller as a member.
+
+
 # TwoTiered
 
 This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system.
@@ -30,6 +45,7 @@ In `TwoTiered.sol`:
 * function `addAdmin(address account)`: Adds `account` as an admin.
 * function `removeAdmin(address account)`: Removes `account` as an admin.
 
+
 # Renounceable
 
 This is an Ethereum project extending `RBAC.sol` that allows members to renounce from their roles.
@@ -38,6 +54,7 @@ This is an Ethereum project extending `RBAC.sol` that allows members to renounce
 
 In `Renounceable.sol`:
 * function `renounceMembership(bytes32 roleId)`: Removes the member from the role denoted by `roleId`.
+
 
 # Transferrable
 
