@@ -46,6 +46,22 @@ In `TwoTiered.sol`:
 * function `removeAdmin(address account)`: Removes `account` as an admin.
 
 
+# Hierarchical
+
+This is an Ethereum project extending `Roles.sol` that implements a hierarchical access control system.
+
+## Usage
+
+In `Hierarchical.sol`:
+
+* constructor `(address root)`: The address deploying Hierarchical.sol will be the first member of the root role. Only admins of a role can execute transactional methods related to it.
+
+* function `isMember(address account, bytes32 roleId)`: Returns `true` if `account` belongs to the admin role of `roleId`.
+* function `addRole(bytes32 roleId, bytes32 adminRoleId)`: Adds `roleId` with `adminRoleId` as the admin role.
+* function `addMember(address account, bytes32 roleId)`: Adds `account` as a member of `roleId`.
+* function `removeUser(address account, bytes32 roleId)`: Removes `account` from `roleId`.
+
+
 # Renounceable
 
 This is an Ethereum project extending `Roles.sol` that allows members to renounce from their roles.
