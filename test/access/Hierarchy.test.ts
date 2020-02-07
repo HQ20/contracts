@@ -1,79 +1,79 @@
 import { should } from 'chai';
-import { HierarchicalInstance } from '../../types/truffle-contracts';
+import { HierarchyInstance } from '../../types/truffle-contracts';
 
-const Hierarchical = artifacts.require('Hierarchical') as Truffle.Contract<HierarchicalInstance>;
+const Hierarchy = artifacts.require('Hierarchy') as Truffle.Contract<HierarchyInstance>;
 should();
 
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
-/** @test {Hierarchical} contract */
-contract('Hierarchical', (accounts) => {
-    let hierarchical: HierarchicalInstance;
+/** @test {Hierarchy} contract */
+contract('Hierarchy', (accounts) => {
+    let hierarchy: HierarchyInstance;
     const ROOT_ROLE_ID = stringToBytes32('ROOT');
     const ADDED_ROLE_ID = stringToBytes32('ADDED');
     const root = accounts[0];
     const user1 = accounts[1];
 
     beforeEach(async () => {
-        hierarchical = await Hierarchical.new(root);
+        hierarchy = await Hierarchy.new(root);
     });
 
     /**
-     * @test {Hierarchical#isMember}
+     * @test {Hierarchy#isMember}
      */
     it('isMember returns true for members of a role', async () => {
-        assert.isTrue(await hierarchical.isMember(root, ROOT_ROLE_ID));
-        assert.isFalse(await hierarchical.isMember(user1, ROOT_ROLE_ID));
+        assert.isTrue(await hierarchy.isMember(root, ROOT_ROLE_ID));
+        assert.isFalse(await hierarchy.isMember(user1, ROOT_ROLE_ID));
     });
 
     /**
-     * @test {Hierarchical#isAdmin}
+     * @test {Hierarchy#isAdmin}
      */
     it('isAdmin returns true for admins', async () => {
-        assert.isTrue(await hierarchical.isAdmin(root, ROOT_ROLE_ID));
-        assert.isFalse(await hierarchical.isAdmin(user1, ROOT_ROLE_ID));
+        assert.isTrue(await hierarchy.isAdmin(root, ROOT_ROLE_ID));
+        assert.isFalse(await hierarchy.isAdmin(user1, ROOT_ROLE_ID));
     });
 
     /**
-     * @test {Hierarchical#addRole}
+     * @test {Hierarchy#addRole}
      */
     itShouldThrow(
         'addRole throws if not called by a member of the admin role.',
         async () => {
-            await hierarchical.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 });
+            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 });
         },
         'Restricted to members.',
     );
 
     /**
-     * @test {Hierarchical#addMember}
+     * @test {Hierarchy#addMember}
      */
     itShouldThrow(
         'addMember throws if not called by a member of the admin role.',
         async () => {
-            await hierarchical.addMember(user1, ROOT_ROLE_ID, { from: user1 });
+            await hierarchy.addMember(user1, ROOT_ROLE_ID, { from: user1 });
         },
         'Restricted to admins.',
     );
 
     /**
-     * @test {Hierarchical#removeMember}
+     * @test {Hierarchy#removeMember}
      */
     itShouldThrow(
         'removeMember throws if not called by a member of the admin role.',
         async () => {
-            await hierarchical.removeMember(user1, ROOT_ROLE_ID, { from: user1 });
+            await hierarchy.removeMember(user1, ROOT_ROLE_ID, { from: user1 });
         },
         'Restricted to admins.',
     );
 
     /**
-     * @test {Hierarchical#addMember}
+     * @test {Hierarchy#addMember}
      */
     it('addMember adds an account to a role.', async () => {
-        await hierarchical.addMember(user1, ROOT_ROLE_ID, { from: root });
-        assert.isTrue(await hierarchical.isMember(user1, ROOT_ROLE_ID));
+        await hierarchy.addMember(user1, ROOT_ROLE_ID, { from: root });
+        assert.isTrue(await hierarchy.isMember(user1, ROOT_ROLE_ID));
     });
 });
 

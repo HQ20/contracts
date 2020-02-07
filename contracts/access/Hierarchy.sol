@@ -3,11 +3,12 @@ import "./Roles.sol";
 
 
 /**
- * @title Hierarchical
+ * @title Hierarchy
  * @author Alberto Cuesta Canada
  * @notice Implements a dynamical role structure for Roles
  */
-contract Hierarchical is Roles {
+contract Hierarchy is Roles {
+    event AdminRoleSet(bytes32 roleId, bytes32 adminRoleId);
 
     bytes32 public constant ROOT_ROLE_ID = "ROOT";
     // adminRoles[roleId] is admin role of roleId.
@@ -59,5 +60,6 @@ contract Hierarchical is Roles {
         require(roleExists(roleId), "Role does not exist");
         require(roleExists(adminRoleId), "Admin role does not exist");
         _adminRoles[roleId] = adminRoleId;
+        emit AdminRoleSet(roleId, adminRoleId);
     }
 }
