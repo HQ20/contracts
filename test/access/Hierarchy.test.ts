@@ -1,11 +1,9 @@
 import { should } from 'chai';
 import { HierarchyInstance } from '../../types/truffle-contracts';
+const { /* expectEvent, */ expectRevert } = require('@openzeppelin/test-helpers');
 
 const Hierarchy = artifacts.require('Hierarchy') as Truffle.Contract<HierarchyInstance>;
 should();
-
-// tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../utils');
 
 /** @test {Hierarchy} contract */
 contract('Hierarchy', (accounts) => {
@@ -38,35 +36,32 @@ contract('Hierarchy', (accounts) => {
     /**
      * @test {Hierarchy#addRole}
      */
-    itShouldThrow(
-        'addRole throws if not called by a member of the admin role.',
-        async () => {
-            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 });
-        },
-        'Restricted to members.',
-    );
+    it('addRole throws if not called by a member of the admin role.', async () => {
+        await expectRevert(
+            hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 }),
+            'Restricted to members.',
+        );
+    });
 
     /**
      * @test {Hierarchy#addMember}
      */
-    itShouldThrow(
-        'addMember throws if not called by a member of the admin role.',
-        async () => {
-            await hierarchy.addMember(user1, ROOT_ROLE_ID, { from: user1 });
-        },
-        'Restricted to admins.',
-    );
+    it('addMember throws if not called by a member of the admin role.', async () => {
+        await expectRevert(
+            hierarchy.addMember(user1, ROOT_ROLE_ID, { from: user1 }),
+            'Restricted to admins.',
+        );
+    });
 
     /**
      * @test {Hierarchy#removeMember}
      */
-    itShouldThrow(
-        'removeMember throws if not called by a member of the admin role.',
-        async () => {
-            await hierarchy.removeMember(user1, ROOT_ROLE_ID, { from: user1 });
-        },
-        'Restricted to admins.',
-    );
+    it('removeMember throws if not called by a member of the admin role.', async () => {
+        await expectRevert(
+            hierarchy.removeMember(user1, ROOT_ROLE_ID, { from: user1 }),
+            'Restricted to admins.',
+        );
+    });
 
     /**
      * @test {Hierarchy#addMember}
@@ -74,6 +69,22 @@ contract('Hierarchy', (accounts) => {
     it('addMember adds an account to a role.', async () => {
         await hierarchy.addMember(user1, ROOT_ROLE_ID, { from: root });
         assert.isTrue(await hierarchy.isMember(user1, ROOT_ROLE_ID));
+    });
+
+    /**
+     * @test {Hierarchy#addMember}
+     */
+    it('adds a role.', async () => {
+        /* expectEvent(
+            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root }),
+            'AdminRoleSet',
+            {
+                roleId: ADDED_ROLE_ID,
+                adminRoleId: ROOT_ROLE_ID,
+            }
+        ); */
+        await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root });
+        assert.isTrue(await hierarchy.roleExists(ADDED_ROLE_ID));
     });
 });
 
