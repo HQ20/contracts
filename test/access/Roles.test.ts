@@ -1,11 +1,10 @@
 import { should } from 'chai';
 import { RolesMockInstance } from '../../types/truffle-contracts';
+const { /* expectEvent, */ expectRevert } = require('@openzeppelin/test-helpers');
 
 const Roles = artifacts.require('RolesMock') as Truffle.Contract<RolesMockInstance>;
 should();
 
-// tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../utils');
 
 contract('Roles', (accounts) => {
     let roles: RolesMockInstance;
@@ -21,29 +20,26 @@ contract('Roles', (accounts) => {
         assert.isFalse(await roles.roleExists(ADDED_ROLE));
     });
 
-    itShouldThrow(
-        'does not add members to non existing roles',
-        async () => {
-            await roles.addMember(user1, ADDED_ROLE);
-        },
-        'Role doesn\'t exist.',
-    );
+    it('does not add members to non existing roles', async () => {
+        await expectRevert(
+            roles.addMember(user1, ADDED_ROLE),
+            'Role doesn\'t exist.',
+        );
+    });
 
-    itShouldThrow(
-        'does not remove members from non existing roles',
-        async () => {
-            await roles.removeMember(user1, ADDED_ROLE);
-        },
-        'Role doesn\'t exist.',
-    );
+    it('does not remove members from non existing roles', async () => {
+        await expectRevert(
+            roles.removeMember(user1, ADDED_ROLE),
+            'Role doesn\'t exist.',
+        );
+    });
 
-    itShouldThrow(
-        'does not check membership for non existing roles.',
-        async () => {
-            await roles.hasRole(user1, ADDED_ROLE);
-        },
-        'Role doesn\'t exist.',
-    );
+    it('does not check membership for non existing roles.', async () => {
+        await expectRevert(
+            roles.hasRole(user1, ADDED_ROLE),
+            'Role doesn\'t exist.',
+        );
+    });
 
     it('adds a new role.', async () => {
         const roleId = (
@@ -65,13 +61,12 @@ contract('Roles', (accounts) => {
             assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
         });
 
-        itShouldThrow(
-            'does not remove a member from a the role it does not belong to.',
-            async () => {
-                await roles.removeMember(user1, ADDED_ROLE);
-            },
-            'Address is not member of role.',
-        );
+        it('does not remove a member from a the role it does not belong to.', async () => {
+            await expectRevert(
+                roles.removeMember(user1, ADDED_ROLE),
+                'Address is not member of role.',
+            );
+        });
 
         it('adds a member to a role.', async () => {
             await roles.addMember(user1, ADDED_ROLE);
@@ -83,13 +78,12 @@ contract('Roles', (accounts) => {
                 await roles.addMember(user1, ADDED_ROLE);
             });
 
-            itShouldThrow(
-                'does not add a member to a role he already belongs to.',
-                async () => {
-                    await roles.addMember(user1, ADDED_ROLE);
-                },
-                'Address is member of role.',
-            );
+            it('does not add a member to a role he already belongs to.', async () => {
+                await expectRevert(
+                    roles.addMember(user1, ADDED_ROLE),
+                    'Address is member of role.',
+                );
+            });
 
             it('removes a member from a role.', async () => {
                 await roles.removeMember(user1, ADDED_ROLE);
