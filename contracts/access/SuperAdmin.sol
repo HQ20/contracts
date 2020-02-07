@@ -29,7 +29,7 @@ contract SuperAdmin is RBAC {
     }
 
     function isAdmin(address account) public view returns (bool) {
-        return hasRole(account, USER_ROLE_ID);
+        return hasRole(account, ADMIN_ROLE_ID);
     }
 
     function isUser(address account) public view returns (bool) {
