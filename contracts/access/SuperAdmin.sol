@@ -1,6 +1,7 @@
 pragma solidity ^0.5.10;
 import "./RBAC.sol";
 
+
 /**
  * @title SuperAdmin
  * @author Alberto Cuesta Canada
@@ -17,6 +18,16 @@ contract SuperAdmin is RBAC {
         _addMember(root, ADMIN_ROLE_ID);
     }
 
+    modifier onlyAdmin() {
+        require(isAdmin(msg.sender), "Restricted to admins.");
+        _;
+    }
+
+    modifier onlyUser() {
+        require(isUser(msg.sender), "Restricted to users.");
+        _;
+    }
+
     function isAdmin(address account) public view returns (bool) {
         return hasRole(account, USER_ROLE_ID);
     }
@@ -25,31 +36,19 @@ contract SuperAdmin is RBAC {
         return hasRole(account, USER_ROLE_ID);
     }
 
-    function addUser(address account)
-        public
-    {
-        require(isAdmin(msg.sender), "Restricted to admin.");
+    function addUser(address account) public onlyAdmin {
         _addMember(account, USER_ROLE_ID);
     }
 
-    function addAdmin(address account)
-        public
-    {
-        require(isAdmin(msg.sender), "Restricted to admin.");
+    function addAdmin(address account) public onlyAdmin {
         _addMember(account, ADMIN_ROLE_ID);
     }
 
-    function removeUser(address account)
-        public
-    {
-        require(isAdmin(msg.sender), "Restricted to admin.");
+    function removeUser(address account) public onlyAdmin {
         _removeMember(account, USER_ROLE_ID);
     }
 
-    function removeAdmin(address account)
-        public
-    {
-        require(isAdmin(msg.sender), "Restricted to admin.");
+    function removeAdmin(address account) public onlyAdmin {
         _removeMember(account, ADMIN_ROLE_ID);
     }
 }
