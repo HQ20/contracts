@@ -30,11 +30,21 @@ In `TwoTiered.sol`:
 * function `addAdmin(address account)`: Adds `account` as an admin.
 * function `removeAdmin(address account)`: Removes `account` as an admin.
 
+# Renounceable
+
+This is an Ethereum project extending `RBAC.sol` that allows members to renounce from their roles.
+
+## Usage
+
+In `Renounceable.sol`:
+* function `renounceMembership(bytes32 roleId)`: Removes the member from the role denoted by `roleId`.
+
 # Transferrable
 
-This is an Ethereum project extending `RBAC.sol` that implements a simple two-tier access control system. It can be used along with `SuperAdmin.sol`.
+This is an Ethereum project extending `RBAC.sol` that allows members to renounce from their roles in favour of others.
 
 ## Usage
 
 In `Transferrable.sol`:
 * function `transferMembership(address to, bytes32 roleId)`: Transfers the role denoted by `roleId` to account `to`. 
+ 
