@@ -2,10 +2,9 @@ pragma solidity ^0.5.10;
 
 import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../token/ERC20MintableDetailed.sol";
+import "../token/IERC20MintableDetailed.sol";
 import "../state/StateMachine.sol";
 import "../utils/SafeCast.sol";
 
@@ -37,7 +36,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    ERC20MintableDetailed public issuanceToken;
+    address public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
@@ -50,7 +49,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     constructor(
         address _issuanceToken
     ) public Ownable() StateMachine() {
-        issuanceToken = ERC20MintableDetailed(_issuanceToken);
+        issuanceToken = _issuanceToken;
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -75,13 +74,16 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
+        IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
+            issuanceToken
+        );
         int256 investedFixed = amount.safeUintToInt().newFixed(18);
         int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(18);
         int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
         uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
-                issuanceToken.decimals()
+                _issuanceToken.decimals()
             ).safeIntToUint();
-        issuanceToken.mint(
+        _issuanceToken.mint(
             msg.sender,
             issuanceTokens
         );
