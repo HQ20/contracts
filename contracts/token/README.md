@@ -6,6 +6,20 @@ This is an Ethereum project that enhances some of the popular implementations of
 
 It is an interface that adds to the `IERC20` interface the `mint` function from the `ERC20Mintable` OpenZeppelin contract.
 
+
+## IERC20Detailed
+
+It is an interface that adds to the `IERC20` interface the `name`, `symbol` and `decimals` functions from the `ERC20Detailed` OpenZeppelin contract.
+
+
+## IERC20MintableDetailed
+
+It is an interface that adds to the `IERC20` interface the `mint`, `name`, `symbol` and `decimals` functions from the `ERC20Mintable` and `ERC20Detailed` OpenZeppelin contracts.
+
+## ERC20MintableDetailed
+
+It is a contract that implements the `IERC20MintableDetailed` interface.
+
 ## ERC20DividendableEth
 
 It is a `ERC20` token contract that is endowed with some rather dividendable qualities. 
