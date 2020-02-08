@@ -80,6 +80,13 @@ Request from investor to claim `issuanceToken`s
 ---
 
 ```
+withdraw(address _wallet)
+```
+Request from `owner` to transfer `amountRaised` to `_wallet`. Even though can be called many times, will transfer funds only once.
+
+---
+
+```
 cancelAllInvestments()
 ```
 Starts the cancellation phase, setting the `Issuance` state to `FAILED`.

@@ -76,7 +76,12 @@ claim()
 Request from investor to claim `issuanceToken`.
 
 ---
+```
+withdraw(address _wallet)
+```
+Request from `owner` to transfer `amountRaised` to `_wallet`. Even though can be called many times, will transfer funds only once.
 
+---
 ```
 cancelAllInvestments()
 ```

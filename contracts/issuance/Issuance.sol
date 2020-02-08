@@ -45,6 +45,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
+    uint256 public amountWithdrawn;
     uint256 public issuePrice;
     uint256 internal nextInvestor;
 
@@ -172,6 +173,8 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
             currentState == "LIVE",
             "Cannot withdraw funds now."
         );
+        uint256 amount = amountRaised - amountWithdrawn;
+        amountWithdrawn = amount;
         IERC20(currencyToken).transfer(_wallet, amountRaised);
     }
 

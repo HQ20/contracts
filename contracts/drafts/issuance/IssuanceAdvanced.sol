@@ -40,6 +40,7 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     mapping(address => uint256) public investments;
 
     uint256 public amountRaised;
+    uint256 public amountWithdrawn;
     uint256 public issuePrice;
     uint256 public softCap;
     uint256 public minInvestment;
@@ -180,7 +181,12 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
     function withdraw(address _wallet) public onlyOwner {
-        require(currentState == "LIVE", "Cannot withdraw funds now.");
+        require(
+            currentState == "LIVE",
+            "Cannot withdraw funds now."
+        );
+        uint256 amount = amountRaised - amountWithdrawn;
+        amountWithdrawn = amount;
         IERC20(currencyToken).transfer(_wallet, amountRaised);
     }
 
