@@ -1,6 +1,6 @@
 pragma solidity ^0.5.10;
 
-import "../../examples/dao/VentureEth.sol";
+import "../../../examples/dao/VentureEth.sol";
 
 
 /**

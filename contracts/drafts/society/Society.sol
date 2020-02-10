@@ -2,11 +2,12 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "./Bank.sol";
-import "./Constitution.sol";
-import "./Executive.sol";
-import "./Judiciary.sol";
-import "./Legislative.sol";
+import "./utils/Branch.sol";
+import "./utils/Bank.sol";
+import "./foundations/Constitution.sol";
+import "./pillars/Executive.sol";
+import "./pillars/Judiciary.sol";
+import "./pillars/Legislative.sol";
 
 
 
@@ -31,8 +32,8 @@ contract Society is Branch {
         address _bank
     ) public Branch(_constitution, address(this)) {
         bank = _bank;
-        require(Bank(_bank).currentState == "OPEN");
-        this.hire(msg.sender);
+        require(Bank(_bank).currentState() == "OPEN");
+        this.hire(owner());
     }
 
     function openExecutive(address _constitution) public onlyOwner {

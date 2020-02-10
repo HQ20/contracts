@@ -2,10 +2,7 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "./Branch.sol";
-import "./Society.sol";
-import "./Executive.sol";
-import "./Bill.sol";
+import "../utils/Branch.sol";
 
 
 /**
@@ -15,8 +12,8 @@ import "./Bill.sol";
 contract Legislative is Branch {
 
     constructor(
-        address _consitution,
-        address _society
+        address _constitution,
+        address payable _society
     ) Branch(_constitution, _society) public {}
 
     // TODO: legislative functions

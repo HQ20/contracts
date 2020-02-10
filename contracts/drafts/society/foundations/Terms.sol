@@ -67,8 +67,8 @@ contract Terms {
         TAXABLE // Aspiring member must pay a tax in bank's tokens
     }
 
-    mapping(uint8 => mapping(uint8 => uint256)) mechanism;
-    mapping(uint8 => mapping(uint8 => uint256)) conditions;
+    mapping(uint8 => mapping(uint8 => uint256)) public mechanism;
+    mapping(uint8 => mapping(uint8 => uint256)) public conditions;
 
     EnumerableSet.AddressSet adoptiveConstitutions;
 

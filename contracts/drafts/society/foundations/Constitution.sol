@@ -14,7 +14,7 @@ contract Constitution {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     address public terms;
-    EnumerableSet.AddressSet public adoptiveSocieties;
+    EnumerableSet.AddressSet adoptiveSocieties;
 
     /**
     * @notice The constructor for the constitution of a society.

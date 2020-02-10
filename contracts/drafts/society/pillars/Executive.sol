@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./Branch.sol";
+import "../utils/Branch.sol";
 
 
 /**
@@ -12,7 +12,7 @@ contract Executive is Branch {
 
     constructor(
         address _constitution,
-        address _society
+        address payable _society
     ) Branch(_constitution, _society) public {}
 
     // TODO: executive functions
