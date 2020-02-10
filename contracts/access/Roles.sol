@@ -63,6 +63,7 @@ contract Roles {
      */
     function enumerateMembers(bytes32 roleId)
         public
+        view
         returns (address[] memory)
     {
         require(roleExists(roleId), "Role doesn't exist.");
