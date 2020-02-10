@@ -1,21 +1,22 @@
 pragma solidity ^0.5.10;
 
+import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../token/IERC20Mintable.sol";
+import "../token/IERC20MintableDetailed.sol";
 import "../state/StateMachine.sol";
+import "../utils/SafeCast.sol";
 
 
 /**
  * @title Issuance
  * @notice Implements a very simple issuance process for tokens
  *
- * 1. Initialize contract with the issuance token contract address.
+ * 1. Initialize contract with the issuance token contract address. This address must inherit from `ERC20Mintable` and `ERC20Detailed`.
  * 2. Use `setIssuePrice` to determine how many ether (in wei) do investors
  *    have to pay for each issued token.
- * 3. Use `openIssuance` to allow investors to invest.
+ * 3. Use `startIssuance` to allow investors to invest.
  * 4. Investors can `invest` their ether at will.
  * 5. Investors can also `cancelInvestment` and get their ether back.
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
@@ -26,13 +27,16 @@ import "../state/StateMachine.sol";
  */
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
+    using FixidityLib for int256;
+    using SafeCast for int256;
+    using SafeCast for uint256;
 
     event IssuanceCreated();
     event IssuePriceSet();
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    IERC20Mintable public issuanceToken;
+    address public issuanceToken;
 
     address[] public investors;
     mapping(address => uint256) public investments;
@@ -45,7 +49,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     constructor(
         address _issuanceToken
     ) public Ownable() StateMachine() {
-        issuanceToken = IERC20Mintable(_issuanceToken);
+        issuanceToken = _issuanceToken;
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -70,7 +74,19 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        issuanceToken.mint(msg.sender, amount.div(issuePrice));
+        IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
+            issuanceToken
+        );
+        int256 investedFixed = amount.safeUintToInt().newFixed(18);
+        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(18);
+        int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
+        uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
+                _issuanceToken.decimals()
+            ).safeIntToUint();
+        _issuanceToken.mint(
+            msg.sender,
+            issuanceTokens
+        );
     }
 
     /**
@@ -103,7 +119,6 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
             msg.value.mod(issuePrice) == 0,
             "Fractional investments not allowed."
         );
-
         if (investments[msg.sender] == 0){
             investors.push(msg.sender);
         }
@@ -115,7 +130,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function openIssuance() public onlyOwner {
+    function startIssuance() public onlyOwner {
         require(
             issuePrice > 0,
             "Issue price not set."
@@ -143,7 +158,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         require(
             currentState == "LIVE",
-            "Cannot transfer funds now."
+            "Cannot withdraw funds now."
         );
         uint256 amount = amountRaised - amountWithdrawn;
         amountWithdrawn = amount;
