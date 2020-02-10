@@ -30,11 +30,7 @@ contract DAO is VentureEth {
     mapping(address => uint256) public totalVotesByHolder;
     mapping(address => address[]) public backersForVenture;
 
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint8 decimals
-    ) VentureEth(name, symbol, decimals) public {}
+    constructor() VentureEth() public {}
 
     /**
      * @dev Fallback function. Required when collecting ether dividends from ventures.
