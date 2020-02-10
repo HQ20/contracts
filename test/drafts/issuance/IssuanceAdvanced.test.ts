@@ -1,328 +1,366 @@
-import { BigNumber } from 'bignumber.js';
-import { should } from 'chai';
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
+import * as chai from 'chai';
+const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { advanceTimeAndBlock, takeSnapshot, revertToSnapshot } = require('ganache-time-traveler');
-import { IssuanceAdvancedInstance, TestERC20MintableInstance } from '../../../types/truffle-contracts';
+
+import { IssuanceAdvancedInstance, ERC20MintableDetailedInstance } from '../../../types/truffle-contracts';
 
 const IssuanceAdvanced = artifacts.require(
     './drafts/issuance/IssuanceAdvanced.sol',
     ) as Truffle.Contract<IssuanceAdvancedInstance>;
-const TestERC20Mintable = artifacts.require(
-        './test/issuance/TestERC20Mintable.sol',
-    ) as Truffle.Contract<TestERC20MintableInstance>;
+const ERC20MintableDetailed = artifacts.require(
+        'ERC20MintableDetailed',
+    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
 
-should();
+chai.use(require('chai-bn')(require('bn.js')));
+chai.should();
+// tslint:enable:no-var-requires
 
-// tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../utils');
 
 contract('IssuanceAdvanced', (accounts) => {
     let snapshotId: any;
 
     const investor1 = accounts[1];
     const investor2 = accounts[2];
-    const wallet = accounts[3];
+    const notInvestor = accounts[3];
+    const beneficiary = accounts[4];
+    const issuePrice = ether('5');
+    const softCap = ether('50');
+    const minInvestment = ether('10');
+    const openingDate = Math.floor((new Date()).getTime() / 1000) - 3600;
+    const closingDate = Math.floor((new Date()).getTime() / 1000) + 3600;
+    const balance1 = ether('100');
+    const balance2 = ether('50');
+    const investment1 = ether('50');
+    const investment2 = ether('10');
+    const claimed1 = ether('1');
+    const claimed2 = ether('0.2');
 
     let issuance: IssuanceAdvancedInstance;
-    let currencyToken: TestERC20MintableInstance;
-    let issuanceToken: TestERC20MintableInstance;
+    let currencyToken: ERC20MintableDetailedInstance;
+    let issuanceToken: ERC20MintableDetailedInstance;
 
-    beforeEach(async () => {
-        const snapShot = await takeSnapshot();
-        snapshotId = snapShot.result;
-        currencyToken = await TestERC20Mintable.new();
-        issuanceToken = await TestERC20Mintable.new();
-        issuance = await IssuanceAdvanced.new(
-            issuanceToken.address,
-            currencyToken.address,
-        );
-        await issuanceToken.addMinter(issuance.address);
-        await issuance.setIssuePrice(5);
-        await issuance.setOpeningDate(Math.floor((new Date()).getTime() / 1000) - 3600);
-        await issuance.setClosingDate(Math.floor((new Date()).getTime() / 1000) + 3600);
-        await issuance.setSoftCap(new BigNumber(50e18));
-        await issuance.setMinInvestment(new BigNumber(10e18));
-    });
+    describe('Setters', () => {
 
-    afterEach(async  () => {
-        await revertToSnapshot(snapshotId);
-    });
+        beforeEach(async () => {
+            currencyToken = await ERC20MintableDetailed.new('CurrencyToken', 'CURT', 18);
+            issuanceToken = await ERC20MintableDetailed.new('IssuanceToken', 'ISST', 17);
+            issuance = await IssuanceAdvanced.new(
+                issuanceToken.address,
+                currencyToken.address,
+            );
+            await issuanceToken.addMinter(issuance.address);
+            await currencyToken.mint(investor1, balance1);
+            await currencyToken.mint(investor2, balance2);
+            await currencyToken.approve(issuance.address, balance1, { from: investor1 });
+            await currencyToken.approve(issuance.address, balance2, { from: investor2 });
+        });
 
-    /**
-     * @test {IssuanceAdvanced#openIssuance}
-     */
-    it('openIssuance can succefully open the Issuance', async () => {
-        await issuance.openIssuance();
-        bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
-    });
+        it('setOpeningDate sets the opening date', async () => {
+            await issuance.setOpeningDate(openingDate);
+            (await issuance.openingDate()).toString().should.be.equal(openingDate.toString());
+        });
 
-    /**
-     * @test {IssuanceAdvanced#openIssuance}
-     */
-    itShouldThrow('cannot open issuance outside allotted timeframe', async () => {
-        await advanceTimeAndBlock(4000);
-        await issuance.openIssuance();
-    }, 'Not the right time.');
+        it('setClosingDate sets the closing date', async () => {
+            await issuance.setClosingDate(closingDate);
+            (await issuance.closingDate()).toString().should.be.equal(closingDate.toString());
+        });
 
-    /**
-     * @test {IssuanceAdvanced#invest}
-     */
-    it('invest should succesfully invest', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await issuance.openIssuance();
-        const event = (await issuance.invest(new BigNumber(50e18), { from: investor1 })).logs[0];
-        event.event.should.be.equal('InvestmentAdded');
-        event.args.investor.should.be.equal(investor1);
-        web3.utils.fromWei(event.args.amount, 'ether').should.be.equal('50');
-    });
+        it('setSoftCap sets the soft cap', async () => {
+            await issuance.setSoftCap(ether('100'));
+            web3.utils.fromWei(await issuance.softCap(), 'ether').should.be.equal('100');
+        });
 
-    /**
-     * @test {IssuanceAdvanced#invest}
-     */
-    itShouldThrow('cannot invest if state is not "OPEN"', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-    }, 'Not open for investments.');
+        it('setMinInvestment sets the minimum investment', async () => {
+            await issuance.setMinInvestment(ether('1'));
+            web3.utils.fromWei(await issuance.minInvestment(), 'ether').should.be.equal('1');
+        });
 
-    /**
-     * @test {IssuanceAdvanced#invest}
-     */
-    itShouldThrow('cannot invest outisde allotted timespan', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await issuance.openIssuance();
-        await advanceTimeAndBlock(4000);
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-    }, 'Not the right time.');
+        describe('before opening the issuance', () => {
 
-    /**
-     * @test {IssuanceAdvanced#invest}
-     */
-    itShouldThrow('cannot invest with fractional investments', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber('1000000000000000001'), { from: investor1 });
-    }, 'Fractional investments not allowed.');
-
-    /**
-     * @test {IssuanceAdvanced#invest}
-     */
-    itShouldThrow('cannot invest with investment below minimum threshold', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(5e18), { from: investor1 });
-    }, 'Investment below minimum threshold.');
-
-    /**
-     * @test {IssuanceAdvanced#startDistribution}
-     */
-    it('startDistribution can succesfully close the Issuance', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#startDistribution}
-     */
-    itShouldThrow('cannot start distribution before closing time', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await issuance.startDistribution();
-    }, 'Not the right time yet.');
-
-    /**
-     * @test {IssuanceAdvanced#startDistribution}
-     */
-    itShouldThrow('cannot start distribution when soft cap not reached', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(10e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-    }, 'Not enough funds collected.');
-
-    /**
-     * @test {IssuanceAdvanced#claim}
-     */
-    it('claim sends tokens to investors', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
-        await issuance.claim({ from: investor1 });
-        await issuance.claim({ from: investor2 });
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor1), 'ether').should.be.equal('10');
-        web3.utils.fromWei(await issuanceToken.balanceOf(investor2), 'ether').should.be.equal('2');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#claim}
-     */
-    itShouldThrow('cannot claim when state is not "LIVE"', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.claim({ from: investor1 });
-    }, 'Cannot claim now.');
-
-    /**
-     * @test {IssuanceAdvanced#claim}
-     */
-    itShouldThrow('cannot claim when not invested', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        await issuance.claim({ from: investor2 });
-    }, 'No investments found.');
-
-    /**
-     * @test {IssuanceAdvanced#cancelInvestment}
-     */
-    it('cancelInvestment should cancel an investor investments', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor1 });
-        const event = (await issuance.cancelInvestment({ from: investor1 })).logs[0];
-        event.event.should.be.equal('InvestmentCancelled');
-        event.args.investor.should.be.equal(investor1);
-        web3.utils.fromWei(event.args.amount, 'ether').should.be.equal('60');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#cancelInvestment}
-     */
-    itShouldThrow('cannot cancel investment when state is not "OPEN" or "FAILED"', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor1 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        await issuance.cancelInvestment({ from: investor1 });
-    }, 'Cannot cancel now.');
-
-    /**
-     * @test {IssuanceAdvanced#cancelInvestment}
-     */
-    itShouldThrow('cannot cancel investment when not invested', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.approve(issuance.address, new BigNumber(60e18), { from: investor1 });
-        await issuance.openIssuance();
-        await issuance.cancelInvestment({ from: investor1 });
-    }, 'No investments found.');
-
-    /**
-     * @test {IssuanceAdvanced#cancelAllInvestments}
-     */
-    it('cancelAllInvestments should begin the process to cancel all investor investments', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await issuance.cancelAllInvestments();
-        bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
-        await issuance.cancelInvestment({ from: investor1 });
-        await issuance.cancelInvestment({ from: investor2 });
-        web3.utils.fromWei(await currencyToken.balanceOf(investor1), 'ether').should.be.equal('100');
-        web3.utils.fromWei(await currencyToken.balanceOf(investor2), 'ether').should.be.equal('50');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#withdraw}
-     */
-    it('withdraw should transfer all collected tokens to the wallet of the owner', async () => {
-        await currencyToken.mint(investor1, new BigNumber(100e18));
-        await currencyToken.mint(investor2, new BigNumber(50e18));
-        await currencyToken.approve(issuance.address, new BigNumber(50e18), { from: investor1 });
-        await currencyToken.approve(issuance.address, new BigNumber(10e18), { from: investor2 });
-        await issuance.openIssuance();
-        await issuance.invest(new BigNumber(50e18), { from: investor1 });
-        await issuance.invest(new BigNumber(10e18), { from: investor2 });
-        await advanceTimeAndBlock(4000);
-        await issuance.startDistribution();
-        await issuance.claim({ from: investor1 });
-        await issuance.claim({ from: investor2 });
-        await issuance.withdraw(wallet);
-        web3.utils.fromWei(await currencyToken.balanceOf(wallet), 'ether').should.be.equal('60');
-    });
-
-    /**
-     * @test {IssuanceAdvanced#withdraw}
-     */
-    itShouldThrow('cannot transfer funds when issuance state is not "LIVE"', async () => {
-        await issuance.openIssuance();
-        await issuance.withdraw(wallet);
-    }, 'Cannot transfer funds now.');
+            beforeEach(async () => {
+                const snapShot = await takeSnapshot();
+                snapshotId = snapShot.result;
+                await issuance.setOpeningDate(openingDate);
+                await issuance.setClosingDate(closingDate);
+                await issuance.setSoftCap(softCap);
+                await issuance.setMinInvestment(minInvestment);
+            });
 
 
-    it('setIssuePrice sets the issue price', async () => {
-        await issuance.setIssuePrice(5);
-        (await issuance.issuePrice()).toString().should.be.equal('5');
-    });
+            afterEach(async () => {
+                await revertToSnapshot(snapshotId);
+            });
 
-    it('setOpeningDate sets the opening date', async () => {
-        const openingDate = Math.floor((new Date()).getTime() / 1000);
-        await issuance.setOpeningDate(openingDate);
-        (await issuance.openingDate()).toString().should.be.equal(openingDate.toString());
-    });
+            it('can set the issue price', async () => {
+                await issuance.setIssuePrice(issuePrice);
+                BN(await issuance.issuePrice()).toString().should.be.bignumber.equal(issuePrice);
+            });
 
-    it('setClosingDate sets the closing date', async () => {
-        const closingDate = Math.floor((new Date()).getTime() / 1000);
-        await issuance.setClosingDate(closingDate);
-        (await issuance.closingDate()).toString().should.be.equal(closingDate.toString());
-    });
+            /**
+             * @test {IssuanceAdvanced#startIssuance}
+             */
+            it('cannot open issuance outside allotted timeframe', async () => {
+                await issuance.setIssuePrice(issuePrice);
+                await advanceTimeAndBlock(4000);
+                await expectRevert(
+                    issuance.startIssuance(),
+                    'Not the right time.',
+                );
+            });
 
-    it('setSoftCap sets the soft cap', async () => {
-        await issuance.setSoftCap(new BigNumber(100e18));
-        web3.utils.fromWei(await issuance.softCap(), 'ether').should.be.equal('100');
-    });
+            /**
+             * @test {IssuanceAdvanced#invest}
+             */
+            it('cannot invest if state is not "OPEN"', async () => {
+                await expectRevert(
+                    issuance.invest(investment1, { from: investor1 }),
+                    'Not open for investments.',
+                );
+            });
 
-    it('setMinInvestment sets the minimum investment', async () => {
-        await issuance.setMinInvestment(new BigNumber(1e18));
-        web3.utils.fromWei(await issuance.minInvestment(), 'ether').should.be.equal('1');
+            /**
+             * @test {IssuanceAdvanced#startIssuance}
+             */
+            it('can start the issuance process', async () => {
+                await issuance.setIssuePrice(issuePrice);
+                await issuance.startIssuance();
+                bytes32ToString(await issuance.currentState()).should.be.equal('OPEN');
+            });
+
+            describe('after opening issuance', () => {
+
+                beforeEach(async () => {
+                    await issuance.setIssuePrice(issuePrice);
+                    await issuance.startIssuance();
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#withdraw}
+                 */
+                it('the beneficiary cannot withdraw funds yet', async () => {
+                    await expectRevert(
+                        issuance.withdraw(beneficiary),
+                        'Cannot withdraw funds now.',
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#cancelInvestment}
+                 */
+                it('investors cannot cancel investments if not invested', async () => {
+                    await expectRevert(
+                        issuance.cancelInvestment({ from: investor1 }),
+                        'No investments found.',
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#invest}
+                 */
+                it('fractional investments are not accepted', async () => {
+                    await expectRevert(
+                        issuance.invest(investment1 + 1, { from: investor1 }),
+                        'Fractional investments not allowed.',
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#invest}
+                 */
+                it('cannot invest outisde allotted timespan', async () => {
+                    await advanceTimeAndBlock(4000);
+                    await expectRevert(
+                        issuance.invest(investment1, { from: investor1 }),
+                        'Not the right time.',
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#invest}
+                 */
+                it('cannot invest with investment below minimum threshold', async () => {
+                    await expectRevert(
+                        issuance.invest(issuePrice, { from: investor1 }),
+                        'Investment below minimum threshold.',
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#invest}
+                 */
+                it('investments are accepted', async () => {
+                    expectEvent(
+                        await issuance.invest(investment1, { from: investor1 }),
+                        'InvestmentAdded',
+                        {
+                            investor: investor1,
+                            amount: investment1,
+                        },
+                    );
+                });
+
+                /**
+                 * @test {IssuanceAdvanced#startDistribution}
+                 */
+                it('cannot start distribution when soft cap not reached', async () => {
+                    await issuance.invest(investment2, { from: investor1 });
+                    await issuance.invest(investment2, { from: investor2 });
+                    await advanceTimeAndBlock(4000);
+                    await expectRevert(
+                        issuance.startDistribution(),
+                        'Not enough funds collected.',
+                    );
+                });
+
+                describe('once invested', () => {
+
+                    beforeEach(async () => {
+                        await issuance.invest(investment1, { from: investor1 });
+                        await issuance.invest(investment2, { from: investor2 });
+                    });
+
+                    /**
+                     * @test {IssuanceAdvanced#startDistribution}
+                     */
+                    it('cannot start distribution before closing time', async () => {
+                        await expectRevert(
+                            issuance.startDistribution(),
+                            'Not the right time yet.',
+                        );
+                    });
+
+                    /**
+                     * @test {IssuanceAdvanced#claim}
+                     */
+                    it('investors cannot claim tokens yet', async () => {
+                        await advanceTimeAndBlock(4000);
+                        await expectRevert(
+                            issuance.claim({ from: investor1 }),
+                            'Cannot claim now.',
+                        );
+                    });
+
+                    /**
+                     * @test {IssuanceAdvanced#cancelInvestment}
+                     */
+                    it('investors can cancel their investments', async () => {
+                        expectEvent(
+                            await issuance.cancelInvestment({ from: investor1 }),
+                            'InvestmentCancelled',
+                            {
+                                investor: investor1,
+                                amount: investment1,
+                            },
+                        );
+                    });
+
+                    /**
+                     * @test {Issuance#cancelAllInvestments}
+                     */
+                    it('the issuance process can be cancelled', async () => {
+                        await issuance.cancelAllInvestments();
+                        bytes32ToString(await issuance.currentState()).should.be.equal('FAILED');
+                    });
+
+                    /**
+                     * @test {IssuanceAdvanced#startDistribution}
+                     */
+                    it('distribution can start', async () => {
+                        await advanceTimeAndBlock(4000);
+                        await issuance.startDistribution();
+                        bytes32ToString(await issuance.currentState()).should.be.equal('LIVE');
+                    });
+
+                    describe('once distribution starts', () => {
+
+                        beforeEach(async () => {
+                            await advanceTimeAndBlock(4000);
+                            await issuance.startDistribution();
+                        });
+
+                        /**
+                         * @test {IssuanceAdvanced#cancelInvestment}
+                         */
+                        it('investments cannot be cancelled', async () => {
+                            await expectRevert(
+                                issuance.cancelInvestment({ from: investor1 }),
+                                'Cannot cancel now.',
+                            );
+                        });
+
+                        /**
+                         * @test {IssuanceAdvanced#claim}
+                         */
+                        it('cannot claim when not invested', async () => {
+                            await expectRevert(
+                                issuance.claim({ from: notInvestor }),
+                                'No investments found.',
+                            );
+                        });
+
+                        /**
+                         * @test {IssuanceAdvanced#claim}
+                         */
+                        it('investors can claim tokens for their investments', async () => {
+                            await issuance.claim({ from: investor1 });
+                            await issuance.claim({ from: investor2 });
+                            BN(await issuanceToken.balanceOf(investor1)).should.be.bignumber.equal(claimed1);
+                            BN(await issuanceToken.balanceOf(investor2)).should.be.bignumber.equal(claimed2);
+                        });
+
+                        /**
+                         * @test {IssuanceAdvanced#withdraw}
+                         */
+                        it('the beneficiary can withdraw all collected funds', async () => {
+                            await issuance.claim({ from: investor1 });
+                            await issuance.claim({ from: investor2 });
+                            await issuance.withdraw(beneficiary);
+                            BN(await currencyToken.balanceOf(beneficiary))
+                                .should.be.bignumber.equal(investment1.add(investment2));
+                        });
+
+                    });
+
+                    describe('once the issuance process is cancelled', () => {
+
+                        beforeEach(async () => {
+                            await issuance.cancelAllInvestments();
+                        });
+
+                        /**
+                         * @test {IssuanceAdvanced#cancelAllInvestments}
+                         */
+                        it(
+                            'investors can claim their investments back',
+                            async () => {
+                                await issuance.cancelInvestment({ from: investor1 });
+                                await issuance.cancelInvestment({ from: investor2 });
+                                BN(await currencyToken.balanceOf(investor1))
+                                    .should.be.bignumber.equal(balance1);
+                                BN(await currencyToken.balanceOf(investor2))
+                                    .should.be.bignumber.equal(balance2);
+                            },
+                        );
+
+                        /**
+                         * @test {Issuance#withdraw}
+                         */
+                        it('the beneficiary cannot withdraw funds', async () => {
+                            await expectRevert(
+                                issuance.withdraw(beneficiary),
+                                'Cannot withdraw funds now.',
+                            );
+                        });
+
+                    });
+
+                });
+
+            });
+
+        });
+
     });
 
 });
