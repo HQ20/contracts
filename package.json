@@ -37,7 +37,7 @@
         "build": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "peerDependencies": {
-        "@openzeppelin/contracts": "2.4.x"
+        "@openzeppelin/contracts": "2.5.0"
     },
     "devDependencies": {
         "@openzeppelin/contracts": "2.5.0",
