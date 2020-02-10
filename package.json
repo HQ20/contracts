@@ -37,10 +37,12 @@
         "build": "truffle compile && typechain --target truffle --outDir types/truffle-contracts './build/contracts/*.json'"
     },
     "peerDependencies": {
-        "@openzeppelin/contracts": "2.4.x"
+        "@openzeppelin/contracts": "^2.4.0",
+        "@hq20/fixidity": "^0.1.0-alpha.1"
     },
     "devDependencies": {
-        "@openzeppelin/contracts": "2.5.0",
+        "@hq20/fixidity": "0.1.0-alpha.1",
+        "@openzeppelin/contracts": "2.4.0",
         "@openzeppelin/test-helpers": "0.5.4",
         "@truffle/hdwallet-provider": "1.0.30",
         "@types/bignumber.js": "5.0.0",
@@ -72,7 +74,7 @@
         "ts-generator": "0.0.8",
         "ts-node": "8.6.2",
         "tslint": "6.0.0",
-        "typechain": "1.0.4",
+        "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
         "typescript": "3.7.5"
     }

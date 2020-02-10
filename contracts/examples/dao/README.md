@@ -11,7 +11,7 @@ This contract is rather experimental. Use with caution.
 
 ## Usage
 
-1. Investors are accepted into the DAO during the investor rounds. The initial one is executed with `DAO.openIssuance()`, callable only by the DAO owner. After the initial investor round additional investors can be welcomed by opening another investor round. To do that you need to call `DAO.reopenInvestorRound()`
+1. Investors are accepted into the DAO during the investor rounds. The initial one is executed with `DAO.startIssuance()`, callable only by the DAO owner. After the initial investor round additional investors can be welcomed by opening another investor round. To do that you need to call `DAO.reopenInvestorRound()`
 
 Any individual can invest ether in this DAO by calling `DAO.invest()` during an investor round. Once the investor round is complete, and if the investor round is succesful, they will be allowed to call `DAO.claim()` to get their allotted DAO tokens in return.
 
