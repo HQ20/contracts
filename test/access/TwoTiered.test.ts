@@ -42,6 +42,16 @@ contract('TwoTiered', (accounts) => {
     });
 
     /**
+     * @test {TwoTiered#addAdmin}
+     */
+    it('addAdmin throws if not called by an admin account.', async () => {
+        await expectRevert(
+            twoTiered.addAdmin(user1, { from: user1 }),
+            'Restricted to admins.',
+        );
+    });
+
+    /**
      * @test {TwoTiered#renounceAdmin}
      */
     it('renounceAdmin removes an user from the admin role.', async () => {
@@ -65,6 +75,14 @@ contract('TwoTiered', (accounts) => {
     it('addUser adds an account as an user.', async () => {
         await twoTiered.addUser(user1, { from: root });
         assert.isTrue(await twoTiered.isUser(user1));
+    });
+
+    /**
+     * @test {TwoTiered#addUser} and {TwoTiered#isUser}
+     */
+    it('addAdmin adds an account as an admin.', async () => {
+        await twoTiered.addAdmin(user1, { from: root });
+        assert.isTrue(await twoTiered.isAdmin(user1));
     });
 
     describe('with existing users', () => {

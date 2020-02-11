@@ -86,6 +86,21 @@ contract('Hierarchy', (accounts) => {
         );
         assert.isTrue(await hierarchy.roleExists(ADDED_ROLE_ID));
     });
+
+    describe('with existing users and roles', () => {
+        beforeEach(async () => {
+            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root });
+            await hierarchy.addMember(user1, ADDED_ROLE_ID, { from: root });
+        });
+
+        /**
+         * @test {Community#removeMember}
+         */
+        it('removeMember removes a member from a role.', async () => {
+            await hierarchy.removeMember(user1, ADDED_ROLE_ID, { from: root });
+            assert.isFalse(await hierarchy.isMember(user1, ADDED_ROLE_ID));
+        });
+    });
 });
 
 function stringToBytes32(text: string) {

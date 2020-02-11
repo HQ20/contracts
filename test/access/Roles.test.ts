@@ -11,6 +11,7 @@ contract('Roles', (accounts) => {
     let roles: RolesMockInstance;
     const ADDED_ROLE = stringToBytes32('ADDED');
     const user1 = accounts[1];
+    const user2 = accounts[2];
 
     beforeEach(async () => {
         roles = await Roles.new();
@@ -84,6 +85,7 @@ contract('Roles', (accounts) => {
         describe('with existing memberships', () => {
             beforeEach(async () => {
                 await roles.addMember(user1, ADDED_ROLE);
+                await roles.addMember(user2, ADDED_ROLE);
             });
 
             it('does not add a member to a role he already belongs to.', async () => {
@@ -105,7 +107,10 @@ contract('Roles', (accounts) => {
                 assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
             });
 
-            // Test roles.enumerateMembers(ADDED_ROLE)
+            it('enumerates the members from a role.', async () => {
+                const members = await roles.enumerateMembers(ADDED_ROLE);
+                expect(members).to.have.members([user1, user2]);
+            });
         });
     });
 });
