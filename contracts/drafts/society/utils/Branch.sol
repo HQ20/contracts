@@ -53,8 +53,15 @@ contract Branch is Ownable {
         return bills.length();
     }
 
-    function draft(address bill, bytes memory article, uint256 amount) public onlyMembers returns (uint256) {
-        require(bills.contains(bill), "Cannot add articles to bill which has not been proposed.");
+    function draft(
+        address bill,
+        bytes memory article,
+        uint256 amount
+    ) public onlyMembers returns (uint256) {
+        require(
+            bills.contains(bill),
+            "Cannot add articles to bill which has not been proposed."
+        );
         return Bill(bill).write(article, amount);
     }
 
@@ -81,7 +88,10 @@ contract Branch is Ownable {
         // enter condition is taxable
         if (terms.conditions(0, 0) == 1) {
             // transfer from citizen enter condition tax
-            require(Bank(Society(society).bank()).transferFrom(citizen, address(this), terms.conditions(0, 1)), "Not enough money to enter.");
+            require(
+                Bank(Society(society).bank()).transferFrom(citizen, address(this), terms.conditions(0, 1)),
+                "Not enough money to enter."
+            );
         }
         members.add(citizen);
     }
@@ -96,7 +106,10 @@ contract Branch is Ownable {
         // leave condition is taxable
         if (terms.conditions(1, 0) == 1) {
             // trasnfer from citizen leave condition tax
-            require(Bank(Society(society).bank()).transferFrom(citizen, address(this), terms.conditions(1, 1)), "Not enough money to leave.");
+            require(
+                Bank(Society(society).bank()).transferFrom(citizen, address(this), terms.conditions(1, 1)),
+                "Not enough money to leave."
+            );
         }
         members.remove(citizen);
     }

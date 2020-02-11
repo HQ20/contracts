@@ -41,7 +41,9 @@ contract Bill is Ownable {
 
     function sign(uint256 paragraph) public payable onlyVetter {
         // solium-disable-next-line security/no-call-value
-        (bool success, ) = issue.call.value(amounts[paragraph])(draft[paragraph]);
+        (bool success, ) = issue.call.value(amounts[paragraph])(
+                draft[paragraph]
+            );
         require(
             success,
             "Bill could not be signed into law."
