@@ -1,18 +1,18 @@
 import { should } from 'chai';
-import { ERC20MintableInstance } from '../../../types/truffle-contracts';
+import { ERC20MintableHQ20Instance } from '../../../types/truffle-contracts';
 // tslint:disable-next-line no-var-requires
 const { BN, expectRevert } = require('@openzeppelin/test-helpers');
-const ERC20Mintable = artifacts.require('ERC20Mintable') as Truffle.Contract<ERC20MintableInstance>;
+const ERC20Mintable = artifacts.require('ERC20MintableHQ20') as Truffle.Contract<ERC20MintableHQ20Instance>;
 
 should();
 
-contract('ERC20Mintable', (accounts) => {
+contract('ERC20MintableHQ20', (accounts) => {
 
     const admin = accounts[0];
     const user = accounts[1];
     const other = accounts[2];
 
-    let token: ERC20MintableInstance;
+    let token: ERC20MintableHQ20Instance;
 
     beforeEach(async () => {
         token = await ERC20Mintable.new(admin);

@@ -12,7 +12,7 @@ import "../../access/TwoTiered.sol";
  * Admins are allowed to renounce their membership to the Admins group.
  * At construction, the deployer of the contract is the only Admin.
  */
-contract ERC20Mintable is ERC20, TwoTiered {
+contract ERC20MintableHQ20 is ERC20, TwoTiered {
     constructor (address admin) TwoTiered(admin) public {}
 
     /// @dev Only Users can mint new tokens
