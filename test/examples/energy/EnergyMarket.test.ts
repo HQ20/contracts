@@ -1,15 +1,12 @@
 // tslint:disable:no-var-requires
 import * as chai from 'chai';
-const { balance, BN, constants, ether, expectEvent, expectRevert, send, time } = require('@openzeppelin/test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 import { EnergyMarketInstance } from '../../../types/truffle-contracts';
 
-const EnergyMarket = artifacts.require(
-    './examples/energy/EnergyMarket.sol',
-    ) as Truffle.Contract<EnergyMarketInstance>;
+const EnergyMarket = artifacts.require('EnergyMarket') as Truffle.Contract<EnergyMarketInstance>;
 
 chai.use(require('chai-bn')(require('bn.js')));
 chai.should();
-// tslint:enable:no-var-requires
 
 contract('EnergyMarket', (accounts) => {
     const [ owner, authorized, unauthorized ] = accounts;
@@ -25,8 +22,9 @@ contract('EnergyMarket', (accounts) => {
         energyMarket = await EnergyMarket.new(
             initialSupply,
             basePrice,
+            { from: owner },
         );
-        await energyMarket.addMember(authorized);
+        await energyMarket.addUser(authorized, { from: owner });
     });
 
     /**
