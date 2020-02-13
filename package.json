@@ -68,7 +68,7 @@
         "node-emoji": "1.10.0",
         "pdf-from-html": "0.1.1",
         "soldoc": "0.1.2",
-        "solidity-coverage": "0.7.1",
+        "solidity-coverage": "0.7.2",
         "truffle": "5.1.12",
         "truffle-typings": "1.0.8",
         "ts-generator": "0.0.8",
