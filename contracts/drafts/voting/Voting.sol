@@ -47,10 +47,16 @@ contract Voting is Ownable, StateMachine {
      */
     constructor(
         address _votingToken,
+        uint256 _threshold,
         address _proposalContract,
         bytes memory _proposalData
     ) public Ownable() StateMachine() {
         votingToken = _votingToken;
+        require(
+            threshold > 0,
+            "Threshold cannot be zero."
+        );
+        threshold = _threshold;
         proposalContract = _proposalContract;
         proposalData = _proposalData;
         _createState("OPEN");
@@ -112,10 +118,6 @@ contract Voting is Ownable, StateMachine {
      * @dev Function to open the voting
      */
     function open() public onlyOwner {
-        require(
-            threshold > 0,
-            "Threshold not set."
-        );
         _transition("OPEN");
     }
 
@@ -135,24 +137,6 @@ contract Voting is Ownable, StateMachine {
      */
     function cancelAllVotes() public onlyOwner {
         _transition("FAILED");
-    }
-
-    /**
-     * @notice Set the threshold during SETUP state. Threshold must be a percentage of the votingToken's totalSupply, with the comma shifted two digits to the right. For example:
-     * If desired threshold is 100% (unanimity), then pass to this function: 10000.
-     * If desired threshold is 66.67% (super majority), then passs to this function: 6667.
-     */
-    function setThreshold(uint256 _threshold) public onlyOwner {
-        require(
-            currentState == "SETUP",
-            "Cannot setup now."
-        );
-        require(
-            _threshold > 0 && _threshold <= 10000,
-            "Quroum must be a percentage."
-        );
-        threshold = _threshold;
-        emit ThresholdSet();
     }
 
     function thresholdVotes() internal returns (uint256) {
