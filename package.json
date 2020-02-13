@@ -55,7 +55,7 @@
         "coveralls": "3.0.9",
         "cross-env": "7.0.0",
         "directory-tree": "2.2.4",
-        "eth-gas-reporter": "0.2.14",
+        "eth-gas-reporter": "0.2.15",
         "ethlint": "1.2.5",
         "ganache-cli": "6.9.0",
         "ganache-time-traveler": "1.0.11",
