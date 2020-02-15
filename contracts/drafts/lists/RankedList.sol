@@ -2,11 +2,12 @@ pragma solidity ^0.5.10;
 
 
 /**
- * @title OrderedList
- * @dev Doubly linked list of ranked objects. The head will always have the highest rank and elements will be ordered down towards the tail.
+ * @title RankedList
+ * @dev Doubly linked list of ranked objects. The head will always have the highest rank and
+ * elements will be ordered down towards the tail.
  * @author Alberto Cuesta Cañada
  */
-contract OrderedList {
+contract RankedList {
 
     event ObjectCreated(uint256 id, uint256 rank, address data);
     event ObjectsLinked(uint256 prev, uint256 next);

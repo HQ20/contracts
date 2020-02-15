@@ -2,11 +2,14 @@ pragma solidity ^0.5.10;
 
 
 /**
- * @title EnumerableSet
- * @dev Data structure
+ * @title OrderedSet
+ * @dev Data structure. It has the properties of a mapping for addresses, but members are ordered
+ * and can be enumerated. Items can be inserted only at the head or the tail, but can be removed
+ * from anywhere. Append, prepend, remove and contains are O(1). Length and enumerate O(N). InsertAfter
+ * and insertBefore could be implemented at O(1).
  * @author Alberto Cuesta Cañada
  */
-library EnumerableSet {
+library OrderedSet {
 
     event ItemInserted(address prev, address inserted, address next);
     event ItemRemoved(address removed);
@@ -42,11 +45,11 @@ library EnumerableSet {
     {
         require(
             item != address(0),
-            "EnumerableSet: Cannot remove the empty address"
+            "OrderedSet: Cannot remove the empty address"
         );
         require(
             contains(set, item) == true,
-            "EnumerableSet: Cannot remove a non existing item"
+            "OrderedSet: Cannot remove a non existing item"
         );
         set.next[set.prev[item]] = set.next[item];
         set.prev[set.next[item]] = set.prev[item];
@@ -134,11 +137,11 @@ library EnumerableSet {
     {
         require(
             item != address(0),
-            "EnumerableSet: Cannot insert the empty address"
+            "OrderedSet: Cannot insert the empty address"
         );
         require(
             contains(set, item) == false,
-            "EnumerableSet: Cannot insert an existing item"
+            "OrderedSet: Cannot insert an existing item"
         );
         set.next[prev_] = item;
         set.next[item] = next_;

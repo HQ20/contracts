@@ -2,11 +2,11 @@ pragma solidity ^0.5.10;
 
 
 /**
- * @title LinkedListAsArray
+ * @title RenounceableQueue
  * @dev Doubly Linked List tweaked for performance. Only allows adding at the Head.
  * @author Alberto Cuesta Cañada
  */
-contract LinkedListAsArray {
+contract RenounceableQueue {
 
     event ObjectCreated(uint256 id, address data);
     event ObjectRemoved(uint256 id);
