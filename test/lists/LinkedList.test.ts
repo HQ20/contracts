@@ -2,12 +2,9 @@ import { should } from 'chai';
 import { LinkedListInstance } from '../../types/truffle-contracts';
 import { TestLinkedListInstance } from '../../types/truffle-contracts';
 
-const LinkedList = artifacts.require('./lists/LinkedList.sol')  as Truffle.Contract<LinkedListInstance>;
-const TestLinkedList = artifacts.require(
-    './lists/mocks/TestLinkedList.sol',
-)  as Truffle.Contract<TestLinkedListInstance>;
+const LinkedList = artifacts.require('LinkedList')  as Truffle.Contract<LinkedListInstance>;
+const TestLinkedList = artifacts.require('TestLinkedList') as Truffle.Contract<TestLinkedListInstance>;
 should();
-
 
 const emptyData = '0x0000000000000000000000000000000000000000';
 const headData = '0x0000000000000000000000000000000000000001';
