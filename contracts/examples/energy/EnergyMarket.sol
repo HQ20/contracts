@@ -2,7 +2,7 @@ pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
-import "../../access/Whitelist.sol";
+import "../../access/TwoTiered.sol";
 
 
 /**
@@ -13,7 +13,7 @@ import "../../access/Whitelist.sol";
  * to the producers. Whitelist is used to keep a list of compliant smart
  * meters that communicate the production and consumption of energy.
  */
-contract EnergyMarket is ERC20, Whitelist {
+contract EnergyMarket is ERC20, TwoTiered {
 
     event EnergyProduced(address producer, uint256 time);
     event EnergyConsumed(address consumer, uint256 time);
@@ -34,7 +34,7 @@ contract EnergyMarket is ERC20, Whitelist {
     constructor (uint256 _initialSupply, uint128 _basePrice)
         public
         ERC20()
-        Whitelist()
+        TwoTiered(msg.sender)
     {
         _mint(address(this), _initialSupply);
         basePrice = _basePrice;
@@ -72,7 +72,7 @@ contract EnergyMarket is ERC20, Whitelist {
      * call this function.
      */
     function produce(uint256 _time) public {
-        require(isMember(msg.sender), "Unknown meter.");
+        require(isUser(msg.sender), "Unknown meter.");
         this.transfer(
             msg.sender,
             getProductionPrice(_time)
@@ -87,7 +87,7 @@ contract EnergyMarket is ERC20, Whitelist {
      * call this function.
      */
     function consume(uint256 _time) public {
-        require(isMember(msg.sender), "Unknown meter.");
+        require(isUser(msg.sender), "Unknown meter.");
         this.transferFrom(
             msg.sender,
             address(this),

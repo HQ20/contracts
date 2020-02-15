@@ -1,7 +1,7 @@
 import { should } from 'chai';
 import { StringConversionInstance } from '../../../types/truffle-contracts';
 
-const StringConversion = artifacts.require('./StringConversion.sol')  as Truffle.Contract<StringConversionInstance>;
+const StringConversion = artifacts.require('StringConversion')  as Truffle.Contract<StringConversionInstance>;
 should();
 
 /** @test {StringConversion} contract */
@@ -14,7 +14,7 @@ contract('StringConversion', () => {
      * @test {StringConversion#bytes32ToString} and {StringConversion#stringToBytes32}
      */
     beforeEach(async () => {
-        stringConversionInstance = await StringConversion.deployed();
+        stringConversionInstance = await StringConversion.new();
     });
 
     it('Extract characters from bytes32', async () => {

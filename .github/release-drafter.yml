@@ -1,0 +1,44 @@
+# Thanks to https://raw.githubusercontent.com/jenkinsci/.github/master/.github/release-drafter.yml
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+
+# Emoji reference: https://gitmoji.carloscuesta.me/
+categories:
+  - title: '💥️ Breaking changes'
+    labels:
+      - 'breaking'
+  - title: '🚨 Removed'
+    label: 'removed'
+  - title: '🚀 New features and improvements'
+    labels:
+      - 'enhancement'
+      - 'feature'
+      - 'new'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+      - 'security'
+      - 'regression'
+  - title: '📝 Documentation updates'
+    label: 'documentation'
+  - title: '👻 Maintenance'
+    labels:
+      - 'internal'
+      - 'refactor'
+  - title: '👨‍🔧️ Examples'
+    labels:
+      - 'example'
+      - 'reusable'
+      - 'use case'
+  - title: '🚦 Tests'
+    label: 'test'
+
+exclude-labels:
+  - 'dependencies'
+  - 'no-changelog'
+  - 'skip-changelog'
+
+template: |
+  ## What’s Changed
+
+  $CHANGES

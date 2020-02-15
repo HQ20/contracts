@@ -4,8 +4,6 @@ import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../token/IERC20Detailed.sol";
 import "../token/IERC20MintableDetailed.sol";
 import "../state/StateMachine.sol";
 import "../utils/SafeCast.sol";
@@ -13,21 +11,21 @@ import "../utils/SafeCast.sol";
 
 /**
  * @title Issuance
- * @dev Implements a very simple issuance process for tokens
+ * @notice Implements a very simple issuance process for tokens
  *
- * 1. Initialize contract with issuance token and currency token. Both tokens must inherit from ERC20Minatble and ERC20Detailed.
- * 2. Use `setIssuePrice` to determine how many currency tokens do investors
+ * 1. Initialize contract with the issuance token contract address. This address must inherit from `ERC20Mintable` and `ERC20Detailed`.
+ * 2. Use `setIssuePrice` to determine how many ether (in wei) do investors
  *    have to pay for each issued token.
  * 3. Use `startIssuance` to allow investors to invest.
- * 4. Investors can `invest` their currency tokens at will.
- * 5. Investors can also `cancelInvestment` and get their currency tokens back.
+ * 4. Investors can `invest` their ether at will.
+ * 5. Investors can also `cancelInvestment` and get their ether back.
  * 6. The contract owner can `cancelAllInvestments` to close the investment phase.
  *    In this case `invest` is not available, but `cancelInvestment` is.
  * 7. Use `startDistribution` to close the investment phase.
- * 8. Investors can only `claim` their issuance tokens now.
- * 9. Owner can use `withdraw` to send collected currency tokens to a wallet.
+ * 8. Investors can only `claim` their issued tokens now.
+ * 9. Owner can use `withdraw` to send collected ether to a wallet.
  */
-contract Issuance is Ownable, StateMachine, ReentrancyGuard {
+contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
     using FixidityLib for int256;
     using SafeCast for int256;
@@ -38,7 +36,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     event InvestmentAdded(address investor, uint256 amount);
     event InvestmentCancelled(address investor, uint256 amount);
 
-    address public currencyToken;
     address public issuanceToken;
 
     address[] public investors;
@@ -49,16 +46,10 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     uint256 public issuePrice;
     uint256 internal nextInvestor;
 
-    /**
-     * @dev Initialize the issuance with the token to issue and the token to
-     * accept as payment.
-     */
     constructor(
-        address _issuanceToken,
-        address _currencyToken
+        address _issuanceToken
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
-        currencyToken = _currencyToken;
         _createState("OPEN");
         _createState("LIVE");
         _createState("FAILED");
@@ -69,28 +60,9 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     }
 
     /**
-     * @dev Use this function to invest. Must have approved this contract
-     * (from the frontend) to spend _amount of currencyToken tokens.
-     * @param _amount The amount of currencyToken tokens that will be invested.
+     * @notice Use this function to claim your issuance tokens
+     * @dev Each user will call this function on his behalf
      */
-    function invest(uint256 _amount) external {
-        require(
-            currentState == "OPEN",
-            "Not open for investments."
-        );
-        require(
-            _amount.mod(issuePrice) == 0,
-            "Fractional investments not allowed."
-        );
-        IERC20(currencyToken).transferFrom(msg.sender, address(this), _amount);
-        if (investments[msg.sender] == 0){
-            investors.push(msg.sender);
-        }
-        investments[msg.sender] = investments[msg.sender].add(_amount);
-        amountRaised = amountRaised.add(_amount);
-        emit InvestmentAdded(msg.sender, _amount);
-    }
-
     function claim() external nonReentrant {
         require(
             currentState == "LIVE",
@@ -102,16 +74,11 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        IERC20Detailed _currencyToken = IERC20Detailed(currencyToken);
         IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
             issuanceToken
         );
-        int256 investedFixed = amount.safeUintToInt().newFixed(
-                _currencyToken.decimals()
-            );
-        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(
-                _currencyToken.decimals()
-            );
+        int256 investedFixed = amount.safeUintToInt().newFixed(18);
+        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(18);
         int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
         uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
                 _issuanceToken.decimals()
@@ -136,8 +103,28 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        IERC20(currencyToken).transfer(msg.sender, amount);
+        msg.sender.transfer(amount);
         emit InvestmentCancelled(msg.sender, amount);
+    }
+
+    /**
+     * @notice Invest into the issuance by sending ether to this function
+     */
+    function invest() public payable {
+        require(
+            currentState == "OPEN",
+            "Not open for investments."
+        );
+        require(
+            msg.value.mod(issuePrice) == 0,
+            "Fractional investments not allowed."
+        );
+        if (investments[msg.sender] == 0){
+            investors.push(msg.sender);
+        }
+        investments[msg.sender] = investments[msg.sender].add(msg.value);
+        amountRaised = amountRaised.add(msg.value);
+        emit InvestmentAdded(msg.sender, msg.value);
     }
 
     /**
@@ -168,14 +155,14 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function withdraw(address _wallet) public onlyOwner {
+    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
         require(
             currentState == "LIVE",
             "Cannot withdraw funds now."
         );
         uint256 amount = amountRaised - amountWithdrawn;
         amountWithdrawn = amount;
-        IERC20(currencyToken).transfer(_wallet, amountRaised);
+        _wallet.transfer(amount);
     }
 
     function setIssuePrice(uint256 _issuePrice) public onlyOwner {
