@@ -15,24 +15,14 @@ contract StateMachine {
 
     bytes32 public currentState;
 
-    /**
-     * @dev A state in the machine.
-     */
-    struct State {
-        bool exists;
-        bytes32[] transitions;
-    }
-
-    mapping (bytes32 => State) internal states;
+    mapping (bytes32 => bool) internal states;
+    mapping (bytes32 => mapping(bytes32 => bool)) internal transitions;
 
     /**
      * @notice The contract constructor. It adds SETUP_STATE with state id 'SETUP' and sets the current state to it.
      */
     constructor() public {
-        states[SETUP_STATE] = State({
-            exists: true,
-            transitions: new bytes32[](0)
-        });
+        states[SETUP_STATE] = true;
         emit StateCreated(SETUP_STATE);
         currentState = SETUP_STATE;
         emit CurrentState(SETUP_STATE);
@@ -46,7 +36,18 @@ contract StateMachine {
         view
         returns(bool)
     {
-        return (states[_state].exists == true);
+        return (states[_state] == true);
+    }
+
+    /**
+     * @dev Verify if a transition exists.
+     */
+    function transitionExists(bytes32 _originState, bytes32 _targetState)
+        public
+        view
+        returns(bool)
+    {
+        return (transitions[_originState][_targetState] == true);
     }
 
     /**
@@ -58,10 +59,7 @@ contract StateMachine {
         require(currentState == SETUP_STATE, "State machine not in SETUP.");
         require(!stateExists(_state), "State already exists.");
 
-        states[_state] = State({
-            exists: true,
-            transitions: new bytes32[](0)
-        });
+        states[_state] = true;
         emit StateCreated(_state);
     }
 
@@ -74,8 +72,12 @@ contract StateMachine {
         require(currentState == SETUP_STATE, "State machine not in SETUP.");
         require(stateExists(_originState), "Origin state doesn't exist.");
         require(stateExists(_targetState), "Target state doesn't exist.");
+        require(
+            !transitionExists(_originState, _targetState),
+            "Transition already exists."
+        );
 
-        states[_originState].transitions.push(_targetState);
+        transitions[_originState][_targetState] = true;
         emit TransitionCreated(_originState, _targetState);
     }
 
@@ -86,14 +88,11 @@ contract StateMachine {
         internal
     {
         require(stateExists(_targetState), "Target state doesn't exist.");
-        State memory originState = states[currentState];
-        for (uint i = 0; i < originState.transitions.length; i++) {
-            if (originState.transitions[i] == _targetState) {
-                currentState = _targetState;
-                emit CurrentState(_targetState);
-                return;
-            }
-        }
-        require(false, "Transition doesn't exist.");
+        require(
+            transitionExists(currentState, _targetState),
+            "Transition doesn't exist."
+        );
+        currentState = _targetState;
+        emit CurrentState(_targetState);
     }
 }
