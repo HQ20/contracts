@@ -1,6 +1,6 @@
 # Lists
 
-This is an Ethereum project that implements an ordered doubly linked list (https://en.wikipedia.org/wiki/Linked_list).
+This is an Ethereum project that implements an ranked doubly linked list (https://en.wikipedia.org/wiki/Linked_list).
 
 # Terminology
 Object: Objects are linked to each other and together they are a Linked List
@@ -19,7 +19,7 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 
 ## Usage
 
-`OrderedList.sol`: Doubly Linked List, sorted by `rank` descending from the head.
+`RankedList.sol`: Doubly Linked List, sorted by `rank` descending from the head.
 * constructor: Creates an empty list.
 * `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
 * `function findRank(uint256 _rank)`: Return the id of the first Object with a lower or equal `_rank`, starting from the head.
