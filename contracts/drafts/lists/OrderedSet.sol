@@ -25,7 +25,12 @@ library OrderedSet {
     function append(Set storage set, address item)
         internal
     {
-        _insert(set, tail(set), item, address(0));
+        _insert(
+            set,
+            tail(set),
+            item,
+            address(0)
+        );
     }
 
     /**
@@ -34,7 +39,12 @@ library OrderedSet {
     function prepend(Set storage set, address item)
         internal
     {
-        _insert(set, address(0), item, head(set));
+        _insert(
+            set,
+            address(0),
+            item,
+            head(set)
+        );
     }
 
     /**
@@ -132,7 +142,12 @@ library OrderedSet {
     /**
      * @dev Insert an item between another two..
      */
-    function _insert(Set storage set, address prev_, address item, address next_)
+    function _insert(
+        Set storage set,
+        address prev_,
+        address item,
+        address next_
+    )
         private
     {
         require(

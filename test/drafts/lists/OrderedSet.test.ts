@@ -1,4 +1,5 @@
-const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+// tslint:disable-next-line:no-var-requires
+const { expectRevert } = require('@openzeppelin/test-helpers');
 
 import { should } from 'chai';
 import { OrderedSetMockInstance } from '../../../types/truffle-contracts';
