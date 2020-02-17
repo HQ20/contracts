@@ -24,13 +24,13 @@ contract VentureProposal is Voting {
         _createTransition("RETRIEVED", "COMPLETED");
     }
 
-    function fund() public {
+    function fundVenture() public {
         _transition("FUNDED");
-        dao.fund(venture, funding);
+        dao.fundVenture(venture, funding);
     }
 
-    function retrieve() public {
+    function retrieveVentureTokens() public {
         _transition("COMPLETED");
-        dao.retrieve(venture);
+        dao.retrieveVentureTokens(venture);
     }
 }

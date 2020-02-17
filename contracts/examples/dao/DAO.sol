@@ -77,8 +77,9 @@ contract DAO is VentureEth {
     /**
      * @notice Fund a venture proposal.
      * @param venture The address of the VentureEth contract to fund.
+     * @param funding The ether to fund the venture with.
      */
-    function fund(
+    function fundVenture(
         address venture,
         unit256 funding
     ) public {
@@ -96,7 +97,7 @@ contract DAO is VentureEth {
      * @notice Retrieve tokens minted for the DAO after an investment.
      * @param venture The address of the VentureEth contract to retrieve tokens from.
      */
-    function retrieve(
+    function retrieveVentureTokens(
         address venture
     ) public {
         require(proposals[venture] == msg.sender);
@@ -109,7 +110,7 @@ contract DAO is VentureEth {
      * @notice Profit from an investment by claiming dividends for the DAO on the venture.
      * @param venture The address of the VentureEth contract to profit from.
      */
-    function profit(address venture) public {
+    function profitFromVenture(address venture) public {
         require(
             ventures.contains(venture),
             "Venture not in portfolio."
