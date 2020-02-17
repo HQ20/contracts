@@ -9,7 +9,7 @@ should();
 // tslint:disable-next-line no-var-requires
 const { itShouldThrow } = require('./../utils');
 
-contract('TestStateMachine', (accounts) => {
+contract('StateMachine', (accounts) => {
     let stateMachine: TestStateMachineInstance;
     const SETUP_STATE = 'SETUP';
     const NEW_STATE = 'NEW';
@@ -19,23 +19,9 @@ contract('TestStateMachine', (accounts) => {
     });
 
     /**
-     * @test {StateMachine#stateExists}
-     */
-    it('stateExists returns false for non existing states', async () => {
-        assert.isFalse(await stateMachine.stateExists(stringToBytes32(stringToBytes32(NEW_STATE))));
-    });
-
-    /**
-     * @test {StateMachine#stateExists}
-     */
-    it('stateExists returns true for existing states', async () => {
-        assert.isTrue(await stateMachine.stateExists(stringToBytes32(SETUP_STATE)));
-    });
-
-    /**
      * @test {StateMachine#transitionExists}
      */
-    it('transitionExists returns false for non existing transitions', async () => {
+    it('recognizes that a transition does not exist', async () => {
         assert.isFalse(
             await stateMachine.transitionExists(
                 stringToBytes32(stringToBytes32(SETUP_STATE)),
@@ -48,20 +34,8 @@ contract('TestStateMachine', (accounts) => {
      * @test {StateMachine#transition}
      */
     itShouldThrow(
-        'transition reverts for non existing target states.',
+        'reverts if attempting not existing transitions',
         async () => {
-            await stateMachine.transition(stringToBytes32(NEW_STATE));
-        },
-        'Target state doesn\'t exist.',
-    );
-
-    /**
-     * @test {StateMachine#transition}
-     */
-    itShouldThrow(
-        'transition reverts for non existing transitions.',
-        async () => {
-            await stateMachine.createState(stringToBytes32(NEW_STATE));
             await stateMachine.transition(stringToBytes32(NEW_STATE));
         },
         'Transition doesn\'t exist.',
@@ -70,126 +44,70 @@ contract('TestStateMachine', (accounts) => {
     /**
      * @test {StateMachine#createTransition}
      */
-    itShouldThrow(
-        'createTransition reverts with not existing states as the origin state.',
-        async () => {
-            await stateMachine.createTransition(stringToBytes32(NEW_STATE), stringToBytes32(SETUP_STATE));
-        },
-        'Origin state doesn\'t exist.',
-    );
-
-    /**
-     * @test {StateMachine#createTransition}
-     */
-    itShouldThrow(
-        'createTransition reverts with not existing states as the target state.',
-        async () => {
-            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-        },
-        'Target state doesn\'t exist.',
-    );
-
-    /**
-     * @test {StateMachine#createState}
-     */
-    itShouldThrow(
-        'createState reverts with existing states.',
-        async () => {
-            await stateMachine.createState(stringToBytes32(SETUP_STATE));
-        },
-        'State already exists.',
-    );
-
-    /**
-     * @test {StateMachine#createState}
-     */
-    it('createState adds a new state.', async () => {
+    it('adds a new transition.', async () => {
         const event = (
-            await stateMachine.createState(stringToBytes32(NEW_STATE))
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE))
         ).logs[0];
-        event.event.should.be.equal('StateCreated');
-        bytes32ToString(event.args.state).should.be.equal(NEW_STATE);
+        event.event.should.be.equal('TransitionCreated');
+        bytes32ToString(event.args.originState).should.be.equal(SETUP_STATE);
+        bytes32ToString(event.args.targetState).should.be.equal(NEW_STATE);
     });
 
-    describe('with existing states', () => {
+    describe('with existing transitions', () => {
         beforeEach(async () => {
-            await stateMachine.createState(stringToBytes32(NEW_STATE));
+            await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
         });
 
         /**
          * @test {StateMachine#createTransition}
          */
-        it('createTransition adds a new transition.', async () => {
-            const event = (
-                await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE))
-            ).logs[0];
-            event.event.should.be.equal('TransitionCreated');
-            bytes32ToString(event.args.originState).should.be.equal(SETUP_STATE);
-            bytes32ToString(event.args.targetState).should.be.equal(NEW_STATE);
+        itShouldThrow(
+            'does not allow to add the same transition more than once.',
+            async () => {
+                await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+            },
+            'Transition already exists.',
+        );
+
+        /**
+         * @test {StateMachine#transitionExists}
+         */
+        it('recognizes that a transition exists', async () => {
+            assert.isTrue(
+                await stateMachine.transitionExists(
+                    stringToBytes32(SETUP_STATE),
+                    stringToBytes32(NEW_STATE),
+                )
+            );
         });
 
-        describe('with existing transitions', () => {
+        /**
+         * @test {StateMachine#transition}
+         */
+        it('transitions between states', async () => {
+            const event = (
+                await stateMachine.transition(stringToBytes32(NEW_STATE))
+            ).logs[0];
+            event.event.should.be.equal('CurrentState');
+            bytes32ToString(event.args.state).should.be.equal(NEW_STATE);
+            bytes32ToString(await stateMachine.currentState()).should.be.equal(NEW_STATE);
+        });
+
+        describe('when not in the initial state', () => {
             beforeEach(async () => {
-                await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
+                await stateMachine.transition(stringToBytes32(NEW_STATE));
             });
 
             /**
-             * @test {StateMachine#transitionExists}
+             * @test {StateMachine#createTransition}
              */
-            it('transitionExists returns false for non existing transitions', async () => {
-                assert.isFalse(
-                    await stateMachine.transitionExists(
-                        stringToBytes32(stringToBytes32(SETUP_STATE)),
-                        stringToBytes32(stringToBytes32(NEW_STATE)),
-                    )
-                );
-            });
-
-            /**
-             * @test {StateMachine#transition}
-             */
-            it('transition follows a transition between states.', async () => {
-                const event = (
-                    await stateMachine.transition(stringToBytes32(NEW_STATE))
-                ).logs[0];
-                event.event.should.be.equal('CurrentState');
-                bytes32ToString(event.args.state).should.be.equal(NEW_STATE);
-                bytes32ToString(await stateMachine.currentState()).should.be.equal(NEW_STATE);
-            });
-
-            describe('when not in the initial state', () => {
-                beforeEach(async () => {
-                    await stateMachine.transition(stringToBytes32(NEW_STATE));
-                });
-
-                /**
-                 * @test {StateMachine#createState}
-                 */
-                itShouldThrow(
-                    'createState reverts if not in SETUP state.',
-                    async () => {
-                        await stateMachine.createState(stringToBytes32(NEW_STATE));
-                        await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-                        await stateMachine.transition(stringToBytes32(NEW_STATE));
-                        await stateMachine.createState(stringToBytes32(NEW_STATE));
-                    },
-                    'State machine not in SETUP.',
-                );
-
-                /**
-                 * @test {StateMachine#createTransition}
-                 */
-                itShouldThrow(
-                    'createTransition reverts if not in SETUP state.',
-                    async () => {
-                        await stateMachine.createState(stringToBytes32(NEW_STATE));
-                        await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-                        await stateMachine.transition(stringToBytes32(NEW_STATE));
-                        await stateMachine.createTransition(stringToBytes32(SETUP_STATE), stringToBytes32(NEW_STATE));
-                    },
-                    'State machine not in SETUP.',
-                );
-            });
+            itShouldThrow(
+                'does not allow to create new transitions outside the SETUP state.',
+                async () => {
+                    await stateMachine.createTransition(stringToBytes32(NEW_STATE), stringToBytes32(NEW_STATE));
+                },
+                'State machine not in SETUP.',
+            );
         });
     });
 });

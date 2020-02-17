@@ -4,10 +4,13 @@ pragma solidity ^0.5.10;
 /**
  * @title StateMachine
  * @author Alberto Cuesta Canada
- * @dev Implements a simple state machine.
+ * @dev Implements a simple state machine:
+ *  - All states exist by default.
+ *  - No transitions exist by default.
+ *  - The state machine starts at "SETUP".
+ *  - New transitions can be created while in the "SETUP state".
  */
 contract StateMachine {
-    event StateCreated(bytes32 state);
     event TransitionCreated(bytes32 originState, bytes32 targetState);
     event CurrentState(bytes32 state);
 
@@ -15,84 +18,56 @@ contract StateMachine {
 
     bytes32 public currentState;
 
-    mapping (bytes32 => bool) internal states;
-    mapping (bytes32 => mapping(bytes32 => bool)) internal transitions;
+    mapping (bytes32 => mapping(bytes32 => bool)) internal _transitions;
 
     /**
-     * @notice The contract constructor. It adds SETUP_STATE with state id 'SETUP' and sets the current state to it.
+     * @notice The contract constructor. It sets the current state to "SETUP".
      */
-    constructor() public {
-        states[SETUP_STATE] = true;
-        emit StateCreated(SETUP_STATE);
+    constructor()
+        public
+    {
         currentState = SETUP_STATE;
         emit CurrentState(SETUP_STATE);
     }
 
     /**
-     * @dev Verify if a state exists.
-     */
-    function stateExists(bytes32 _state)
-        public
-        view
-        returns(bool)
-    {
-        return (states[_state] == true);
-    }
-
-    /**
      * @dev Verify if a transition exists.
      */
-    function transitionExists(bytes32 _originState, bytes32 _targetState)
+    function transitionExists(bytes32 originState, bytes32 targetState)
         public
         view
         returns(bool)
     {
-        return (transitions[_originState][_targetState] == true);
-    }
-
-    /**
-     * @dev Create a new state.
-     */
-    function _createState(bytes32 _state)
-        internal
-    {
-        require(currentState == SETUP_STATE, "State machine not in SETUP.");
-        require(!stateExists(_state), "State already exists.");
-
-        states[_state] = true;
-        emit StateCreated(_state);
+        return (_transitions[originState][targetState] == true);
     }
 
     /**
      * @dev Create a transition between two states.
      */
-    function _createTransition(bytes32 _originState, bytes32 _targetState)
+    function _createTransition(bytes32 originState, bytes32 targetState)
         internal
     {
         require(currentState == SETUP_STATE, "State machine not in SETUP.");
-        require(stateExists(_originState), "Origin state doesn't exist.");
-        require(stateExists(_targetState), "Target state doesn't exist.");
         require(
-            !transitionExists(_originState, _targetState),
+            !transitionExists(originState, targetState),
             "Transition already exists."
         );
 
-        transitions[_originState][_targetState] = true;
-        emit TransitionCreated(_originState, _targetState);
+        _transitions[originState][targetState] = true;
+        emit TransitionCreated(originState, targetState);
     }
 
     /**
      * @dev Transition the state machine between states
      */
-    function _transition(bytes32 _targetState)
+    function _transition(bytes32 targetState)
         internal
     {
-        require(stateExists(_targetState), "Target state doesn't exist.");
         require(
-            transitionExists(currentState, _targetState),
+            transitionExists(currentState, targetState),
             "Transition doesn't exist."
         );
-        currentState = _targetState;
-        emit CurrentState(_targetState);
+        currentState = targetState;
+        emit CurrentState(targetState);
     }
 }
