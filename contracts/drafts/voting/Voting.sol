@@ -61,8 +61,6 @@ contract Voting is Ownable, StateMachine {
             "Threshold cannot be zero."
         );
         threshold = _threshold;
-        _createState("OPEN");
-        _createState("PASSED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "PASSED");
         emit VotingCreated();
