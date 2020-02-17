@@ -24,13 +24,14 @@ contract DAO is VentureEth {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    event VentureProposed(address proposal);
+
     uint256 public fundingPool;
     uint256 public gage;
     uint256 public threshold;
-    mapping(address => uint256) public requests;
-    mapping(address => address) public proponents;
-    mapping(address => address) private votings;
-    EnumerableSet.AddressSet ventures;
+
+    mapping(address => address) private proposals;
+    EnumerableSet.AddressSet internal ventures;
 
     constructor(
         string memory name,
@@ -41,19 +42,6 @@ contract DAO is VentureEth {
     ) VentureEth(name, symbol, decimals) public {
         gage = _gage;
         threshold = _threshold;
-    }
-
-    modifier onlyWhen(bytes32 state) {
-        require(currentState == state, "DAO needs to be LIVE");
-        _;
-    }
-
-    modifier activeVoting(address venture) {
-        require(
-            ventures.contains(venture),
-            "Voting is not active for venture."
-        );
-        _;
     }
 
     /**
@@ -69,80 +57,21 @@ contract DAO is VentureEth {
     }
 
     /**
-     * @notice Propose a venture. Must have approved the DAO to spend proposalGage of your DAO tokens. venture must inherit from VentureEth.
+     * @notice Propose a venture. Must have approved the DAO to spend gage of your DAO tokens. venture must inherit from VentureEth.
      * @param venture The address of the VentureEth contract
+     * @param funding The ether to fund the venture with.
      */
-    function propose(
+    function proposeVenture(
         address venture,
         uint256 funding
-    ) public onlyWhen("LIVE") {
-        uint256 newFundingPool = fundingPool.add(funding);
-        require(
-            newFundingPool <= address(this).balance,
-            "Not enough funds."
-        );
+    ) public {
+        require(currentState == state, "DAO needs to be LIVE");
+
         this.transferFrom(msg.sender, address(this), gage);
-        ventures.add(address(VentureEth(venture)));
-        proponents[venture] = msg.sender;
-        fundingPool = newFundingPool;
-        requests[venture] = funding;
-        Voting voting = new Voting(address(this), threshold);
-        votings[venture] = address(voting);
-        voting.registerProposal(
-            venture,
-            abi.encodeWithSignature("invest()", "")
-        );
-        voting.registerProposal(
-            venture,
-            abi.encodeWithSignature("claim()", "")
-        );
-        voting.registerProposal(
-            venture,
-            abi.encodeWithSignature("approve(address, uint256)",
-                address(this),
-                IERC20(venture).totalSupply()
-            )
-        );
-        voting.open();
-    }
-
-    /**
-     * @notice Drop a venture proposal.
-     * @param venture The address of the VentureEth contract to drop.
-     */
-    function drop(
-        address venture
-    ) public onlyWhen("LIVE") activeVoting(venture) {
-        require(proponents[venture] == msg.sender, "Cannot renounce venture.");
-        this.transfer(msg.sender, gage);
-        ventures.remove(venture);
-    }
-
-    /**
-     * @dev Use this function to cast votes. Must have approved this contract to spend votes of DAO tokens.
-     * @param votes The amount of DAO tokens that will be casted.
-     */
-    function vote(
-        address venture,
-        uint256 votes
-    ) public onlyWhen("LIVE") activeVoting(venture) {
-        // solium-disable-next-line security/no-low-level-calls
-        (bool success, ) = votings[venture].delegatecall(
-            abi.encodeWithSignature("cast()", votes)
-        );
-        require(success, "Could not cast votes.");
-    }
-
-    /**
-     * @dev Use this function to retrieve your DAO tokens in case you changed your mind or the voting has passed.
-     * @param venture The venture from which votes will be canceled
-     */
-    function renounce(address venture) public onlyWhen("LIVE") {
-        // solium-disable-next-line security/no-low-level-calls
-        (bool success, ) = votings[venture].delegatecall(
-            abi.encodeWithSignature("cancel()", "")
-        );
-        require(success, "Could not cancel votes.");
+        VentureProposal proposal = new VentureProposal(address(this), venture, funding, threshold);
+        proposal.open();
+        proposals[venture] = address(proposal);
+        emit VentureProposed(address(proposal));
     }
 
     /**
@@ -150,45 +79,40 @@ contract DAO is VentureEth {
      * @param venture The address of the VentureEth contract to fund.
      */
     function fund(
-        address venture
-    ) public onlyWhen("LIVE") activeVoting(venture) {
-        Voting voting = Voting(votings[venture]);
-        voting.validate();
-        // solium-disable-next-line security/no-call-value
-        (bool success, ) = address(voting).call.value(requests[venture])(
-            abi.encodeWithSignature("enact()", "")
-        );
-        require(success, "Could not fund venture.");
-        fundingPool = fundingPool.sub(requests[venture]);
+        address venture,
+        unit256 funding
+    ) public {
+        require(proposals[venture] == msg.sender);
+        VentureProposal proposal = VentureProposal(msg.sender);
+        require(proposal.currentState == "PASSED");
+
+        VentureEth(venture).invest.value(funding)()  // Maybe use ERC165 to make sure it's a VentureEth
+        fundingPool = fundingPool.sub(funding);
+        ventures.add(venture);
+        emit VentureAdded(venture);
     }
 
     /**
      * @notice Retrieve tokens minted for the DAO after an investment.
      * @param venture The address of the VentureEth contract to retrieve tokens from.
      */
-    function retrieve(address venture) public onlyWhen("LIVE") {
-        Voting voting = Voting(votings[venture]);
-        require(
-            voting.nextProposal() == 1,
-            "Cannot take tokens from venture."
-        );
-        voting.enact();
-        voting.enact();
-        IERC20(venture).transferFrom(
-            address(voting),
-            address(this),
-            IERC20(venture).balanceOf(address(voting))
-        );
+    function retrieve(
+        address venture
+    ) public {
+        require(proposals[venture] == msg.sender);
+        VentureProposal proposal = VentureProposal(msg.sender);
+        require(proposal.currentState == "FUNDED");
+        VentureEth(venture).claim();
     }
 
     /**
      * @notice Profit from an investment by claiming dividends for the DAO on the venture.
      * @param venture The address of the VentureEth contract to profit from.
      */
-    function profit(address venture) public onlyWhen("LIVE") {
+    function profit(address venture) public {
         require(
-            Voting(votings[venture]).nextProposal() == 3,
-            "Cannot profit from venture."
+            ventures.contains(venture),
+            "Venture not in portfolio."
         );
         totalDividends = totalDividends.add(
             VentureEth(venture).updateAccount(address(this))
@@ -200,7 +124,7 @@ contract DAO is VentureEth {
     /**
      * @notice Returns the currently proposed ventures.
      */
-    function enumerate() public view returns (address[] memory) {
+    function enumerateVentures() public view returns (address[] memory) {
         return ventures.enumerate();
     }
 
