@@ -32,10 +32,10 @@ contract ClassifiedsAdvanced is IERC721Receiver {
     mapping(bytes => bytes[]) public fillersByAd;
 
     function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes memory data
+        address,
+        address,
+        uint256,
+        bytes memory
     )
     public returns (bytes4) {
         return bytes4(

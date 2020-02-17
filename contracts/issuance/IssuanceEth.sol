@@ -49,9 +49,6 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         address _issuanceToken
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
-        _createState("OPEN");
-        _createState("LIVE");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "LIVE");
         _createTransition("OPEN", "FAILED");

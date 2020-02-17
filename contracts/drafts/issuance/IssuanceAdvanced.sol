@@ -54,9 +54,6 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
         currencyToken = _currencyToken;
-        _createState("OPEN");
-        _createState("LIVE");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "LIVE");
         _createTransition("OPEN", "FAILED");
