@@ -41,11 +41,11 @@ contract Voting is Ownable, StateMachine {
     address[] public voters;
     mapping(address => uint256) public votes;
 
-    address[] proposalContracts;
+    address[] public proposalContracts;
     bytes[] public proposalData;
 
     uint256 public threshold;
-    uint256 nextProposal;
+    uint256 public nextProposal;
 
     /**
      * @dev Initialize the issuance with the token to issue and the token to
@@ -106,7 +106,7 @@ contract Voting is Ownable, StateMachine {
     }
 
     /**
-     * @dev Use this function to retrieve your votingToken votes in case you changed your mind.
+     * @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
      */
     function cancel() external {
         require(
