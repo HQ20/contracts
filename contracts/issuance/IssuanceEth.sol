@@ -44,7 +44,6 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     uint256 public amountRaised;
     uint256 public amountWithdrawn;
     uint256 public issuePrice;
-    uint256 internal nextInvestor;
 
     constructor(
         address _issuanceToken
