@@ -195,14 +195,6 @@ contract('Voting', (accounts) => {
             });
 
             /**
-             * @test {Voting#cancelAllVotes}
-             */
-            it('the voting process can be cancelled', async () => {
-                await voting.cancelAllVotes();
-                bytes32ToString(await voting.currentState()).should.be.equal('FAILED');
-            });
-
-            /**
              * @test {Voting#validate}
              */
             it('can validate the vote', async () => {
@@ -262,32 +254,6 @@ contract('Voting', (accounts) => {
                     await expectRevert(
                         voting.enact(),
                         'No more proposals to enact.',
-                    );
-                });
-            });
-
-            describe('once the voting process is cancelled', () => {
-                beforeEach(async () => {
-                    await voting.cancelAllVotes();
-                });
-
-                /**
-                 * @test {Voting#cancel}
-                 */
-                it('voters can retrieve voting tokens', async () => {
-                    await voting.cancel({ from: voter1 });
-                    await voting.cancel({ from: voter2 });
-                    BN(await votingToken.balanceOf(voter1)).should.be.bignumber.equal(balance1);
-                    BN(await votingToken.balanceOf(voter2)).should.be.bignumber.equal(balance2);
-                });
-
-                /**
-                 * @test {Voting#enact}
-                 */
-                it('cannot enact proposal', async () => {
-                    await expectRevert(
-                        voting.enact(),
-                        'Cannot enact proposal until vote passes.',
                     );
                 });
             });
