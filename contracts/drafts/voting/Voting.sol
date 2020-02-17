@@ -71,7 +71,8 @@ contract Voting is Ownable, StateMachine {
     }
 
     /**
-     * @dev Function to enact the proposal of this voting
+     * @dev Function to enact one proposal of this voting. This function should be called
+     * repeatedly until all the passed proposals have been enacted.
      */
     function enact() external payable {
         require(
@@ -122,6 +123,10 @@ contract Voting is Ownable, StateMachine {
         emit VoteCanceled(msg.sender, count);
     }
 
+    /**
+     * @dev Add a proposal to be enacted if the vote passes. A proposal is a contract address and
+     * data to pass on to it, usually a function call with encoded parameters.
+     */
     function registerProposal(
         address _proposalContract,
         bytes memory _proposalData
