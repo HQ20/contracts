@@ -63,15 +63,14 @@ contract Voting is Ownable, StateMachine {
         threshold = _threshold;
         _createState("OPEN");
         _createState("PASSED");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "PASSED");
-        _createTransition("OPEN", "FAILED");
         emit VotingCreated();
     }
 
     /**
-     * @dev Function to enact the proposal of this voting
+     * @dev Function to enact one proposal of this voting. This function should be called
+     * repeatedly until all the passed proposals have been enacted.
      */
     function enact() external payable {
         require(
@@ -122,6 +121,10 @@ contract Voting is Ownable, StateMachine {
         emit VoteCanceled(msg.sender, count);
     }
 
+    /**
+     * @dev Add a proposal to be enacted if the vote passes. A proposal is a contract address and
+     * data to pass on to it, usually a function call with encoded parameters.
+     */
     function registerProposal(
         address _proposalContract,
         bytes memory _proposalData
@@ -142,19 +145,12 @@ contract Voting is Ownable, StateMachine {
     /**
      * @dev Function to validate the threshold
      */
-    function validate() public onlyOwner {
+    function validate() public {
         require(
             IERC20(votingToken).balanceOf(address(this)) >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
         _transition("PASSED");
-    }
-
-    /**
-     * @dev Function to cancel all votes
-     */
-    function cancelAllVotes() public onlyOwner {
-        _transition("FAILED");
     }
 
     function thresholdVotes() internal view returns (uint256) {
