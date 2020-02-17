@@ -14,11 +14,11 @@ import "../../utils/SafeCast.sol";
  * @title Voting
  * @dev Implements a simple voting process for proposals
  *
- * 1. Initialize the Voting with the votingToken address and the address and the callData of the proposal you wish to enact, should this Voting pass.
+ * 1. Initialize the Voting with the votingToken address and the address and the callData of the proposals you wish to enact, should this Voting pass.
  * 2. Setup the Voting by providing a threshold. The threshold must be expressed as an integer between 1 and 10000, representing a double digit percentage of the total supply of the voting tokens, with the comma shifted two digits to the right.
  * 3. Open the voting.
  * 4. Cast votes.
- * 5. You can cancel your vote at any time. You should cancel it after the voting proposal has passed or after the voting has been Canceled.
+ * 5. You can cancel your vote at any time. You should cancel it after the voting proposals have passed or after the voting has been Canceled.
  * 6. Validate the threshold.
  * 7. Enact the proposal.
  */
