@@ -44,7 +44,7 @@
         "@hq20/fixidity": "0.1.0-alpha.1",
         "@openzeppelin/contracts": "2.5.0",
         "@openzeppelin/test-helpers": "0.5.4",
-        "@truffle/hdwallet-provider": "1.0.30",
+        "@truffle/hdwallet-provider": "1.0.31",
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.9",
         "@types/mocha": "7.0.1",
