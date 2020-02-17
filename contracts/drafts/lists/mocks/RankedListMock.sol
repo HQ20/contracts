@@ -1,17 +1,9 @@
 pragma solidity ^0.5.10;
-import "../OrderedList.sol";
+import "../RankedList.sol";
 
 
-/**
- * @title OrderedListMock
- * @dev Data structure
- * @author Alberto Cuesta Cañada
- */
-contract OrderedListMock is OrderedList{
+contract RankedListMock is RankedList{
 
-    /**
-     * @dev Insert a new Object as the new Head with `_data` in the data field.
-     */
     function addHead(uint256 _rank, address _data)
         public
         returns (bool)
@@ -19,9 +11,6 @@ contract OrderedListMock is OrderedList{
         return super._addHead(_rank, _data);
     }
 
-    /**
-     * @dev Insert a new Object as the new Tail with `_data` in the data field.
-     */
     function addTail(uint256 _rank, address _data)
         public
         returns (bool)
@@ -29,9 +18,6 @@ contract OrderedListMock is OrderedList{
         return super._addTail(_rank, _data);
     }
 
-    /**
-     * @dev Insert a new Object after the Object denoted by `_id` with `_data` in the data field.
-     */
     function insertAfter(uint256 _prevId, uint256 _rank, address _data)
         public
         returns (bool)
@@ -39,9 +25,6 @@ contract OrderedListMock is OrderedList{
         return super._insertAfter(_prevId, _rank, _data);
     }
 
-    /**
-     * @dev Insert a new Object before the Object denoted by `_id` with `_data` in the data field.
-     */
     function insertBefore(uint256 _nextId, uint256 _rank, address _data)
         public
         returns (bool)
@@ -49,9 +32,6 @@ contract OrderedListMock is OrderedList{
         return super._insertBefore(_nextId, _rank, _data);
     }
 
-    /**
-     * @dev Internal function to update the Head pointer.
-     */
     function _setHead(uint256 _id)
         internal
     {
@@ -59,9 +39,6 @@ contract OrderedListMock is OrderedList{
         emit NewHead(_id);
     }
 
-    /**
-     * @dev Internal function to update the Tail pointer.
-     */
     function _setTail(uint256 _id)
         internal
     {
@@ -69,9 +46,6 @@ contract OrderedListMock is OrderedList{
         emit NewTail(_id);
     }
 
-    /**
-     * @dev Internal function to create an unlinked Object.
-     */
     function _createObject(uint256 _rank, address _data)
         internal
         returns (uint256)
@@ -94,9 +68,6 @@ contract OrderedListMock is OrderedList{
         return object.id;
     }
 
-    /**
-     * @dev Internal function to link an Object to another.
-     */
     function _link(uint256 _prevId, uint256 _nextId)
         internal
     {
