@@ -84,7 +84,7 @@ contracts ──┬─── examples ────── access
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-As well as bug fixes , we will welcome updates to the basic contracts that make them even easier to understand, examples of contracts implementing a particular feature, or advanced contracts that put together a number of features into a complete use case.
+As well as bug fixes, we will welcome updates to the basic contracts that make them even easier to understand, examples of contracts implementing a particular feature, or advanced contracts that put together a number of features into a complete use case.
 
 Please make sure to update tests as appropriate.
 
