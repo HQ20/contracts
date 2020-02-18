@@ -24,10 +24,10 @@ contract DAO is VentureEth {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event VentureProposed(address venture, address proposal);
+    event VentureProposed(address proposal);
+    event VentureAdded(address venture);
 
     uint256 public fundingPool;
-    uint256 public gage;
     uint256 public threshold;
 
     mapping(address => address) private proposals;
@@ -40,7 +40,6 @@ contract DAO is VentureEth {
         uint256 _threshold,
         uint256 _gage
     ) VentureEth(name, symbol, decimals) public {
-        gage = _gage;
         threshold = _threshold;
     }
 
@@ -66,20 +65,14 @@ contract DAO is VentureEth {
         uint256 funding
     ) public {
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        this.transferFrom(msg.sender, address(this), gage);
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
             address(this),
             abi.encodeWithSignature("fundVenture(address,uint256)", venture, funding)
         );
-        voting.registerProposal(
-            address(this),
-            abi.encodeWithSignature("retrieveVentureTokens(address)", venture)
-        );
         voting.open();
         proposals[venture] = address(voting);
-        ventures.add(venture);
-        emit VentureProposed(venture, address(voting));
+        emit VentureProposed(address(voting));
     }
 
     /**
@@ -94,6 +87,8 @@ contract DAO is VentureEth {
         require(proposals[venture] == msg.sender);
         VentureEth(venture).invest
             .value(funding)();  // Maybe use ERC165 to make sure it's a VentureEth
+        ventures.add(venture);
+        emit VenutreAdded(venture);
     }
 
     /**
@@ -103,7 +98,6 @@ contract DAO is VentureEth {
     function retrieveVentureTokens(
         address venture
     ) public {
-        require(proposals[venture] == msg.sender);
         VentureEth(venture).claim();
     }
 
