@@ -17,7 +17,7 @@ It is a `ERC20` token contract that is endowed with some rather dividendable qua
 2. In order to be useful in practice, the contract has to be customized by inheriting from a mintable standard implementation, for example, openzeppelin's `ERC20Mintable` contract, in this way:
 
 ```
-contract MyERC20DividendableEth is ERC20DividendableEth, ERC20Mintable {
+contract MyERC20MultiDividendable is ERC20MultiDividendable, ERC20Mintable {
     // here goes your fantasy
 }
 ```
