@@ -47,38 +47,42 @@ Contracts go in `contracts`, test files go in `test`.
 
 Inside the contracts folder the files are organized by topic and by type.
 
-Current topics are access, lists, state, strings and token. This list might not be exhaustive.
-
 At the root of `contracts` are directories for each one of the topics, containing the simplest implementations that are in a mature state.
 
 For contracts that are used as example implementations there is a `contracts/examples` directory with the appropriate topic folders inside.
 
-For contracts that are more complex and complete implementations of the base topics there is a `contracts/advanced` directory with the appropriate topic folders inside.
-
 For contracts that are under development there is a `contracts/drafts` directory with the appropriate topic folders inside.
 
-For contracts that are used for testing of libraries or internal methods there is a `contracts/tests` directory with the appropriate topic folders inside.
+For contracts that are used for testing of libraries or internal methods there is a `contracts/test` directory with the appropriate topic folders inside.
 
 The `test` directory replicates the structure of the `contracts` directory.
 
-At the time of writing and as an example, this is the directory structure.
+At the time of this writing (`Feb 2020`), this is the directory structure:
 
 ```
-contracts ──┬─── examples ────── access
+contracts ──┬─── access
             │
-            ├─── advanced ────── access
+            ├─── classifieds
             │
-            ├─── test     ──┬─── issuance
-            │               └─── token
+            ├─── drafts ───────┬─── classifieds
+            │                  ├─── issuance
+            |                  ├─── lists ──────────── mocks
+            |                  ├─── strings
+            |                  ├─── token
+            |                  └─── voting
             │
-            ├─── drafts   ──┬─── access
-            │               ├─── issuance
-            │               ├─── strings
-            │               └─── token
+            ├─── examples ─────┬─── access
+            │                  ├─── dao
+            │                  ├─── energy
+            │                  └─── introspection
             │
-            ├─── access
-            ├─── lists
-            └─── state
+            ├─── exchange
+            ├─── issuance
+            ├─── lists 
+            ├─── state
+            ├─── test
+            ├─── token
+            └─── utils
 ```
 
 ## Contributing
