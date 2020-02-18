@@ -24,7 +24,7 @@ contract DAO is VentureEth {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event VentureProposed(address proposal);
+    event VentureProposed(address venture, address proposal);
 
     uint256 public fundingPool;
     uint256 public gage;
@@ -65,13 +65,21 @@ contract DAO is VentureEth {
         address venture,
         uint256 funding
     ) public {
-        require(currentState == state, "DAO needs to be LIVE");
-
+        require(currentState == "LIVE", "DAO needs to be LIVE");
         this.transferFrom(msg.sender, address(this), gage);
-        VentureProposal proposal = new VentureProposal(address(this), venture, funding, threshold);
-        proposal.open();
-        proposals[venture] = address(proposal);
-        emit VentureProposed(address(proposal));
+        Voting voting = new Voting(address(this), threshold);
+        voting.registerProposal(
+            address(this),
+            abi.encodeWithSignature("fundVenture(address,uint256)", venture, funding)
+        );
+        voting.registerProposal(
+            address(this),
+            abi.encodeWithSignature("retrieveVentureTokens(address)", venture)
+        );
+        voting.open();
+        proposals[venture] = address(voting);
+        ventures.add(venture);
+        emit VentureProposed(venture, address(voting));
     }
 
     /**
@@ -81,16 +89,11 @@ contract DAO is VentureEth {
      */
     function fundVenture(
         address venture,
-        unit256 funding
+        uint256 funding
     ) public {
         require(proposals[venture] == msg.sender);
-        VentureProposal proposal = VentureProposal(msg.sender);
-        require(proposal.currentState == "PASSED");
-
-        VentureEth(venture).invest.value(funding)()  // Maybe use ERC165 to make sure it's a VentureEth
-        fundingPool = fundingPool.sub(funding);
-        ventures.add(venture);
-        emit VentureAdded(venture);
+        VentureEth(venture).invest
+            .value(funding)();  // Maybe use ERC165 to make sure it's a VentureEth
     }
 
     /**
@@ -101,8 +104,6 @@ contract DAO is VentureEth {
         address venture
     ) public {
         require(proposals[venture] == msg.sender);
-        VentureProposal proposal = VentureProposal(msg.sender);
-        require(proposal.currentState == "FUNDED");
         VentureEth(venture).claim();
     }
 
@@ -111,10 +112,6 @@ contract DAO is VentureEth {
      * @param venture The address of the VentureEth contract to profit from.
      */
     function profitFromVenture(address venture) public {
-        require(
-            ventures.contains(venture),
-            "Venture not in portfolio."
-        );
         totalDividends = totalDividends.add(
             VentureEth(venture).updateAccount(address(this))
         );
