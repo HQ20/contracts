@@ -37,8 +37,7 @@ contract DAO is VentureEth {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint256 _threshold,
-        uint256 _gage
+        uint256 _threshold
     ) VentureEth(name, symbol, decimals) public {
         threshold = _threshold;
     }
@@ -63,7 +62,7 @@ contract DAO is VentureEth {
     function proposeVenture(
         address venture,
         uint256 funding
-    ) public {
+    ) public returns(address) {
         require(currentState == "LIVE", "DAO needs to be LIVE");
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
@@ -73,6 +72,7 @@ contract DAO is VentureEth {
         voting.open();
         proposals[venture] = address(voting);
         emit VentureProposed(address(voting));
+        return address(voting);
     }
 
     /**
@@ -84,11 +84,14 @@ contract DAO is VentureEth {
         address venture,
         uint256 funding
     ) public {
-        require(proposals[venture] == msg.sender);
+        require(
+            proposals[venture] == msg.sender,
+            "Can fund only after vote passed."
+        );
         VentureEth(venture).invest
             .value(funding)();  // Maybe use ERC165 to make sure it's a VentureEth
         ventures.add(venture);
-        emit VenutreAdded(venture);
+        emit VentureAdded(venture);
     }
 
     /**
