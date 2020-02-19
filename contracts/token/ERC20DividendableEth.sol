@@ -16,7 +16,7 @@ contract ERC20DividendableEth is ERC20 {
     uint public pointMultiplier = 10e18; // This should be 10**decimals(). We should use Fixidity instead.
     uint public totalDividends; // Remove
     uint public totalDividendPoints; // Rename as dividendsPerToken
-    // Add uint public dividendMultiplier, which will be a decimal number. Initialized at 1
+
     mapping(address => uint) public lastDividendPoints; // Rename as claimedDividends
 
     constructor() public {}
