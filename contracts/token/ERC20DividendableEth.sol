@@ -15,9 +15,9 @@ contract ERC20DividendableEth is ERC20 {
 
     uint public pointMultiplier = 10e18; // This should be 10**decimals(). We should use Fixidity instead.
     uint public totalDividends; // Remove
-    uint public totalDividendPoints; // Rename as dividendsPerToken
+    uint public totalDividendPoints; // Rename as dividendsPerToken.
 
-    mapping(address => uint) public lastDividendPoints; // Rename as claimedDividends
+    mapping(address => uint) public lastDividendPoints; // Rename as lastDividendsPerToken
 
     constructor() public {}
 
@@ -26,7 +26,7 @@ contract ERC20DividendableEth is ERC20 {
      */
     function increasePool() external payable { // Rename as releaseDividends
         totalDividends = totalDividends.add(msg.value); // Remove
-        totalDividendPoints = totalDividends.mul(pointMultiplier).div(this.totalSupply()); // Remove
+        totalDividendPoints = totalDividends.mul(pointMultiplier).div(this.totalSupply()); // Rename to dividendsPerToken and change formula as below.
         // dividendsPerToken = dividendsPerToken + ((msg.value * pointMultiplier) / this.totalSupply())
     } // Split into an internal function _releaseDividends(uint256) and an external one releaseDividends() that calls _releaseDividends(msg.value)
 
@@ -48,7 +48,7 @@ contract ERC20DividendableEth is ERC20 {
      * @param account The account for which to compute the dividends
      */
     function dividendsOwing(address account) internal view returns(uint) {
-        uint newDividendPoints = totalDividendPoints
+        uint newDividendPoints = totalDividendPoints // Rename newDividendPoints to owedDividendsPerToken.
             .sub(lastDividendPoints[account]);
         return this.balanceOf(account)
             .mul(newDividendPoints).div(pointMultiplier);
