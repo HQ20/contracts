@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
-import { DAOInstance, TestERC20MintableInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
+import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
 
 const DAO = artifacts.require(
     'DAO',
@@ -55,8 +55,8 @@ contract('DAO', (accounts) => {
             await dao.startDistribution();
             await dao.claim({ from: holder1 });
             await dao.claim({ from: holder2 });
-            await venture1.setIssuePrice(ether('0.1'));
-            await venture2.setIssuePrice(ether('10'));
+            await venture1.setIssuePrice(ether('1'));
+            await venture2.setIssuePrice(ether('1'));
             await venture1.startIssuance();
             await venture2.startIssuance();
         });
@@ -94,26 +94,24 @@ contract('DAO', (accounts) => {
         describe('once ventures are proposed and funded', () => {
 
             beforeEach(async () => {
-                const address1 = await dao.proposeVenture.call(venture1.address, ether('1'));
-                const address2 = await dao.proposeVenture.call(venture2.address, ether('2'));
-                await dao.proposeVenture(venture1.address, ether('1'));
-                await dao.proposeVenture(venture2.address, ether('2'));
-                voting1 = await Voting.at(address1);
-                voting2 = await Voting.at(address2);
-                await dao.approve(address1, ether('10'), { from: holder1 });
-                await dao.approve(address1, ether('10'), { from: holder2 });
-                await dao.approve(address2, ether('10'), { from: holder1 });
-                await dao.approve(address2, ether('10'), { from: holder2 });
+                voting1 = await Voting.at((await dao.proposeVenture(venture1.address, ether('1'))).logs[5].args.proposal);
+                voting2 = await Voting.at((await dao.proposeVenture(venture2.address, ether('2'))).logs[5].args.proposal);
+                await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                await dao.approve(voting2.address, ether('10'), { from: holder1 });
+                await dao.approve(voting2.address, ether('10'), { from: holder2 });
                 await voting1.cast(ether('3'), { from: holder1 });
-                await voting1.cast(ether('6'), { from: holder2 });
-                await voting2.cast(ether('1'), { from: holder1 });
-                await voting2.cast(ether('7'), { from: holder2 });
+                await voting1.cast(ether('8'), { from: holder2 });
                 await voting1.validate();
-                await voting2.validate();
-                await voting1.enact();
-                await voting2.enact();
                 await voting1.cancel({ from: holder1 });
+                await voting1.cancel({ from: holder2 });
+                await voting1.enact();
+                await voting2.cast(ether('2'), { from: holder1 });
+                await voting2.cast(ether('10'), { from: holder2 });
+                await voting2.validate();
+                await voting2.cancel({ from: holder1 });
                 await voting2.cancel({ from: holder2 });
+                await voting2.enact();
             });    
 
             it('retrieve tokens from funded venture', async () => {
@@ -121,17 +119,17 @@ contract('DAO', (accounts) => {
                 await venture2.startDistribution();
                 await dao.retrieveVentureTokens(venture1.address);
                 await dao.retrieveVentureTokens(venture2.address);
-                BN(await venture1.balanceOf(dao.address)).should.be.bignumber.equal(ether('6'));
-                BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.24'));
+                BN(await venture1.balanceOf(dao.address)).should.be.bignumber.equal(ether('10'));
+                BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.2'));
             });
 
             describe('once tokens are retrieved', async () => {
 
                 beforeEach(async () => {
-                    await venture1.invest({ from: ventureHolder1, value: ether('2.4').toString() });
-                    await venture1.invest({ from: ventureHolder2, value: ether('0.6').toString() });
-                    await venture2.invest({ from: ventureHolder1, value: ether('0.24').toString() });
-                    await venture2.invest({ from: ventureHolder2, value: ether('0.76').toString() });
+                    await venture1.invest({ from: ventureHolder1, value: ether('2').toString() });
+                    await venture1.invest({ from: ventureHolder2, value: ether('1').toString() });
+                    await venture2.invest({ from: ventureHolder1, value: ether('1').toString() });
+                    await venture2.invest({ from: ventureHolder2, value: ether('1').toString() });
                     await venture1.startDistribution();
                     await venture2.startDistribution();
                     await dao.retrieveVentureTokens(venture1.address);
@@ -143,14 +141,14 @@ contract('DAO', (accounts) => {
                     await venture1.increasePool({ from: ventureClient1, value: ether('1').toString() });
                     await venture1.increasePool({ from: ventureClient2, value: ether('3').toString() });
                     await venture2.increasePool({ from: ventureClient1, value: ether('1').toString() });
-                    await venture2.increasePool({ from: ventureClient2, value: ether('0.5').toString() });
+                    await venture2.increasePool({ from: ventureClient2, value: ether('5').toString() });
                 });
 
                 it('investors can profit from venture dividends', async () => {
                     await dao.profitFromVenture(venture1.address);
                     await dao.profitFromVenture(venture2.address);
-                    BN(await dao.updateAccount.call(holder1)).should.be.bignumber.gt(ether('0.45')).and.bignumber.lt(ether('0.55'));
-                    BN(await dao.updateAccount.call(holder2)).should.be.bignumber.gt(ether('1.4')).and.bignumber.lt(ether('1.6'));
+                    BN(await dao.updateAccount.call(holder1)).should.be.bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
+                    BN(await dao.updateAccount.call(holder2)).should.be.bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
                 });
 
             });

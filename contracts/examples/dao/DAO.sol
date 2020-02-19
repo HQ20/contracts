@@ -62,7 +62,7 @@ contract DAO is VentureEth {
     function proposeVenture(
         address venture,
         uint256 funding
-    ) public returns(address) {
+    ) public {
         require(currentState == "LIVE", "DAO needs to be LIVE");
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
@@ -72,7 +72,6 @@ contract DAO is VentureEth {
         voting.open();
         proposals[venture] = address(voting);
         emit VentureProposed(address(voting));
-        return address(voting);
     }
 
     /**
