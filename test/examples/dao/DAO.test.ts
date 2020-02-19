@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
-import { DAOInstance, IssuanceEthInstance, TestERC20MintableInstance, VentureEthInstance } from '../../../types/truffle-contracts';
+import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
 
 const DAO = artifacts.require(
     'DAO',
@@ -11,21 +11,28 @@ const DAO = artifacts.require(
 const VentureEth = artifacts.require(
     'VentureEth',
 ) as Truffle.Contract<VentureEthInstance>;
+const Voting = artifacts.require(
+    'Voting',
+) as Truffle.Contract<VotingInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
 chai.should();
 
-contract('DAO - pre initial funding cases', (accounts) => {
+contract('DAO', (accounts) => {
 
-    const [ holder1 ] = accounts;
+    const [ holder1, holder2, ventureHolder1, ventureHolder2, ventureClient1, ventureClient2 ] = accounts;
 
     let dao: DAOInstance;
     let venture1: VentureEthInstance;
+    let venture2: VentureEthInstance;
+    let voting1: VotingInstance;
+    let voting2: VotingInstance;
 
     beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 16);
-        venture1 = await VentureEth.new('VentureToken', 'VNT', 16);
+        dao = await DAO.new('DAOToken', 'DAO', 18, 5001);
+        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 19);
+        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 17);
     });
 
     /**
@@ -33,175 +40,127 @@ contract('DAO - pre initial funding cases', (accounts) => {
      */
     it('cannot propose venture if DAO not in "LIVE" state', async () => {
         await expectRevert(
-            dao.proposeVenture(ether('1'), venture1.address),
+            dao.proposeVenture(venture1.address, ether('1')),
             'DAO needs to be LIVE.',
         );
     });
 
-    /**
-     * @test {DAO#voteVenture}
-     */
-    it('cannot vote venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.voteForVenture(ether('1'), venture1.address),
-            'DAO needs to be LIVE.',
-        );
+    describe('once DAO tokens issued to investors', () => {
+
+        beforeEach(async () => {
+            await dao.setIssuePrice(ether('0.2'));
+            await dao.startIssuance();
+            await dao.invest({ from: holder1, value: ether('1').toString() });
+            await dao.invest({ from: holder2, value: ether('3').toString() });
+            await dao.startDistribution();
+            await dao.claim({ from: holder1 });
+            await dao.claim({ from: holder2 });
+            await venture1.setIssuePrice(ether('1'));
+            await venture2.setIssuePrice(ether('1'));
+            await venture1.startIssuance();
+            await venture2.startIssuance();
+        });
+
+        /**
+         * @test {DAO#withdraw}
+         */
+        it('cannot withdraw funds under any circumstances', async () => {
+            await expectRevert(
+                dao.withdraw(holder1),
+                'Withdraw is disabled.',
+            );
+        });
+
+        /**
+         * @test {DAO#investVenture}
+         */
+        it('cannot invest in venture from outside voting contract', async () => {
+            await expectRevert(
+                dao.investVenture(venture1.address, ether('1')),
+                'Only a proposal can execute.',
+            );
+        });
+
+        /**
+         * @test {DAO#proposeVenture}
+         */
+        it('can propose venture', async () => {
+            expectEvent(
+                await dao.proposeVenture(venture1.address, ether('1')),
+                'VentureProposed',
+            );
+        });
+
+        describe('once ventures are proposed and invested in', () => {
+
+            beforeEach(async () => {
+                voting1 = await Voting.at(
+                    (await dao.proposeVenture(venture1.address, ether('1'))).logs[5].args.proposal
+                );
+                voting2 = await Voting.at(
+                    (await dao.proposeVenture(venture2.address, ether('2'))).logs[5].args.proposal
+                );
+                await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                await dao.approve(voting2.address, ether('10'), { from: holder1 });
+                await dao.approve(voting2.address, ether('10'), { from: holder2 });
+                await voting1.cast(ether('3'), { from: holder1 });
+                await voting1.cast(ether('8'), { from: holder2 });
+                await voting1.validate();
+                await voting1.cancel({ from: holder1 });
+                await voting1.cancel({ from: holder2 });
+                await voting1.enact();
+                await voting2.cast(ether('2'), { from: holder1 });
+                await voting2.cast(ether('10'), { from: holder2 });
+                await voting2.validate();
+                await voting2.cancel({ from: holder1 });
+                await voting2.cancel({ from: holder2 });
+                await voting2.enact();
+            });
+
+            it('retrieve tokens from invested venture', async () => {
+                await venture1.startDistribution();
+                await venture2.startDistribution();
+                await dao.retrieveVentureTokens(venture1.address);
+                await dao.retrieveVentureTokens(venture2.address);
+                BN(await venture1.balanceOf(dao.address)).should.be.bignumber.equal(ether('10'));
+                BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.2'));
+            });
+
+            describe('once venture tokens are retrieved', async () => {
+
+                beforeEach(async () => {
+                    await venture1.invest({ from: ventureHolder1, value: ether('2').toString() });
+                    await venture1.invest({ from: ventureHolder2, value: ether('1').toString() });
+                    await venture2.invest({ from: ventureHolder1, value: ether('1').toString() });
+                    await venture2.invest({ from: ventureHolder2, value: ether('1').toString() });
+                    await venture1.startDistribution();
+                    await venture2.startDistribution();
+                    await dao.retrieveVentureTokens(venture1.address);
+                    await dao.retrieveVentureTokens(venture2.address);
+                    await venture1.claim({ from: ventureHolder1 });
+                    await venture1.claim({ from: ventureHolder2 });
+                    await venture2.claim({ from: ventureHolder1 });
+                    await venture2.claim({ from: ventureHolder2 });
+                    await venture1.increasePool({ from: ventureClient1, value: ether('1').toString() });
+                    await venture1.increasePool({ from: ventureClient2, value: ether('3').toString() });
+                    await venture2.increasePool({ from: ventureClient1, value: ether('1').toString() });
+                    await venture2.increasePool({ from: ventureClient2, value: ether('5').toString() });
+                });
+
+                it('investors can profit from venture dividends', async () => {
+                    await dao.profitFromVenture(venture1.address);
+                    await dao.profitFromVenture(venture2.address);
+                    BN(await dao.updateAccount.call(holder1)).should.be
+                        .bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
+                    BN(await dao.updateAccount.call(holder2)).should.be
+                        .bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
+                });
+
+            });
+
+        });
+
     });
 
-    /**
-     * @test {DAO#fundVenture}
-     */
-    it('cannot fund venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.fundVenture(venture1.address),
-            'DAO needs to be LIVE.',
-        );
-    });
-
-    /**
-     * @test {DAO#claimTokensForFundedVenture}
-     */
-    it('cannot get tokens for funded venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.claimTokensForFundedVenture(venture1.address),
-            'DAO needs to be LIVE.',
-        );
-    });
-
-    /**
-     * @test {DAO#getReturnsFromTokensOfFundedVenture}
-     */
-    it('cannot get returns from tokens of funded venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.getReturnsFromTokensOfFundedVenture(venture1.address),
-            'DAO needs to be LIVE.',
-        );
-    });
-
-    /**
-     * @test {DAO#reopenInvestorRound}
-     */
-    it('cannot get returns for funded venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.claimTokensForFundedVenture(venture1.address),
-            'DAO needs to be LIVE.',
-        );
-    });
-
-    /**
-     * @test {DAO#transferFunds}
-     */
-    it('cannot transfer funds under any circumstances', async () => {
-        await expectRevert(
-            dao.withdraw(holder1),
-            'Cannot transfer funds.',
-        );
-    });
-});
-
-contract('DAO - post initial funding cases', (accounts) => {
-
-    const [ holder1, holder2 ] = accounts;
-
-    let dao: DAOInstance;
-    let venture1: VentureEthInstance;
-
-    beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 16);
-        venture1 = await VentureEth.new('VentureToken', 'VNT', 16);
-        await dao.setIssuePrice(ether('0.05'));
-        await dao.startIssuance();
-        await dao.invest({ from: holder1, value: ether('1').toString() });
-        await dao.invest({ from: holder2, value: ether('1').toString() });
-        await dao.startDistribution();
-        await dao.claim({ from: holder1 });
-        await dao.claim({ from: holder2 });
-        await venture1.setIssuePrice(ether('0.1'));
-        await venture1.startIssuance();
-    });
-
-    /**
-     * @test {DAO#proposeVenture}
-     */
-    it('cannot propose more funding than is available', async () => {
-        await expectRevert(
-            dao.proposeVenture(ether('3'), venture1.address),
-            'Not enough funds.',
-        );
-    });
-
-    /**
-     * @test {DAO#voteForVenture}
-     */
-    it('cannot vote for venture with insufficient voting power', async () => {
-        await expectRevert(
-            dao.voteForVenture(ether('0.3'), venture1.address),
-            'Not enough power.',
-        );
-    });
-
-    /**
-     * @test {DAO#fundVenture}
-     */
-    it('cannot fund venture with insufficient votes', async () => {
-        await expectRevert(
-            dao.fundVenture(venture1.address),
-            'Not enough expressed votes.',
-        );
-    });
-});
-
-contract('DAO - ventures', (accounts) => {
-
-    const [ holder1, holder2, ventureHolder1, ventureHolder2, ventureClient1, ventureClient2 ] = accounts;
-
-    let dao: DAOInstance;
-    let venture1: VentureEthInstance;
-    let venture2: VentureEthInstance;
-
-    beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 16);
-        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 16);
-        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 16);
-        await dao.setIssuePrice(ether('0.05'));
-        await dao.startIssuance();
-        await dao.invest({ from: holder1, value: ether('1').toString() });
-        await dao.invest({ from: holder2, value: ether('2').toString() });
-        await dao.startDistribution();
-        await dao.claim({ from: holder1 });
-        await dao.claim({ from: holder2 });
-        await venture1.setIssuePrice(ether('0.1'));
-        await venture2.setIssuePrice(ether('0.01'));
-        await venture1.startIssuance();
-        await venture2.startIssuance();
-    });
-
-    /**
-     * @test {DAO#proposeVenture} and {DAO#voteVenture} and {DAO#fundVenture} and {DAO#getReturnsForFundedVenture}
-     */
-    it('can get returns for two funded ventures', async () => {
-        await dao.proposeVenture(ether('2.4'), venture1.address);
-        await dao.proposeVenture(ether('0.6'), venture2.address);
-        await dao.voteForVenture(ether('0.4'), venture1.address, { from: holder2 });
-        await dao.fundVenture(venture1.address);
-        await venture1.invest({ from: ventureHolder1, value: ether('2.4').toString() });
-        await venture1.invest({ from: ventureHolder2, value: ether('2.4').toString() });
-        await venture1.startDistribution();
-        await venture1.claim({ from: ventureHolder1 });
-        await venture1.claim({ from: ventureHolder2 });
-        await dao.claimTokensForFundedVenture(venture1.address);
-        await venture1.increasePool({ from: ventureClient1, value: ether('1').toString() });
-        await venture1.increasePool({ from: ventureClient2, value: ether('2').toString() });
-        await dao.getReturnsFromTokensOfFundedVenture(venture1.address);
-        await dao.voteForVenture(ether('0.2'), venture2.address, { from: holder1 });
-        await dao.voteForVenture(ether('0.2'), venture2.address, { from: holder2 });
-        await dao.fundVenture(venture2.address);
-        await venture2.startDistribution();
-        await dao.claimTokensForFundedVenture(venture2.address);
-        await venture2.increasePool({ from: ventureClient1, value: ether('1').toString() });
-        await venture2.increasePool({ from: ventureClient2, value: ether('1').toString() });
-        await dao.getReturnsFromTokensOfFundedVenture(venture2.address);
-        BN(await dao.updateAccount.call(holder1)).should.be.bignumber.gt(ether('0.9'));
-        BN(await dao.updateAccount.call(holder2)).should.be.bignumber.gt(ether('1.9'));
-    });
 });
