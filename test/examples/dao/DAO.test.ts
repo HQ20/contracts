@@ -94,8 +94,12 @@ contract('DAO', (accounts) => {
         describe('once ventures are proposed and funded', () => {
 
             beforeEach(async () => {
-                voting1 = await Voting.at((await dao.proposeVenture(venture1.address, ether('1'))).logs[5].args.proposal);
-                voting2 = await Voting.at((await dao.proposeVenture(venture2.address, ether('2'))).logs[5].args.proposal);
+                voting1 = await Voting.at(
+                    (await dao.proposeVenture(venture1.address, ether('1'))).logs[5].args.proposal
+                );
+                voting2 = await Voting.at(
+                    (await dao.proposeVenture(venture2.address, ether('2'))).logs[5].args.proposal
+                );
                 await dao.approve(voting1.address, ether('10'), { from: holder1 });
                 await dao.approve(voting1.address, ether('10'), { from: holder2 });
                 await dao.approve(voting2.address, ether('10'), { from: holder1 });
@@ -112,7 +116,7 @@ contract('DAO', (accounts) => {
                 await voting2.cancel({ from: holder1 });
                 await voting2.cancel({ from: holder2 });
                 await voting2.enact();
-            });    
+            });
 
             it('retrieve tokens from funded venture', async () => {
                 await venture1.startDistribution();
@@ -147,8 +151,10 @@ contract('DAO', (accounts) => {
                 it('investors can profit from venture dividends', async () => {
                     await dao.profitFromVenture(venture1.address);
                     await dao.profitFromVenture(venture2.address);
-                    BN(await dao.updateAccount.call(holder1)).should.be.bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
-                    BN(await dao.updateAccount.call(holder2)).should.be.bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
+                    BN(await dao.updateAccount.call(holder1)).should.be
+                        .bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
+                    BN(await dao.updateAccount.call(holder2)).should.be
+                        .bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
                 });
 
             });
