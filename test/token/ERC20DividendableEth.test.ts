@@ -20,8 +20,8 @@ contract('ERC20DividendableEth', (accounts) => {
 
     beforeEach(async () => {
         erc20dividendableEth = await TestERC20DividendableEth.new();
-        await erc20dividendableEth.mint(account1, ether('40'));
-        await erc20dividendableEth.mint(account2, ether('60'));
+        await erc20dividendableEth.mint(account1, ether('40')); // Convert to variable
+        await erc20dividendableEth.mint(account2, ether('60')); // Convert to variable
     });
 
     /**
@@ -35,8 +35,8 @@ contract('ERC20DividendableEth', (accounts) => {
         await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
         await erc20dividendableEth.updateAccount(account1);
         await erc20dividendableEth.updateAccount(account2);
-        (await tracker1.delta()).should.be.bignumber.equal('4');
-        (await tracker2.delta()).should.be.bignumber.equal('6');
+        (await tracker1.delta()).should.be.bignumber.equal('4'); // Convert to variable
+        (await tracker2.delta()).should.be.bignumber.equal('6'); // Convert to variable
     });
 
     /**
@@ -49,10 +49,30 @@ contract('ERC20DividendableEth', (accounts) => {
         await tracker2.get();
         await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
         await erc20dividendableEth.updateAccount(account1);
-        (await tracker1.delta()).should.be.bignumber.equal('4');
+        (await tracker1.delta()).should.be.bignumber.equal('4'); // Convert to variable
         await expectRevert(erc20dividendableEth.updateAccount(account1), 'Account need not be updated now.');
         await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
         await erc20dividendableEth.updateAccount(account2);
-        (await tracker2.delta()).should.be.bignumber.equal('12');
+        (await tracker2.delta()).should.be.bignumber.equal('12'); // Convert to variable
     });
+
+    /**
+     * Test:
+     * Supply = 100
+     * User Balance = 40
+     * Release 10 ether as dividends
+     * Mint 100, User Balance still 50.
+     * Release 10 ether as dividends
+     * User claims dividends, it should receive 6 ether
+     */
+
+    /**
+     * Test:
+     * Supply = 200
+     * User Balance = 40
+     * Release 10 ether as dividends
+     * Burn 100, User Balance still 40.
+     * Release 10 ether as dividends
+     * User claims dividends, it should receive 6 ether
+     */
 });

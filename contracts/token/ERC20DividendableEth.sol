@@ -13,34 +13,35 @@ contract ERC20DividendableEth is ERC20 {
 
     using SafeMath for uint;
 
-    uint public pointMultiplier = 10e18;
-    uint public totalDividends;
-    uint public totalDividendPoints;
-    mapping(address => uint) public lastDividendPoints;
+    uint public pointMultiplier = 10e18; // This should be 10**decimals(). We should use Fixidity instead.
+    uint public totalDividends; // Remove
+    uint public totalDividendPoints; // Rename as dividendsPerToken
+    // Add uint public dividendMultiplier, which will be a decimal number. Initialized at 1
+    mapping(address => uint) public lastDividendPoints; // Rename as claimedDividends
 
     constructor() public {}
 
     /**
      * @notice Send ether to this function in orther to disburse dividends
      */
-    function increasePool() external payable {
-        totalDividends = totalDividends.add(msg.value);
-        totalDividendPoints = totalDividends
-            .mul(pointMultiplier).div(this.totalSupply());
-    }
+    function increasePool() external payable { // Rename as releaseDividends
+        totalDividends = totalDividends.add(msg.value); // Remove
+        totalDividendPoints = totalDividends.mul(pointMultiplier).div(this.totalSupply()); // Remove
+        // dividendsPerToken = dividendsPerToken + ((msg.value * pointMultiplier) / this.totalSupply())
+    } // Split into an internal function _releaseDividends(uint256) and an external one releaseDividends() that calls _releaseDividends(msg.value)
 
     /**
      * @dev Function to update an account
      * @param account The account to update
      * @notice Will revert if account need not be updated
      */
-    function updateAccount(address payable account) public returns(uint) {
+    function updateAccount(address payable account) public returns(uint) { // Rename as claimDividends
         uint owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
         lastDividendPoints[account] = totalDividendPoints;
         account.transfer(owing);
         return owing;
-    }
+    } // Split into an internal _claimDividends(address payable) with this exact functionality, and a public claimDividends that calls _claimDividends(msg.sender).
 
     /**
      * @dev Internal function to compute dividends owing to an account
