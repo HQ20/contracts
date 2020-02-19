@@ -64,20 +64,20 @@ contract('DAO', (accounts) => {
         /**
          * @test {DAO#withdraw}
          */
-        it('cannot transfer funds under any circumstances', async () => {
+        it('cannot withdraw funds under any circumstances', async () => {
             await expectRevert(
                 dao.withdraw(holder1),
-                'Cannot transfer funds.',
+                'Withdraw is disabled.',
             );
         });
 
         /**
-         * @test {DAO#fundVenture}
+         * @test {DAO#investVenture}
          */
-        it('cannot fund venture from outside voting contract', async () => {
+        it('cannot invest in venture from outside voting contract', async () => {
             await expectRevert(
-                dao.fundVenture(venture1.address, ether('1')),
-                'Can fund only after vote passed.',
+                dao.investVenture(venture1.address, ether('1')),
+                'Only a proposal can execute.',
             );
         });
 
@@ -91,7 +91,7 @@ contract('DAO', (accounts) => {
             );
         });
 
-        describe('once ventures are proposed and funded', () => {
+        describe('once ventures are proposed and invested in', () => {
 
             beforeEach(async () => {
                 voting1 = await Voting.at(
@@ -118,7 +118,7 @@ contract('DAO', (accounts) => {
                 await voting2.enact();
             });
 
-            it('retrieve tokens from funded venture', async () => {
+            it('retrieve tokens from invested venture', async () => {
                 await venture1.startDistribution();
                 await venture2.startDistribution();
                 await dao.retrieveVentureTokens(venture1.address);
@@ -127,7 +127,7 @@ contract('DAO', (accounts) => {
                 BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.2'));
             });
 
-            describe('once tokens are retrieved', async () => {
+            describe('once venture tokens are retrieved', async () => {
 
                 beforeEach(async () => {
                     await venture1.invest({ from: ventureHolder1, value: ether('2').toString() });

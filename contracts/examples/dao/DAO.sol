@@ -11,12 +11,12 @@ import "../../drafts/voting/Voting.sol";
  * @title DAO
  * @dev The contract inherits from VentureEth.
  * @notice This is an exeprimental DAO (Decentralised Autonomous Organization) implementation. Use with caution.
- * 1. Issue the DAO tokens through an inital funding round.
- * 2. Propose a venture, and funding amount. You will have to stake the DAO's gage until either the venture is funded or you decide to drop the proposal.
- * 3. Vote for a venture. Each DAO token is 1 vote. If venture is funded, or if you renounce your vote, you must manualy take back the tokens.
+ * 1. Issue the DAO tokens through an initial investment round.
+ * 2. Propose a venture, and investment amount.
+ * 3. Vote for a venture. Each DAO token is 1 vote. If the proposal passes, or if you renounce your vote, you must manualy take back the tokens.
  * 4. Fund a venture. Votes count must surpass the DAO's threshold for a majority.
- * 5. Retrieve the venture tokens.
- * 6. Increase the DAO pool with returns (if any) on the tokens from a funded venture.
+ * 5. Retrieve the venture tokens for the DAO.
+ * 6. Increase the DAO pool with returns (if any) on the tokens from a venture.
  * 7. Claim ether dividends from the DAO on behalf of your DAO tokens.
  */
 contract DAO is VentureEth {
@@ -27,7 +27,7 @@ contract DAO is VentureEth {
     event VentureProposed(address proposal);
     event VentureAdded(address venture);
 
-    uint256 public fundingPool;
+    uint256 public investmentPool;
     uint256 public threshold;
 
     mapping(address => address) private proposals;
@@ -51,23 +51,24 @@ contract DAO is VentureEth {
      * @notice The withdraw function inherited from VentureEth is disabled. The funds can be transferred exclusively by the vote of the investors.
      */
     function withdraw(address payable) public onlyOwner nonReentrant {
-        revert("Cannot transfer funds.");
+        revert("Withdraw is disabled.");
     }
 
     /**
      * @notice Propose a venture. Must have approved the DAO to spend gage of your DAO tokens. venture must inherit from VentureEth.
      * @param venture The address of the VentureEth contract
-     * @param funding The ether to fund the venture with.
+     * @param investment The ether to invest in the venture.
      */
     function proposeVenture(
         address venture,
-        uint256 funding
+        uint256 investment
     ) public {
+        // Maybe use ERC165 to make sure venture it's a VentureEth
         require(currentState == "LIVE", "DAO needs to be LIVE");
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
             address(this),
-            abi.encodeWithSignature("fundVenture(address,uint256)", venture, funding)
+            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
         );
         voting.open();
         proposals[venture] = address(voting);
@@ -76,19 +77,18 @@ contract DAO is VentureEth {
 
     /**
      * @notice Fund a venture proposal.
-     * @param venture The address of the VentureEth contract to fund.
-     * @param funding The ether to fund the venture with.
+     * @param venture The address of the VentureEth contract to invest in.
+     * @param investment The ether to invest in the venture.
      */
-    function fundVenture(
+    function investVenture(
         address venture,
-        uint256 funding
+        uint256 investment
     ) public {
         require(
             proposals[venture] == msg.sender,
-            "Can fund only after vote passed."
+            "Only a proposal can execute."
         );
-        VentureEth(venture).invest
-            .value(funding)();  // Maybe use ERC165 to make sure it's a VentureEth
+        VentureEth(venture).invest.value(investment)();
         ventures.add(venture);
         emit VentureAdded(venture);
     }
@@ -116,7 +116,7 @@ contract DAO is VentureEth {
     }
 
     /**
-     * @notice Returns the currently proposed ventures.
+     * @notice Returns the invested ventures.
      */
     function enumerateVentures() public view returns (address[] memory) {
         return ventures.enumerate();
