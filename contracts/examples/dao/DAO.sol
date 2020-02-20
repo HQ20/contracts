@@ -27,7 +27,6 @@ contract DAO is VentureEth {
     event VentureProposed(address proposal);
     event VentureAdded(address venture);
 
-    uint256 public investmentPool;
     uint256 public threshold;
 
     mapping(address => address) private proposals;
