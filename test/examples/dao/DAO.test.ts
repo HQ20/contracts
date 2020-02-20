@@ -142,18 +142,18 @@ contract('DAO', (accounts) => {
                     await venture1.claim({ from: ventureHolder2 });
                     await venture2.claim({ from: ventureHolder1 });
                     await venture2.claim({ from: ventureHolder2 });
-                    await venture1.increasePool({ from: ventureClient1, value: ether('1').toString() });
-                    await venture1.increasePool({ from: ventureClient2, value: ether('3').toString() });
-                    await venture2.increasePool({ from: ventureClient1, value: ether('1').toString() });
-                    await venture2.increasePool({ from: ventureClient2, value: ether('5').toString() });
+                    await venture1.releaseDividends({ from: ventureClient1, value: ether('1').toString() });
+                    await venture1.releaseDividends({ from: ventureClient2, value: ether('3').toString() });
+                    await venture2.releaseDividends({ from: ventureClient1, value: ether('1').toString() });
+                    await venture2.releaseDividends({ from: ventureClient2, value: ether('5').toString() });
                 });
 
                 it('investors can profit from venture dividends', async () => {
                     await dao.profitFromVenture(venture1.address);
                     await dao.profitFromVenture(venture2.address);
-                    BN(await dao.updateAccount.call(holder1)).should.be
+                    BN(await dao.claimDividends.call({ from: holder1 })).should.be
                         .bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
-                    BN(await dao.updateAccount.call(holder2)).should.be
+                    BN(await dao.claimDividends.call({ from: holder2 })).should.be
                         .bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
                 });
 

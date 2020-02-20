@@ -18,7 +18,7 @@ contract('VentureEth - after issuance', (accounts) => {
 
     let ventureEth: VentureEthInstance;
 
-    beforeEach(async () => {
+    it('venture can isssue tokens and release dividends', async () => {
         ventureEth = await VentureEth.new('VentureToken', 'VNT', 16);
         await ventureEth.setIssuePrice(ether('0.05'));
         await ventureEth.startIssuance();
@@ -34,39 +34,11 @@ contract('VentureEth - after issuance', (accounts) => {
         await tracker.get();
         await ventureEth.withdraw(wallet);
         BN(await tracker.delta()).should.be.bignumber.gte(ether('0.5')).and.bignumber.lte(ether('0.6'));
+        await ventureEth.releaseDividends({ from: user1, value: ether('6').toString()});
+        BN(await ventureEth.claimDividends.call({ from: investor1 }))
+            .should.be.bignumber.gte(ether('4.99')).and.lte(ether('5.01'));
     });
 
-    /**
-     * @test {VentureEth#updateAccount} and {VentureEth#increasePool}
-     */
-    it('updateAccount can succesfully update an account', async () => {
-        const tracker1 = await balance.tracker(investor1, 'ether');
-        const tracker2 = await balance.tracker(investor2, 'ether');
-        await tracker1.get();
-        await tracker2.get();
-        await ventureEth.increasePool({ from: user1, value: ether('6').toString()});
-        await ventureEth.updateAccount(investor1);
-        await ventureEth.updateAccount(investor2);
-        (await tracker1.delta()).should.be.bignumber.equal('5');
-        (await tracker2.delta()).should.be.bignumber.equal('1');
-    });
-
-    /**
-     * @test {VentureEth#updateAccount} and {VentureEth#increasePool}
-     */
-    it('more updateAccount usage, including a revert', async () => {
-        const tracker1 = await balance.tracker(investor1, 'ether');
-        const tracker2 = await balance.tracker(investor2, 'ether');
-        await tracker1.get();
-        await tracker2.get();
-        await ventureEth.increasePool({ from: user1, value: ether('6').toString()});
-        await ventureEth.updateAccount(investor1);
-        (await tracker1.delta()).should.be.bignumber.equal('5');
-        await expectRevert(ventureEth.updateAccount(investor1), 'Account need not be updated now.');
-        await ventureEth.increasePool({ from: user1, value: ether('6').toString()});
-        await ventureEth.updateAccount(investor2);
-        (await tracker2.delta()).should.be.bignumber.equal('2');
-    });
 });
 
 function bytes32ToString(text: string) {

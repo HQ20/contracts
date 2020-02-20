@@ -16,43 +16,60 @@ contract('ERC20DividendableEth', (accounts) => {
 
     const [user1, account1, account2] = accounts;
 
+    const balance1 = ether('40');
+    const balance2 = ether('60');
+    const profits = ether('10');
+    const dividends1 = ether('4');
+    const dividends2 = ether('6');
+
     let erc20dividendableEth: TestERC20DividendableEthInstance;
 
     beforeEach(async () => {
-        erc20dividendableEth = await TestERC20DividendableEth.new();
-        await erc20dividendableEth.mint(account1, ether('40'));
-        await erc20dividendableEth.mint(account2, ether('60'));
+        erc20dividendableEth = await TestERC20DividendableEth.new('DividendableToken', 'DTK', 17);
+        await erc20dividendableEth.mint(account1, balance1);
+        await erc20dividendableEth.mint(account2, balance2);
     });
 
     /**
      * @test {ERC20DividendableEth#updateAccount}
      */
     it('updateAccount can succesfully update an account', async () => {
-        const tracker1 = await balance.tracker(account1, 'ether');
-        const tracker2 = await balance.tracker(account2, 'ether');
-        await tracker1.get();
-        await tracker2.get();
-        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
-        await erc20dividendableEth.updateAccount(account1);
-        await erc20dividendableEth.updateAccount(account2);
-        (await tracker1.delta()).should.be.bignumber.equal('4');
-        (await tracker2.delta()).should.be.bignumber.equal('6');
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        BN(await erc20dividendableEth.claimDividends.call({ from: account1 })).should.be.bignumber.equal(dividends1);
+        BN(await erc20dividendableEth.claimDividends.call({ from: account2 })).should.be.bignumber.equal(dividends2);
     });
 
     /**
      * @test {ERC20DividendableEth#updateAccount}
      */
     it('more updateAccount usage, including a revert', async () => {
-        const tracker1 = await balance.tracker(account1, 'ether');
-        const tracker2 = await balance.tracker(account2, 'ether');
-        await tracker1.get();
-        await tracker2.get();
-        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
-        await erc20dividendableEth.updateAccount(account1);
-        (await tracker1.delta()).should.be.bignumber.equal('4');
-        await expectRevert(erc20dividendableEth.updateAccount(account1), 'Account need not be updated now.');
-        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
-        await erc20dividendableEth.updateAccount(account2);
-        (await tracker2.delta()).should.be.bignumber.equal('12');
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        BN(await erc20dividendableEth.claimDividends.call({ from: account1 })).should.be.bignumber.equal(dividends1);
+        await erc20dividendableEth.claimDividends({ from: account1 });
+        await expectRevert(erc20dividendableEth.claimDividends({ from: account1 }), 'Account need not be updated now.');
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.equal(dividends2.add(dividends2));
+    });
+
+    /**
+     * @test {ERC20DividendableEth#updateAccount}
+     */
+    it('dividends can be claimed after minting tokens', async () => {
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        await erc20dividendableEth.mint(account2, balance1.add(balance2));
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        BN(await erc20dividendableEth.claimDividends.call({ from: account1 })).should.be.bignumber.equal(dividends2);
+    });
+
+    /**
+     * @test {ERC20DividendableEth#updateAccount}
+     */
+    it('dividends can be claimed after burning tokens', async () => {
+        await erc20dividendableEth.mint(account2, balance1.add(balance2));
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        await erc20dividendableEth.burn(balance1.add(balance2), { from: account2 });
+        await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
+        BN(await erc20dividendableEth.claimDividends.call({ from: account1 })).should.be.bignumber.equal(dividends2);
     });
 });
