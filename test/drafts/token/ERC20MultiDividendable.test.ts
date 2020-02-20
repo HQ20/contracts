@@ -25,7 +25,7 @@ contract('ERC20DividendableToken', (accounts) => {
     let mintable2: TestERC20MintableInstance;
 
     beforeEach(async () => {
-        dividendable = await TestERC20MultiDividendable.new();
+        dividendable = await TestERC20MultiDividendable.new('MultiDividendableToken', 'MDT', 19);
         mintable1 = await TestERC20Mintable.new();
         mintable2 = await TestERC20Mintable.new();
         await mintable1.mint(user1, ether('100'));
@@ -40,12 +40,12 @@ contract('ERC20DividendableToken', (accounts) => {
      * @test {ERC20DividendableEth#updateAccount}
      */
     it('updateAccount can succesfully update an account', async () => {
-        await dividendable.increasePool(ether('20'), mintable1.address, { from: user1 });
-        await dividendable.increasePool(ether('10'), mintable2.address, { from: user2 });
-        await dividendable.updateAccount(account1, mintable1.address);
-        await dividendable.updateAccount(account1, mintable2.address);
-        await dividendable.updateAccount(account2, mintable1.address);
-        await dividendable.updateAccount(account2, mintable2.address);
+        await dividendable.releaseDividends(ether('20'), mintable1.address, { from: user1 });
+        await dividendable.releaseDividends(ether('10'), mintable2.address, { from: user2 });
+        await dividendable.claimDividends(account1, mintable1.address);
+        await dividendable.claimDividends(account1, mintable2.address);
+        await dividendable.claimDividends(account2, mintable1.address);
+        await dividendable.claimDividends(account2, mintable2.address);
         BN(await mintable1.balanceOf(account1)).should.be.bignumber.equal(ether('8'));
         BN(await mintable1.balanceOf(account2)).should.be.bignumber.equal(ether('12'));
         BN(await mintable2.balanceOf(account1)).should.be.bignumber.equal(ether('4'));
@@ -56,18 +56,18 @@ contract('ERC20DividendableToken', (accounts) => {
      * @test {ERC20DividendableEth#updateAccount}
      */
     it('more updateAccount usage, including a revert', async () => {
-        await dividendable.increasePool(ether('20'), mintable1.address, { from: user1 });
-        await dividendable.increasePool(ether('10'), mintable2.address, { from: user2 });
-        await dividendable.updateAccount(account1, mintable1.address);
-        await dividendable.updateAccount(account1, mintable2.address);
+        await dividendable.releaseDividends(ether('20'), mintable1.address, { from: user1 });
+        await dividendable.releaseDividends(ether('10'), mintable2.address, { from: user2 });
+        await dividendable.claimDividends(account1, mintable1.address);
+        await dividendable.claimDividends(account1, mintable2.address);
         BN(await mintable1.balanceOf(account1)).should.be.bignumber.equal(ether('8'));
         BN(await mintable2.balanceOf(account1)).should.be.bignumber.equal(ether('4'));
-        await expectRevert(dividendable.updateAccount(account1, mintable1.address), 'Account need not be updated now for this dividend token.');
-        await expectRevert(dividendable.updateAccount(account1, mintable2.address), 'Account need not be updated now for this dividend token.');
-        await dividendable.increasePool(ether('20'), mintable1.address, { from: user1 });
-        await dividendable.increasePool(ether('10'), mintable2.address, { from: user2 });
-        await dividendable.updateAccount(account2, mintable1.address);
-        await dividendable.updateAccount(account2, mintable2.address);
+        await expectRevert(dividendable.claimDividends(account1, mintable1.address), 'Account need not be updated now for this dividend token.');
+        await expectRevert(dividendable.claimDividends(account1, mintable2.address), 'Account need not be updated now for this dividend token.');
+        await dividendable.releaseDividends(ether('20'), mintable1.address, { from: user1 });
+        await dividendable.releaseDividends(ether('10'), mintable2.address, { from: user2 });
+        await dividendable.claimDividends(account2, mintable1.address);
+        await dividendable.claimDividends(account2, mintable2.address);
         BN(await mintable1.balanceOf(account2)).should.be.bignumber.equal(ether('24'));
         BN(await mintable2.balanceOf(account2)).should.be.bignumber.equal(ether('12'));
     });
