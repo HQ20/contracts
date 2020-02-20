@@ -65,6 +65,20 @@ contract('ERC20DividendableEth', (accounts) => {
      * Release 10 ether as dividends
      * User claims dividends, it should receive 6 ether
      */
+    /**
+     * @test {ERC20DividendableEth#updateAccount}
+     */
+    it('more updateAccount usage, including a revert', async () => {
+        const tracker1 = await balance.tracker(account1, 'ether');
+        const tracker2 = await balance.tracker(account2, 'ether');
+        await tracker1.get();
+        await tracker2.get();
+        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
+        await erc20dividendableEth.mint(account2, ether('100'));
+        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
+        await erc20dividendableEth.updateAccount(account1);
+        (await tracker1.delta()).should.not.be.bignumber.equal('6'); // Convert to variable
+    });
 
     /**
      * Test:
@@ -75,4 +89,19 @@ contract('ERC20DividendableEth', (accounts) => {
      * Release 10 ether as dividends
      * User claims dividends, it should receive 6 ether
      */
+    /**
+     * @test {ERC20DividendableEth#updateAccount}
+     */
+    it('more updateAccount usage, including a revert', async () => {
+        await erc20dividendableEth.mint(account2, ether('100'));
+        const tracker1 = await balance.tracker(account1, 'ether');
+        const tracker2 = await balance.tracker(account2, 'ether');
+        await tracker1.get();
+        await tracker2.get();
+        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
+        await erc20dividendableEth.burn(ether('100'), { from: account2 });
+        await erc20dividendableEth.increasePool({ from: user1, value: ether('10').toString()});
+        await erc20dividendableEth.updateAccount(account1);
+        (await tracker1.delta()).should.not.be.bignumber.equal('6'); // Convert to variable
+    });
 });
