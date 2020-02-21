@@ -21,6 +21,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     uint256 public dividendsPerToken;
 
     mapping(address => uint256) public lastDividendsPerToken;
+    mapping(address => uint256) public dividendsPerTokenAdjustment;
 
     constructor(
         string memory name,
@@ -33,6 +34,67 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      */
     function releaseDividends() external payable {
         releaseDividends(msg.value);
+    }
+
+    /**
+     * @dev See {IERC20-transfer}.
+     *
+     * Requirements:
+     *
+     * - `recipient` cannot be the zero address.
+     * - the caller must have a balance of at least `amount`.
+     */
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) public returns (bool) {
+        int256 weight = amount.safeUintToInt().newFixed()
+            .divide(this.balanceOf(recipient).safeUintToInt())
+            .fromFixed(this.decimals());
+        int256 dividendsPerTokenDifferential = lastDividendsPerToken[
+            msg.sender].safeUintToInt()
+            .subtract(lastDividendsPerToken[recipient].safeUintToInt())
+            .abs();
+        int256 weightedDifferential = dividendsPerTokenDifferential
+            .newFixed(this.decimals())
+            .multiply(weight).fromFixed();
+        dividendsPerTokenAdjustment[recipient] = dividendsPerTokenAdjustment[
+            recipient].safeUintToInt()
+            .add(weightedDifferential).safeIntToUint();
+        return super.transfer(recipient, amount);
+    }
+
+    /**
+     * @dev See {IERC20-transferFrom}.
+     *
+     * Emits an {Approval} event indicating the updated allowance. This is not
+     * required by the EIP. See the note at the beginning of {ERC20};
+     *
+     * Requirements:
+     * - `sender` and `recipient` cannot be the zero address.
+     * - `sender` must have a balance of at least `amount`.
+     * - the caller must have allowance for `sender`'s tokens of at least
+     * `amount`.
+     */
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public returns (bool) {
+        int256 weight = amount.safeUintToInt().newFixed()
+            .divide(this.balanceOf(recipient).safeUintToInt())
+            .fromFixed(this.decimals());
+        uint256 dividendsPerTokenDifferential = lastDividendsPerToken[
+            sender].safeUintToInt()
+            .subtract(lastDividendsPerToken[recipient].safeUintToInt())
+            .abs().safeIntToUint();
+        int256 weightedDifferential = dividendsPerTokenDifferential
+            .safeUintToInt().newFixed(this.decimals())
+            .multiply(weight).fromFixed();
+        dividendsPerTokenAdjustment[recipient] = dividendsPerTokenAdjustment[
+            recipient].safeUintToInt()
+            .add(weightedDifferential).safeIntToUint();
+        return super.transferFrom(sender, recipient, amount);
     }
 
     /**
@@ -57,8 +119,9 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     ) internal returns(uint256) {
         uint256 owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
-        account.transfer(owing);
+        dividendsPerTokenAdjustment[account] = 0;
         lastDividendsPerToken[account] = dividendsPerToken;
+        account.transfer(owing);
         return owing;
     }
 
@@ -67,8 +130,10 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @param account The account for which to compute the dividends
      */
     function dividendsOwing(address account) internal view returns(uint256) {
-        uint256 owedDividendsPerToken = dividendsPerToken
-            .sub(lastDividendsPerToken[account]);
+        uint256 owedDividendsPerToken = dividendsPerToken.safeUintToInt()
+            .subtract(lastDividendsPerToken[account].safeUintToInt())
+            .add(dividendsPerTokenAdjustment[account].safeUintToInt())
+            .safeIntToUint();
         int256 fixedBalance = this.balanceOf(account)
             .safeUintToInt();
         int256 fixedOwed = owedDividendsPerToken
