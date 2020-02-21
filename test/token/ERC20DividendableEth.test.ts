@@ -1,7 +1,7 @@
 import { should } from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
+const { BN, ether, expectRevert } = require('@openzeppelin/test-helpers');
 
 import { TestERC20DividendableEthInstance } from '../../types/truffle-contracts';
 
@@ -94,7 +94,8 @@ contract('ERC20DividendableEth', (accounts) => {
         await erc20dividendableEth.releaseDividends({ from: user1, value: profits.toString()});
         await erc20dividendableEth.claimDividends({ from: account2 });
         await erc20dividendableEth.transfer(account2, transfer, { from: account1 });
-        BN(await erc20dividendableEth.claimDividends.call({ from: account2 })).should.be.bignumber.gt(ether('6.59')).and.lt(ether('6.61'));
+        BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.gt(ether('6.59')).and.lt(ether('6.61'));
     });
 
     /**
