@@ -1,9 +1,8 @@
 pragma solidity ^0.5.10;
 
-import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./ERC20MintableDetailed.sol";
-import "../utils/SafeCast.sol";
+import "../math/DecimalMath.sol";
 
 
 /**
@@ -14,13 +13,10 @@ import "../utils/SafeCast.sol";
 contract ERC20DividendableEth is ERC20MintableDetailed {
 
     using SafeMath for uint256;
-    using SafeCast for uint256;
-    using SafeCast for int256;
-    using FixidityLib for int256;
+    using DecimalMath for uint256;
 
-    uint256 public dividendsPerToken; // This should be a Fixidity fixed point number
-
-    mapping(address => uint256) public lastDividendsPerToken; // This should be a Fixidity fixed point number
+    uint256 public dividendsPerToken; // This is a decimal number
+    mapping(address => uint256) public lastDPT; // These are decimal numbers
 
     constructor(
         string memory name,
@@ -43,22 +39,27 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         return claimDividends(msg.sender);
     }
 
-    // Specify in natspec this takes an amount in wei.
+    /**
+     * @dev Release an `amount` of ether in the contract as dividends.
+     */
     function releaseDividends(uint256 amount) internal {
-        int256 fixedSupply = this.totalSupply().safeUintToInt(); // This needs to be converted from ether/wei to Fixidity with .newFixed(this.decimals())
-        int256 fixedValue = amount.safeUintToInt().newFixed(); // This needs to be converted from ether/wei to Fixidity with .newFixed(this.decimals())
-        uint256 releasedDividends = fixedValue
-            .divide(fixedSupply).fromFixed(this.decimals()).safeIntToUint(); // dividendsPerToken is a Fixidity number, so no need to convert back.
-        dividendsPerToken = dividendsPerToken.add(releasedDividends);
+        require(address(this).balance >= amount, "Not enough funds.");
+        // Wei amounts are already decimals.
+        uint256 releasedDPT = amount.divd(this.totalSupply());
+        dividendsPerToken = dividendsPerToken.addd(releasedDPT);
     }
 
-    function claimDividends(
-        address payable account
-    ) internal returns(uint256) {
+    /**
+     * @dev Transfer owed dividends to its account.
+     */
+    function claimDividends(address payable account)
+        internal
+        returns(uint256)
+    {
         uint256 owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
         account.transfer(owing);
-        lastDividendsPerToken[account] = dividendsPerToken;
+        lastDPT[account] = dividendsPerToken;
         return owing;
     }
 
@@ -66,16 +67,9 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @dev Internal function to compute dividends owing to an account
      * @param account The account for which to compute the dividends
      */
-    // Specify in natspec this returns an amount in wei.
-    // Let's make sure that we have numerical tests for this one, not only 100% overage. I'll think of a test suite.
     function dividendsOwing(address account) internal view returns(uint256) {
-        uint256 owedDividendsPerToken = dividendsPerToken
-            .sub(lastDividendsPerToken[account]);
-        int256 fixedBalance = this.balanceOf(account)
-            .safeUintToInt(); // This needs to be converted from ether/wei to Fixidity with .newFixed(this.decimals())
-        int256 fixedOwed = owedDividendsPerToken
-            .safeUintToInt().newFixed(this.decimals()); // owedDividendsPerToken is already a Fixidity number, remove the .newFixed(this.decimals()) extra conversion
-        return fixedBalance.multiply(fixedOwed).fromFixed().safeIntToUint(); // To convert back from fixidity to ether/wei is .fromFixed(this.decimals())
+        uint256 owedDPT = dividendsPerToken.subd(lastDPT[account]);
+        return this.balanceOf(account).muld(owedDPT);
     }
 
 }
