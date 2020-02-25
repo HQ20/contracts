@@ -25,4 +25,4 @@ All operations assume that operands are fixed point numbers with 18 digits.
 * `function subf(uint256 x, uint256 y)`: Substracts y from x.
 * `function mulf(uint256 x, uint256 y)`: Multiplies x and y.
 * `function divf(uint256 x, uint256 y)`: Divides x by y.
-* `function split(uint256 x)`: Returns `(uint256 i, uint256 f)`, where i is the integer part of x, and f the fractional part of x, with all zeroes to the left of the least significant digit omitted. `split(1500000000000000000)` (== 1.5) returns `(1, 500000000000000000)`.
+* `function split(uint256 x)`: Returns `(uint256 i, uint256 f)`, where i is the integer part of x, and f the fractional part of x, with all zeroes to the left of the least significant digit omitted. `split(1500000000000000000)` (== 1.5) returns `(1000000000000000000, 500000000000000000)`.
