@@ -25,11 +25,13 @@ contract DAO is VentureEth {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event VentureProposed(address proposal);
+    event ProfitProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public threshold;
 
-    mapping(address => address) private proposals;
+    mapping(address => address) private ventureProposals;
+    mapping(address => address) private profitProposals;
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
@@ -70,7 +72,7 @@ contract DAO is VentureEth {
             abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
         );
         voting.open();
-        proposals[venture] = address(voting);
+        ventureProposals[venture] = address(voting);
         emit VentureProposed(address(voting));
     }
 
@@ -84,7 +86,7 @@ contract DAO is VentureEth {
         uint256 investment
     ) public {
         require(
-            proposals[venture] == msg.sender,
+            ventureProposals[venture] == msg.sender,
             "Only a proposal can execute."
         );
         VentureEth(venture).invest.value(investment)();
@@ -106,7 +108,22 @@ contract DAO is VentureEth {
      * @notice Profit from an investment by claiming dividends for the DAO on the venture.
      * @param venture The address of the VentureEth contract to profit from.
      */
-    function profitFromVenture(address venture) public {
+    function proposeProfit(address venture) public {
+        Voting voting = new Voting(address(this), threshold);
+        voting.registerProposal(
+            address(this),
+            abi.encodeWithSignature("retrieveProfit(address)", venture)
+        );
+        voting.open();
+        profitProposals[venture] = address(voting);
+        emit ProfitProposed(address(voting));
+    }
+
+    function retrieveProfit(address venture) public {
+        require(
+            profitProposals[venture] == msg.sender,
+            "Only a proposal can execute."
+        );
         releaseDividends(
             VentureEth(venture).claimDividends()
         );

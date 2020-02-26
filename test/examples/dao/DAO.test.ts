@@ -149,8 +149,28 @@ contract('DAO', (accounts) => {
                 });
 
                 it('investors can profit from venture dividends', async () => {
-                    await dao.profitFromVenture(venture1.address);
-                    await dao.profitFromVenture(venture2.address);
+                    voting1 = await Voting.at(
+                        (await dao.proposeProfit(venture1.address)).logs[5].args.proposal
+                    );
+                    voting2 = await Voting.at(
+                        (await dao.proposeProfit(venture2.address)).logs[5].args.proposal
+                    );
+                    await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                    await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                    await dao.approve(voting2.address, ether('10'), { from: holder1 });
+                    await dao.approve(voting2.address, ether('10'), { from: holder2 });
+                    await voting1.cast(ether('3'), { from: holder1 });
+                    await voting1.cast(ether('8'), { from: holder2 });
+                    await voting1.validate();
+                    await voting1.cancel({ from: holder1 });
+                    await voting1.cancel({ from: holder2 });
+                    await voting1.enact();
+                    await voting2.cast(ether('2'), { from: holder1 });
+                    await voting2.cast(ether('10'), { from: holder2 });
+                    await voting2.validate();
+                    await voting2.cancel({ from: holder1 });
+                    await voting2.cancel({ from: holder2 });
+                    await voting2.enact();
                     BN(await dao.claimDividends.call({ from: holder1 })).should.be
                         .bignumber.gt(ether('0.95')).and.bignumber.lt(ether('1.05'));
                     BN(await dao.claimDividends.call({ from: holder2 })).should.be
