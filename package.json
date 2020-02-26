@@ -48,7 +48,7 @@
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.9",
         "@types/mocha": "7.0.1",
-        "@types/node": "13.7.2",
+        "@types/node": "13.7.4",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.0",
@@ -69,13 +69,13 @@
         "pdf-from-html": "0.1.1",
         "soldoc": "0.1.2",
         "solidity-coverage": "0.7.2",
-        "truffle": "5.1.13",
+        "truffle": "5.1.14",
         "truffle-typings": "1.0.8",
         "ts-generator": "0.0.8",
         "ts-node": "8.6.2",
         "tslint": "6.0.0",
         "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
-        "typescript": "3.7.5"
+        "typescript": "3.8.2"
     }
 }

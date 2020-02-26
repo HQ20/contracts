@@ -107,11 +107,9 @@ contract DAO is VentureEth {
      * @param venture The address of the VentureEth contract to profit from.
      */
     function profitFromVenture(address venture) public {
-        totalDividends = totalDividends.add(
-            VentureEth(venture).updateAccount(address(this))
+        releaseDividends(
+            VentureEth(venture).claimDividends()
         );
-        totalDividendPoints = totalDividends
-            .mul(pointMultiplier).div(this.totalSupply());
     }
 
     /**

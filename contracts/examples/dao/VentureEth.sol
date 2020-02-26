@@ -24,14 +24,12 @@ import "../../token/ERC20MintableDetailed.sol";
  * 10. Investors can be returned dividends with `updateAccount`
  */
 contract VentureEth is
-ERC20MintableDetailed,
 ERC20DividendableEth,
 IssuanceEth {
 
     constructor(string memory name, string memory symbol, uint8 decimals)
     public
-    ERC20MintableDetailed(name, symbol, decimals)
-    ERC20DividendableEth()
+    ERC20DividendableEth(name, symbol, decimals)
     IssuanceEth(address(this))
     {
         addMinter(address(this));
