@@ -44,9 +44,9 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         address recipient,
         uint256 amount
     ) public returns (bool) {
-        int256 weight = amount.divd(this.balanceOf(recipient));
-        int256 differentialDPT = lastDPT[msg.sender].subd(lastDPT[recipient]);
-        int256 weightedDifferential = differentialDPT.muld(weight);
+        uint256 weight = amount.divd(this.balanceOf(recipient));
+        uint256 differentialDPT = lastDPT[msg.sender].subd(lastDPT[recipient]);
+        uint256 weightedDifferential = differentialDPT.muld(weight);
         adjustmentDPT[recipient] = adjustmentDPT[recipient]
             .addd(weightedDifferential);
         return super.transfer(recipient, amount);
@@ -69,10 +69,10 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         address recipient,
         uint256 amount
     ) public returns (bool) {
-        int256 weight = amount.divd(this.balanceOf(recipient));
+        uint256 weight = amount.divd(this.balanceOf(recipient));
         uint256 differentialDPT = lastDPT[sender]
-            .subd(lastDividendsPerToken[recipient]);
-        int256 weightedDifferential = differentialDPT.muld(weight);
+            .subd(lastDPT[recipient]);
+        uint256 weightedDifferential = differentialDPT.muld(weight);
         adjustmentDPT[recipient] = adjustmentDPT[recipient]
             .addd(weightedDifferential);
         return super.transferFrom(sender, recipient, amount);
@@ -105,7 +105,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     {
         uint256 owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
-        DPTadjustment[account] = 0;
+        adjustmentDPT[account] = 0;
         lastDPT[account] = dividendsPerToken;
         account.transfer(owing);
         return owing;
@@ -117,7 +117,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      */
     function dividendsOwing(address account) internal view returns(uint256) {
         uint256 owedDPT = dividendsPerToken
-            .subd(lastDPT[account]).addd(DPTadjustment[account]);
+            .subd(lastDPT[account]).addd(adjustmentDPT[account]);
         return this.balanceOf(account).muld(owedDPT);
     }
 

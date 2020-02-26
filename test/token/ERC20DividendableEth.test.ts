@@ -111,6 +111,7 @@ contract('ERC20DividendableEth', (accounts) => {
         await erc20dividendableEth.releaseDividends({ from: user1, value: releasedDividends.toString()});
         await erc20dividendableEth.claimDividends({ from: account1 });
         await erc20dividendableEth.transfer(account2, transferTokens, { from: account1 });
-        BN(await erc20dividendableEth.claimDividends.call({ from: account2 })).should.be.bignumber.equal(claimedDividends2);
+        BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.equal(claimedDividends2);
     });
 });
