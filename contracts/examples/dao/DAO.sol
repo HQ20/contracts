@@ -101,6 +101,7 @@ contract DAO is VentureEth {
     function retrieveVentureTokens(
         address venture
     ) public {
+        require(currentState == "LIVE", "DAO needs to be LIVE");
         VentureEth(venture).claim();
     }
 
@@ -109,6 +110,7 @@ contract DAO is VentureEth {
      * @param venture The address of the VentureEth contract to profit from.
      */
     function proposeProfit(address venture) public {
+        require(currentState == "LIVE", "DAO needs to be LIVE");
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
             address(this),
