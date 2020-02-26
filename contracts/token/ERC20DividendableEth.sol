@@ -1,9 +1,8 @@
 pragma solidity ^0.5.10;
 
-import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./ERC20MintableDetailed.sol";
-import "../utils/SafeCast.sol";
+import "../math/DecimalMath.sol";
 
 
 /**
@@ -14,13 +13,10 @@ import "../utils/SafeCast.sol";
 contract ERC20DividendableEth is ERC20MintableDetailed {
 
     using SafeMath for uint256;
-    using FixidityLib for int256;
-    using SafeCast for uint256;
-    using SafeCast for int256;
+    using DecimalMath for uint256;
 
-    uint256 public dividendsPerToken;
-
-    mapping(address => uint256) public lastDividendsPerToken;
+    uint256 public dividendsPerToken; // This is a decimal number
+    mapping(address => uint256) public lastDPT; // These are decimal numbers
 
     constructor(
         string memory name,
@@ -43,22 +39,27 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         return claimDividends(msg.sender);
     }
 
+    /**
+     * @dev Release an `amount` of ether in the contract as dividends.
+     */
     function releaseDividends(uint256 amount) internal {
-        int256 fixedSupply = this.totalSupply()
-            .safeUintToInt();
-        int256 fixedValue = amount.safeUintToInt().newFixed();
-        uint256 releasedDividends = fixedValue
-            .divide(fixedSupply).fromFixed(this.decimals()).safeIntToUint();
-        dividendsPerToken = dividendsPerToken.add(releasedDividends);
+        require(address(this).balance >= amount, "Not enough funds.");
+        // Wei amounts are already decimals.
+        uint256 releasedDPT = amount.divd(this.totalSupply());
+        dividendsPerToken = dividendsPerToken.addd(releasedDPT);
     }
 
-    function claimDividends(
-        address payable account
-    ) internal returns(uint256) {
+    /**
+     * @dev Transfer owed dividends to its account.
+     */
+    function claimDividends(address payable account)
+        internal
+        returns(uint256)
+    {
         uint256 owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
         account.transfer(owing);
-        lastDividendsPerToken[account] = dividendsPerToken;
+        lastDPT[account] = dividendsPerToken;
         return owing;
     }
 
@@ -67,13 +68,8 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @param account The account for which to compute the dividends
      */
     function dividendsOwing(address account) internal view returns(uint256) {
-        uint256 owedDividendsPerToken = dividendsPerToken
-            .sub(lastDividendsPerToken[account]);
-        int256 fixedBalance = this.balanceOf(account)
-            .safeUintToInt();
-        int256 fixedOwed = owedDividendsPerToken
-            .safeUintToInt().newFixed(this.decimals());
-        return fixedBalance.multiply(fixedOwed).fromFixed().safeIntToUint();
+        uint256 owedDPT = dividendsPerToken.subd(lastDPT[account]);
+        return this.balanceOf(account).muld(owedDPT);
     }
 
 }
