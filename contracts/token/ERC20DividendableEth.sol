@@ -28,7 +28,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @notice Send ether to this function in orther to disburse dividends
      */
     function releaseDividends() external payable {
-        releaseDividends(msg.value);
+        _releaseDividends(msg.value);
     }
 
     /**
@@ -36,13 +36,13 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @notice Will revert if account need not be updated
      */
     function claimDividends() public returns(uint256) {
-        return claimDividends(msg.sender);
+        return _claimDividends(msg.sender);
     }
 
     /**
      * @dev Release an `amount` of ether in the contract as dividends.
      */
-    function releaseDividends(uint256 amount) internal {
+    function _releaseDividends(uint256 amount) internal {
         require(address(this).balance >= amount, "Not enough funds.");
         // Wei amounts are already decimals.
         uint256 releasedDPT = amount.divd(this.totalSupply());
@@ -52,11 +52,11 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     /**
      * @dev Transfer owed dividends to its account.
      */
-    function claimDividends(address payable account)
+    function _claimDividends(address payable account)
         internal
         returns(uint256)
     {
-        uint256 owing = dividendsOwing(account);
+        uint256 owing = _dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
         account.transfer(owing);
         lastDPT[account] = dividendsPerToken;
@@ -67,7 +67,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @dev Internal function to compute dividends owing to an account
      * @param account The account for which to compute the dividends
      */
-    function dividendsOwing(address account) internal view returns(uint256) {
+    function _dividendsOwing(address account) internal view returns(uint256) {
         uint256 owedDPT = dividendsPerToken.subd(lastDPT[account]);
         return this.balanceOf(account).muld(owedDPT);
     }
