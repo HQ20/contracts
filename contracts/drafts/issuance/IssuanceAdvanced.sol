@@ -48,17 +48,12 @@ contract IssuanceAdvanced is Ownable, StateMachine, ReentrancyGuard {
     uint256 public openingDate;
     uint256 public closingDate;
 
-    uint256 nextInvestor;
-
     constructor(
         address _issuanceToken,
         address _currencyToken
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
         currencyToken = _currencyToken;
-        _createState("OPEN");
-        _createState("LIVE");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "LIVE");
         _createTransition("OPEN", "FAILED");

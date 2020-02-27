@@ -1,44 +1,65 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20MintableDetailed.sol";
+import "../math/DecimalMath.sol";
 
 
 /**
  * @title ERC20DividendableEth
- * @dev Implements an ERC20 token with a dividend distribution procedure for etehreum received
+ * @dev Implements an ERC20MintableDetailed token with a dividend distribution procedure for etehreum received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
-contract ERC20DividendableEth is ERC20 {
+contract ERC20DividendableEth is ERC20MintableDetailed {
 
-    using SafeMath for uint;
+    using SafeMath for uint256;
+    using DecimalMath for uint256;
 
-    uint public pointMultiplier = 10e18;
-    uint public totalDividends;
-    uint public totalDividendPoints;
-    mapping(address => uint) public lastDividendPoints;
+    uint256 public dividendsPerToken; // This is a decimal number
+    mapping(address => uint256) public lastDPT; // These are decimal numbers
 
-    constructor() public {}
+    constructor(
+        string memory name,
+        string memory symbol,
+        uint8 decimals
+    ) ERC20MintableDetailed(name, symbol, decimals) public {}
 
     /**
      * @notice Send ether to this function in orther to disburse dividends
      */
-    function increasePool() external payable {
-        totalDividends = totalDividends.add(msg.value);
-        totalDividendPoints = totalDividends
-            .mul(pointMultiplier).div(this.totalSupply());
+    function releaseDividends() external payable {
+        releaseDividends(msg.value);
     }
 
     /**
-     * @dev Function to update an account
-     * @param account The account to update
+     * @dev Function to update the account of the sender
      * @notice Will revert if account need not be updated
      */
-    function updateAccount(address payable account) public returns(uint) {
-        uint owing = dividendsOwing(account);
+    function claimDividends() public returns(uint256) {
+        return claimDividends(msg.sender);
+    }
+
+    /**
+     * @dev Release an `amount` of ether in the contract as dividends.
+     */
+    function releaseDividends(uint256 amount) internal {
+        require(address(this).balance >= amount, "Not enough funds.");
+        // Wei amounts are already decimals.
+        uint256 releasedDPT = amount.divd(this.totalSupply());
+        dividendsPerToken = dividendsPerToken.addd(releasedDPT);
+    }
+
+    /**
+     * @dev Transfer owed dividends to its account.
+     */
+    function claimDividends(address payable account)
+        internal
+        returns(uint256)
+    {
+        uint256 owing = dividendsOwing(account);
         require(owing > 0, "Account need not be updated now.");
-        lastDividendPoints[account] = totalDividendPoints;
         account.transfer(owing);
+        lastDPT[account] = dividendsPerToken;
         return owing;
     }
 
@@ -46,11 +67,9 @@ contract ERC20DividendableEth is ERC20 {
      * @dev Internal function to compute dividends owing to an account
      * @param account The account for which to compute the dividends
      */
-    function dividendsOwing(address account) internal view returns(uint) {
-        uint newDividendPoints = totalDividendPoints
-            .sub(lastDividendPoints[account]);
-        return this.balanceOf(account)
-            .mul(newDividendPoints).div(pointMultiplier);
+    function dividendsOwing(address account) internal view returns(uint256) {
+        uint256 owedDPT = dividendsPerToken.subd(lastDPT[account]);
+        return this.balanceOf(account).muld(owedDPT);
     }
 
 }
