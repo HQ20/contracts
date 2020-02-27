@@ -22,7 +22,7 @@ contract DecimalMathMock {
         return x.muld(y);
     }
 
-    function muld(
+    function muld2(
         uint256 x,
         uint256 y,
         uint8 decimals
@@ -34,7 +34,7 @@ contract DecimalMathMock {
         return x.divd(y);
     }
 
-    function divd(
+    function divd2(
         uint256 x,
         uint256 y,
         uint8 decimals
