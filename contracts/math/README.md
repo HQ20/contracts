@@ -9,7 +9,7 @@ Using tokens and wei, with `N` decimals, the number stored to represent 1 wei wo
 
 `DecimalMath` implements the four basic arithmetic operations (`addd`, `subd`, `muld` and `divd`) to operate on token amounts respecting the position of the comma.
 
-`DecimalMath` assumes that all operands are in the widespread `wei` representation.
+`DecimalMath` assumes that all operands are in the widespread `wei` representation with 18 decimals, unless a different number of decimals is specified.
 
 When using `DecimalMath` the representation should be the same. For example:
  - Multiply 1 token by 0.5: `DecimalMath.muld(1000000000000000000, 500000000000000000)`
@@ -45,5 +45,5 @@ All operations assume that operands are decimal numbers with 18 digits.
 * `function subd(uint256 x, uint256 y)`: Substracts y from x.
 * `function muld(uint256 x, uint256 y)`: Multiplies x and y.
 * `function divd(uint256 x, uint256 y)`: Divides x by y.
-* `function muld(uint256 x, uint256 y, uint8 decimals)`
-* `function divd(uint256 x, uint256 y, uint8 decimals)`
+* `function muld(uint256 x, uint256 y, uint8 decimals)` Multiplies x and y, for decimal numbers with `decimals` decimals.
+* `function divd(uint256 x, uint256 y, uint8 decimals)` Divides x by y, for decimal numbers with `decimals` decimals.

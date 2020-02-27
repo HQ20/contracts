@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 library DecimalMath {
     using SafeMath for uint256;
 
-    /// @dev Returns 1 in the fixed point representation, with `decimals` digits.
+    /// @dev Returns 1 in the fixed point representation, with `decimals` decimals.
     function unit(uint8 decimals) internal pure returns (uint256) {
         return 10**uint256(decimals);
     }
