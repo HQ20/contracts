@@ -9,6 +9,7 @@ import "../token/IERC20Detailed.sol";
 import "../token/IERC20MintableDetailed.sol";
 import "../state/StateMachine.sol";
 import "../utils/SafeCast.sol";
+import "../math/DecimalMath.sol";
 
 
 /**
@@ -29,9 +30,7 @@ import "../utils/SafeCast.sol";
  */
 contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
-    using FixidityLib for int256;
-    using SafeCast for int256;
-    using SafeCast for uint256;
+    using DecimalMath for uint256;
 
     event IssuanceCreated();
     event IssuePriceSet();
@@ -98,23 +97,12 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        IERC20Detailed _currencyToken = IERC20Detailed(currencyToken);
         IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
             issuanceToken
         );
-        int256 investedFixed = amount.safeUintToInt().newFixed(
-                _currencyToken.decimals()
-            );
-        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(
-                _currencyToken.decimals()
-            );
-        int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
-        uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
-                _issuanceToken.decimals()
-            ).safeIntToUint();
         _issuanceToken.mint(
             msg.sender,
-            issuanceTokens
+            amount.divd(issuePrice, IERC20MintableDetailed(issuanceToken).decimals())
         );
     }
 

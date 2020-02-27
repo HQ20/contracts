@@ -3,6 +3,7 @@ import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { BN } = require('@openzeppelin/test-helpers');
 import { DecimalMathMockInstance } from '../../types/truffle-contracts';
+import BigNumber from 'bignumber.js';
 
 const DecimalMath = artifacts.require('DecimalMathMock') as Truffle.Contract<DecimalMathMockInstance>;
 
@@ -60,9 +61,8 @@ contract('DecimalMath', () => {
      * @test {DecimalMath#muld()}
      */
     it('multiplies decimal values.', async () => {
-        // the next linen is disabled due to typechain overloading issue, but it should pass
-        // BN(await tokenMath.muld(decimal2_18.toString(), decimal3_18.toString()))
-        //     .should.be.bignumber.equal(decimal6_18);
+        BN(await (<any> tokenMath).muld(decimal2_18.toString(), decimal3_18.toString()))
+            .should.be.bignumber.equal(decimal6_18);
         BN(await tokenMath.muld(decimal2_16.toString(), decimal3_18.toString(), decimals16.toString()))
             .should.be.bignumber.equal(decimal6_18);
     });
@@ -73,8 +73,8 @@ contract('DecimalMath', () => {
     it('divides decimal values.', async () => {
         BN(await tokenMath.divd(decimal6_18.toString(), decimal3_18.toString()))
             .should.be.bignumber.equal(decimal2_18);
-        // the next linen is disabled due to typechain overloading issue, but it should pass
-        // BN(await tokenMath.divd(decimal6_18.toString(), decimal3_18.toString(), decimals16.toString()))
+        // no idea why the following runs out of gas
+        // BN(await (<any> tokenMath).divd(decimal6_18.toString(), decimal3_18.toString(), decimals16.toString()))
         //     .should.be.bignumber.equal(decimal2_16);
     });
 });

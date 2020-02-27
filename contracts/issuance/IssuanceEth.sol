@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../token/IERC20MintableDetailed.sol";
 import "../state/StateMachine.sol";
-import "../utils/SafeCast.sol";
+import "../math/DecimalMath.sol";
 
 
 /**
@@ -27,9 +27,7 @@ import "../utils/SafeCast.sol";
  */
 contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     using SafeMath for uint256;
-    using FixidityLib for int256;
-    using SafeCast for int256;
-    using SafeCast for uint256;
+    using DecimalMath for uint256;
 
     event IssuanceCreated();
     event IssuePriceSet();
@@ -73,15 +71,9 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
             issuanceToken
         );
-        int256 investedFixed = amount.safeUintToInt().newFixed(18);
-        int256 issuePriceFixed = issuePrice.safeUintToInt().newFixed(18);
-        int256 issuanceTokensFixed = investedFixed.divide(issuePriceFixed);
-        uint256 issuanceTokens = issuanceTokensFixed.fromFixed(
-                _issuanceToken.decimals()
-            ).safeIntToUint();
         _issuanceToken.mint(
             msg.sender,
-            issuanceTokens
+            amount.divd(issuePrice, _issuanceToken.decimals())
         );
     }
 

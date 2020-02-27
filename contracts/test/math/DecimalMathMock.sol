@@ -3,10 +3,11 @@ import "../../math/DecimalMath.sol";
 
 
 contract DecimalMathMock {
+    using DecimalMath for uint8;
     using DecimalMath for uint256;
 
     function unit(uint8 decimals) public pure returns (uint256) {
-        return DecimalMath.unit(decimals);
+        return decimals.unit();
     }
 
     function addd(uint256 x, uint256 y) public pure returns (uint256) {
