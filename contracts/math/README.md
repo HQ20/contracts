@@ -20,7 +20,7 @@ When using `DecimalMath` the representation should be the same. For example:
 ## Number Conversions
 
 
-No functions are supplied to convert to and from decimal representation, as an user you just need to remember that you need to add 18 zeros (or multiply by `token.decimals().unit()`) to convert from solidity integer to DecimalMath decimal. Remove zeros or divide by `token.decimlas().unit()` to convert back.
+No functions are supplied to convert to and from decimal representation, as an user you just need to remember that you need to add 18 zeros (or multiply by `DecimalMath.unit(token.decimals())`) to convert from solidity integer to DecimalMath decimal. Remove zeros or divide by `DecimalMath.unit(token.decimals())` to convert back.
 
 ```
 using SafeMath for uint256;
