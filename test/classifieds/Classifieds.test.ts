@@ -28,7 +28,7 @@ contract('Classifieds', (accounts) => {
     let erc20token: TestERC20MintableInstance;
     let erc721token: TestERC721MintableInstance;
 
-    const ERC721id = 0;
+    const ERC721id = 42;
     const POSTER = 0;
     const ITEM = 1;
     const PRICE = 2;
@@ -44,11 +44,11 @@ contract('Classifieds', (accounts) => {
     /**
      * @test {Classifieds#openTrade}
      */
-    it('openTrade emits an event to signal trade opening', async () => {
+    it('emits an event when opening trades', async () => {
         await erc721token.mint(poster, ERC721id);
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
         expectEvent(
-            await classifieds.openTrade(0, ether('1'), { from: poster }),
+            await classifieds.openTrade(ERC721id, ether('1'), { from: poster }),
             'TradeStatusChange',
             {
                 ad: new BN('0'),
@@ -60,96 +60,105 @@ contract('Classifieds', (accounts) => {
     /**
      * @test {Classifieds#openTrade} and {Classifieds#getTrade}
      */
-    it('getTrade can succesfully retrieve a trade', async () => {
+    it('opens a trade', async () => {
         await erc721token.mint(poster, ERC721id);
         await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, ether('1'), { from: poster });
-        const tx = await classifieds.getTrade(0);
-        expect(tx).to.include({
+        const tradeId = (
+            await classifieds.openTrade(ERC721id, ether('1'), { from: poster })
+        ).logs[0].args.ad;
+        const trade = await classifieds.getTrade(tradeId);
+        expect(trade).to.include({
             [POSTER]: poster,
             [STATUS]: stringToBytes32('Open'),
         });
-        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
-        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
+        chai.expect(trade[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+        chai.expect(trade[PRICE]).to.be.bignumber.equal(ether('1'));
     });
 
-    /**
-     * @test {Classifieds#executeTrade}
-     */
-    it('executeTrade can succesfully close a trade', async () => {
-        await erc20token.mint(filler, ether('1'));
-        await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
-        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, ether('1'), { from: poster });
-        await classifieds.executeTrade(0, { from: filler });
-        const tx = await classifieds.getTrade(0);
-        expect(tx).to.include({
-            [POSTER]: poster,
-            [STATUS]: stringToBytes32('Executed'),
+    describe('after opening a trade', () => {
+        let tradeId : string;
+
+        beforeEach(async () => {
+            await erc721token.mint(poster, ERC721id);
+            await erc721token.approve(classifieds.address, ERC721id, { from: poster });
+            tradeId = (
+                await classifieds.openTrade(ERC721id, ether('1'), { from: poster })
+            ).logs[0].args.ad;
         });
-        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
-        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
-        expect(await erc721token.ownerOf(ERC721id)).to.be.equal(filler);
-        chai.expect(await erc20token.balanceOf(poster)).to.be.bignumber.equal(ether('1'));
-    });
 
-    /**
-     * @test {Classifieds#executeTrade}
-     */
-    it('executeTrade cannot execute trade when it is not opened', async () => {
-        await erc20token.mint(filler, ether('1'));
-        await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
-        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, ether('1'), { from: poster });
-        await classifieds.cancelTrade(0, { from: poster });
-        await expectRevert(classifieds.executeTrade(0, { from: poster }), 'Trade is not Open.');
-    });
+        /**
+         * @test {Classifieds#executeTrade}
+         */
+        it('trades can be executed', async () => {
+            await erc20token.mint(filler, ether('1'));
+            await erc20token.approve(classifieds.address, ether('1'), { from: filler });
+            await classifieds.executeTrade(tradeId, { from: filler });
+            const trade = await classifieds.getTrade(tradeId);
+            expect(trade).to.include({
+                [POSTER]: poster,
+                [STATUS]: stringToBytes32('Executed'),
+            });
+            chai.expect(trade[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+            chai.expect(trade[PRICE]).to.be.bignumber.equal(ether('1'));
 
-    /**
-     * @test {Classifieds#cancelTrade}
-     */
-    it('cancelTrade can succefully cancel a trade', async () => {
-        await erc721token.mint(poster, ERC721id);
-        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, new ether('1'), { from: poster });
-        await classifieds.cancelTrade(0, { from: poster });
-        const tx = await classifieds.getTrade(0);
-        expect(tx).to.include({
-            [POSTER]: poster,
-            [STATUS]: stringToBytes32('Cancelled'),
+            expect(await erc721token.ownerOf(ERC721id)).to.be.equal(filler);
+            chai.expect(await erc20token.balanceOf(poster)).to.be.bignumber.equal(ether('1'));
         });
-        chai.expect(tx[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
-        chai.expect(tx[PRICE]).to.be.bignumber.equal(ether('1'));
-        expect(await erc721token.ownerOf(ERC721id)).to.be.equal(poster);
-    });
 
-    /**
-     * @test {Classifieds#cancelTrade}
-     */
-    it('cancelTrade cannot cancel a trade by inavlid caller', async () => {
-        await erc20token.mint(filler, ether('1'));
-        await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
-        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, ether('1'), { from: poster });
-        await expectRevert(classifieds.cancelTrade(0, { from: filler }), 'Trade can be cancelled only by poster.');
-    });
+        /**
+         * @test {Classifieds#cancelTrade}
+         */
+        it('trades can be cancelled', async () => {
+            await classifieds.cancelTrade(tradeId, { from: poster });
+            const trade = await classifieds.getTrade(tradeId);
+            expect(trade).to.include({
+                [POSTER]: poster,
+                [STATUS]: stringToBytes32('Cancelled'),
+            });
+            chai.expect(trade[ITEM]).to.be.bignumber.equal(new BN(ERC721id));
+            chai.expect(trade[PRICE]).to.be.bignumber.equal(ether('1'));
+            expect(await erc721token.ownerOf(ERC721id)).to.be.equal(poster);
+        });
 
-    /**
-     * @test {Classifieds#cancelTrade}
-     */
-    it('cancelTrade cannot cancel a trade which is not Open', async () => {
-        await erc20token.mint(filler, ether('1'));
-        await erc721token.mint(poster, ERC721id);
-        await erc20token.approve(classifieds.address, ether('1'), { from: filler });
-        await erc721token.approve(classifieds.address, ERC721id, { from: poster });
-        await classifieds.openTrade(0, ether('1'), { from: poster });
-        await classifieds.executeTrade(0, { from: filler });
-        await expectRevert(classifieds.cancelTrade(0, { from: poster }), 'Trade is not Open.');
-    });
 
+        /**
+         * @test {Classifieds#cancelTrade}
+         */
+        it('trades can only be cancelled by their posters', async () => {
+            await erc20token.mint(filler, ether('1'));
+            await erc20token.approve(classifieds.address, ether('1'), { from: filler });
+            await expectRevert(
+                classifieds.cancelTrade(tradeId, { from: filler }),
+                'Trade can be cancelled only by poster.',
+            );
+        });
+
+        describe('after closing a trade', () => {
+            beforeEach(async () => {
+                await classifieds.cancelTrade(tradeId, { from: poster });
+            });
+
+            /**
+             * @test {Classifieds#executeTrade}
+             */
+            it('closed trades cannot be executed', async () => {
+                await expectRevert(
+                    classifieds.executeTrade(tradeId, { from: poster }),
+                    'Trade is not Open.',
+                );
+            });
+
+            /**
+             * @test {Classifieds#cancelTrade}
+             */
+            it('closed trades cannot be cancelled', async () => {
+                await expectRevert(
+                    classifieds.cancelTrade(tradeId, { from: poster }),
+                    'Trade is not Open.',
+                );
+            });
+        });
+    });
 });
 
 function stringToBytes32(text: string) {

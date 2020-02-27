@@ -3,7 +3,6 @@ import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { BN } = require('@openzeppelin/test-helpers');
 import { DecimalMathMockInstance } from '../../types/truffle-contracts';
-import BigNumber from 'bignumber.js';
 
 const DecimalMath = artifacts.require('DecimalMathMock') as Truffle.Contract<DecimalMathMockInstance>;
 

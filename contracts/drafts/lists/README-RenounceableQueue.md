@@ -1,6 +1,6 @@
 # Lists
 
-This is an Ethereum project that implements singly and doubly linked lists (https://en.wikipedia.org/wiki/Linked_list).
+This is an Ethereum project that implements a queue with random extraction (https://en.wikipedia.org/wiki/Linked_list).
 
 # Terminology
 Object: Objects are linked to each other and together they are a Linked List
@@ -21,7 +21,7 @@ This renders a traditional implementation of Linked Lists impossible. In this im
 
 High performance implementation of a Doubly Linked List based on a dynamic array and without structs. It only allows inserting by the head and suffers from some fragmentation which can be managed.
 
-`LinkedListAsArray.sol`:
+`RenounceableQueue.sol`:
 * constructor: Creates an empty list.
 * `function get(uint256 _id)`: Retrieves the Object denoted by `_id`.
 * `function next(uint256 _id)`: Given an Object, denoted by `_id`, returns (true, id) for the Object it points to, or (false, 0) if `_id` refers to the Tail.

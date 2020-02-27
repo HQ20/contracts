@@ -5,6 +5,7 @@ This is an Ethereum library to implement decimal arithmetic tailored to cryptocu
 ## Usage
 Tokens implementing `ERC20Detailed` already are in a decimal representation, with a virtual comma `decimals()` positions to the left of the least significant digit.
 
+
 Using tokens and wei, with `N` decimals, the number stored to represent 1 wei would be 1, and the number stored to represent 1 token would be 100...`pad(0, N)`...0 (== 10**decimals()).
 
 `DecimalMath` implements the four basic arithmetic operations (`addd`, `subd`, `muld` and `divd`) to operate on token amounts respecting the position of the comma.
@@ -17,6 +18,7 @@ When using `DecimalMath` the representation should be the same. For example:
  - Multiply 1.01 by 2.02: `DecimalMath.muld(1010000000000000000, 2020000000000000000)`
 
 ## Number Conversions
+
 
 No functions are supplied to convert to and from decimal representation, as an user you just need to remember that you need to add 18 zeros (or multiply by `token.decimals().unit()`) to convert from solidity integer to DecimalMath decimal. Remove zeros or divide by `token.decimlas().unit()` to convert back.
 

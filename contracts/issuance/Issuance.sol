@@ -47,7 +47,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     uint256 public amountRaised;
     uint256 public amountWithdrawn;
     uint256 public issuePrice;
-    uint256 internal nextInvestor;
 
     /**
      * @dev Initialize the issuance with the token to issue and the token to
@@ -59,9 +58,6 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
         currencyToken = _currencyToken;
-        _createState("OPEN");
-        _createState("LIVE");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "LIVE");
         _createTransition("OPEN", "FAILED");

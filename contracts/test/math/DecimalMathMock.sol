@@ -21,7 +21,6 @@ contract DecimalMathMock {
     function muld(uint256 x, uint256 y) public pure returns (uint256) {
         return x.muld(y);
     }
-
     function muld2(
         uint256 x,
         uint256 y,

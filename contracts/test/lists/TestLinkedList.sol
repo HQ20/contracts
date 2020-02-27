@@ -1,5 +1,5 @@
 pragma solidity ^0.5.10;
-import "./../LinkedList.sol";
+import "./../../lists/LinkedList.sol";
 
 
 /**

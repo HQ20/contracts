@@ -44,15 +44,11 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     uint256 public amountRaised;
     uint256 public amountWithdrawn;
     uint256 public issuePrice;
-    uint256 internal nextInvestor;
 
     constructor(
         address _issuanceToken
     ) public Ownable() StateMachine() {
         issuanceToken = _issuanceToken;
-        _createState("OPEN");
-        _createState("LIVE");
-        _createState("FAILED");
         _createTransition("SETUP", "OPEN");
         _createTransition("OPEN", "LIVE");
         _createTransition("OPEN", "FAILED");
