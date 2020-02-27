@@ -7,14 +7,9 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 library DecimalMath {
     using SafeMath for uint256;
 
-    /// @dev Returns the number of decimals in the fixed point representation, currently 18.
-    function decimals() internal pure returns (uint8) {
-        return 18;
-    }
-
-    /// @dev Returns 1 in the fixed point representation, currently 1000000000000000000.
-    function decimal1() internal pure returns (uint256) {
-        return 1000000000000000000;
+    /// @dev Returns 1 in the fixed point representation, with `decimals` digits.
+    function unit(uint8 decimals) internal pure returns (uint256) {
+        return 10**uint256(decimals);
     }
 
     /// @dev Adds x and y, assuming they are both fixed point with 18 decimals.
@@ -27,13 +22,32 @@ library DecimalMath {
         return x.sub(y);
     }
 
-    /// @dev Multiplies x and y, assuming they are both fixed point with 18 decimals.
+    /// @dev Multiplies x and y, assuming they are both fixed point with 18 digits.
     function muld(uint256 x, uint256 y) internal pure returns (uint256) {
-        return x.mul(y).div(decimal1());
+        return muld(x, y, 18);
     }
 
-    /// @dev Divides x between y, assuming they are both fixed point with 18 decimals.
-    function divd(uint256 x, uint256 y) internal pure returns (uint256) {
-        return x.mul(decimal1()).div(y);
+    /// @dev Multiplies x and y, assuming they are both fixed point with `decimals` digits.
+    function muld(
+        uint256 x,
+        uint256 y,
+        uint8 decimals
+    ) internal pure returns (uint256) {
+        return x.mul(y).div(unit(decimals));
     }
+
+    /// @dev Divides x between y, assuming they are both fixed point with 18 digits.
+    function divd(uint256 x, uint256 y) internal pure returns (uint256) {
+        return divd(x, y, 18);
+    }
+
+    /// @dev Divides x between y, assuming they are both fixed point with `decimals` digits.
+    function divd(
+        uint256 x,
+        uint256 y,
+        uint8 decimals
+    ) internal pure returns (uint256) {
+        return x.mul(unit(decimals)).div(y);
+    }
+
 }
