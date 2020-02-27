@@ -61,7 +61,7 @@ contract('DecimalMath', () => {
      * @test {DecimalMath#muld()}
      */
     it('multiplies decimal values.', async () => {
-        BN(await (<any> tokenMath).muld(decimal2_18.toString(), decimal3_18.toString()))
+        BN(await (tokenMath as any).muld(decimal2_18.toString(), decimal3_18.toString()))
             .should.be.bignumber.equal(decimal6_18);
         BN(await tokenMath.muld(decimal2_16.toString(), decimal3_18.toString(), decimals16.toString()))
             .should.be.bignumber.equal(decimal6_18);
@@ -74,7 +74,7 @@ contract('DecimalMath', () => {
         BN(await tokenMath.divd(decimal6_18.toString(), decimal3_18.toString()))
             .should.be.bignumber.equal(decimal2_18);
         // no idea why the following runs out of gas
-        // BN(await (<any> tokenMath).divd(decimal6_18.toString(), decimal3_18.toString(), decimals16.toString()))
+        // BN(await (tokenMath as any).divd(decimal6_18.toString(), decimal3_18.toString(), decimals16.toString()))
         //     .should.be.bignumber.equal(decimal2_16);
     });
 });
