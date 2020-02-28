@@ -50,7 +50,7 @@ contract('Voting', (accounts) => {
             await votingToken.approve(voting.address, votes1, { from: voter1 });
             await votingToken.approve(voting.address, votes2, { from: voter2 });
         });
-    
+
         /**
          * @test {Voting#cast}
          */
@@ -76,7 +76,7 @@ contract('Voting', (accounts) => {
                 'Can propose only when in SETUP',
             );
         });
-    
+
         it('can register proposals', async () => {
             expectEvent(
                 await voting.registerProposal(
@@ -124,7 +124,7 @@ contract('Voting', (accounts) => {
                 'Failed to enact proposal.',
             );
         });
-    
+
         /**
          * @test {Voting#open}
          */
@@ -132,9 +132,9 @@ contract('Voting', (accounts) => {
             await voting.open();
             bytes32ToString(await voting.currentState()).should.be.equal('OPEN');
         });
-    
+
         describe('after opening the vote', () => {
-    
+
             beforeEach(async () => {
                 await voting.registerProposal(
                     issuanceEth.address,
@@ -169,7 +169,7 @@ contract('Voting', (accounts) => {
                 );
                 await voting.open();
             });
-    
+
             /**
              * @test {Voting#cancel}
              */
@@ -179,7 +179,7 @@ contract('Voting', (accounts) => {
                     'No votes casted.',
                 );
             });
-    
+
             /**
              * @test {Voting#cast}
              */
@@ -193,7 +193,7 @@ contract('Voting', (accounts) => {
                     },
                 );
             });
-    
+
             /**
              * @test {Voting#validate}
              */
@@ -204,14 +204,14 @@ contract('Voting', (accounts) => {
                     'Not enough votes to meet the threshold.'
                 );
             });
-    
+
             describe('once voted', () => {
-    
+
                 beforeEach(async () => {
                     await voting.cast(votes1, { from: voter1 });
                     await voting.cast(votes2, { from: voter2 });
                 });
-    
+
                 /**
                  * @test {Voting#enact}
                  */
@@ -221,7 +221,7 @@ contract('Voting', (accounts) => {
                         'Cannot enact proposal until vote passes.',
                     );
                 });
-    
+
                 /**
                  * @test {Voting#cancel}
                  */
@@ -235,7 +235,7 @@ contract('Voting', (accounts) => {
                         },
                     );
                 });
-    
+
                 /**
                  * @test {Voting#validate}
                  */
@@ -243,13 +243,13 @@ contract('Voting', (accounts) => {
                     await voting.validate();
                     bytes32ToString(await voting.currentState()).should.be.equal('PASSED');
                 });
-    
+
                 describe('once validated', () => {
-    
+
                     beforeEach(async () => {
                         await voting.validate();
                     });
-    
+
                     /**
                      * @test {Voting#cancel}
                      */
@@ -263,7 +263,7 @@ contract('Voting', (accounts) => {
                             },
                         );
                     });
-    
+
                     /**
                      * @test {Voting#enact}
                      */
@@ -284,7 +284,7 @@ contract('Voting', (accounts) => {
                         await votingToken.transferFrom(voting.address, owner, issued);
                         BN(await votingToken.balanceOf(owner)).should.be.bignumber.equal(issued);
                     });
-    
+
                     /**
                      * @test {Voting#enact}
                      */
@@ -303,7 +303,7 @@ contract('Voting', (accounts) => {
         });
 
     });
-    
+
 });
 
 function bytes32ToString(text: string) {
