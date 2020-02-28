@@ -247,10 +247,10 @@
     web3 "1.2.1"
     web3-provider-engine "https://github.com/trufflesuite/provider-engine#web3-one"
 
-"@truffle/hdwallet-provider@1.0.31":
-  version "1.0.31"
-  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.31.tgz#fafb4caa7a1bc234dd2af3543fa98eb491f257e1"
-  integrity sha512-Ll8Swkfd5kB+V4v9GVC1fyZt3NFldPVsXYM4lHECF0O/Jhf6gCexHf4miRtabzzuOXNidZu5loTA9+FLGU2LnA==
+"@truffle/hdwallet-provider@1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.32.tgz#0e032359403b22ea62fa190a0679cb7cb247d10a"
+  integrity sha512-1r+He82jvVBE3KfO4KtsqEm4y8FDvCAaOVbrjm9YmxY+PWXI3ZV9fal/FgZkEvBVPkwRggkArqfDGmyZ1D0Wrw==
   dependencies:
     any-promise "^1.3.0"
     bindings "^1.5.0"
@@ -7036,10 +7036,10 @@ truffle-typings@1.0.8:
     "@types/mocha" "^5.2.5"
     "@types/web3" "^1.0.18"
 
-truffle@5.1.14:
-  version "5.1.14"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.14.tgz#18dde420cd88d8214451d59d1cf554c83f54dcd4"
-  integrity sha512-6rIy335igwHOR0a8xEtPZdlCPBAvDcMIuVQVWAVtPqDy7xMTxGm4A0C4YRsEvZUc5V8GfCBfQb/GQ5AXlXI+6w==
+truffle@5.1.15:
+  version "5.1.15"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.15.tgz#cf1efb8a601571eb20de13e95dbd8d27c574c0c3"
+  integrity sha512-sknMUERo+3bihwUEThxI4a8h+lJdumLSYGCObmqCNMxjNWCwfqlPkYaIl8z64PcN3Dus/Sr8aLEF8IHpHQWISA==
   dependencies:
     app-module-path "^2.2.0"
     mocha "5.2.0"
