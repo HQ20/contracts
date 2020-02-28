@@ -247,10 +247,10 @@
     web3 "1.2.1"
     web3-provider-engine "https://github.com/trufflesuite/provider-engine#web3-one"
 
-"@truffle/hdwallet-provider@1.0.31":
-  version "1.0.31"
-  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.31.tgz#fafb4caa7a1bc234dd2af3543fa98eb491f257e1"
-  integrity sha512-Ll8Swkfd5kB+V4v9GVC1fyZt3NFldPVsXYM4lHECF0O/Jhf6gCexHf4miRtabzzuOXNidZu5loTA9+FLGU2LnA==
+"@truffle/hdwallet-provider@1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.32.tgz#0e032359403b22ea62fa190a0679cb7cb247d10a"
+  integrity sha512-1r+He82jvVBE3KfO4KtsqEm4y8FDvCAaOVbrjm9YmxY+PWXI3ZV9fal/FgZkEvBVPkwRggkArqfDGmyZ1D0Wrw==
   dependencies:
     any-promise "^1.3.0"
     bindings "^1.5.0"
