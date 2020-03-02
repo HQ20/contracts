@@ -25,7 +25,7 @@ contract DAO is VentureEth {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event VentureProposed(address proposal);
-    event ProfitProposed(address proposal);
+    event DividendsProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public threshold;
@@ -132,7 +132,7 @@ contract DAO is VentureEth {
         );
         voting.open();
         proposals.add(address(voting));
-        emit ProfitProposed(address(voting));
+        emit DividendsProposed(address(voting));
     }
 
     /**
