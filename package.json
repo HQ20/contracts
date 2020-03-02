@@ -48,7 +48,7 @@
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.9",
         "@types/mocha": "7.0.1",
-        "@types/node": "13.7.6",
+        "@types/node": "13.7.7",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.0",
@@ -76,6 +76,6 @@
         "tslint": "6.0.0",
         "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
-        "typescript": "3.8.2"
+        "typescript": "3.8.3"
     }
 }
