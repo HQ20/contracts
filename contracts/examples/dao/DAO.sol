@@ -90,9 +90,9 @@ contract DAO is VentureEth {
             proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
-        VentureEth(venture).invest.value(investment)();
-        ventures.add(venture);
         proposals.remove(msg.sender);
+        ventures.add(venture);
+        VentureEth(venture).invest.value(investment)();
         emit VentureAdded(venture);
     }
 
@@ -144,8 +144,8 @@ contract DAO is VentureEth {
             proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
-        _releaseDividends(amount);
         proposals.remove(msg.sender);
+        _releaseDividends(amount);
     }
 
     /** Enumerators */
