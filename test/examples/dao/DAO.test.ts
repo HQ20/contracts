@@ -159,10 +159,6 @@ contract('DAO', (accounts) => {
                     voting1 = await Voting.at(
                         (await dao.proposeDividends(dividends1.add(dividends2).toString())).logs[5].args.proposal
                     );
-                    await expectRevert(
-                        dao.proposeDividends(dividends1.toString()),
-                        'A proposal has already been submitted.',
-                    );
                     await dao.approve(voting1.address, ether('10'), { from: holder1 });
                     await dao.approve(voting1.address, ether('10'), { from: holder2 });
                     await voting1.cast(ether('3'), { from: holder1 });

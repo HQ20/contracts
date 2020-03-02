@@ -30,8 +30,7 @@ contract DAO is VentureEth {
 
     uint256 public threshold;
 
-    mapping(address => address) private ventureProposals;
-    address private dividendProposal;
+    EnumerableSet.AddressSet internal proposals;
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
@@ -74,7 +73,7 @@ contract DAO is VentureEth {
             abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
         );
         voting.open();
-        ventureProposals[venture] = address(voting);
+        proposals.add(address(voting));
         emit VentureProposed(address(voting));
     }
 
@@ -88,11 +87,12 @@ contract DAO is VentureEth {
         uint256 investment
     ) public {
         require(
-            ventureProposals[venture] == msg.sender,
+            proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
         VentureEth(venture).invest.value(investment)();
         ventures.add(venture);
+        proposals.remove(msg.sender);
         emit VentureAdded(venture);
     }
 
@@ -117,13 +117,6 @@ contract DAO is VentureEth {
         return VentureEth(venture).claimDividends();
     }
 
-    /**
-     * @notice Returns the invested ventures.
-     */
-    function enumerateVentures() public view returns (address[] memory) {
-        return ventures.enumerate();
-    }
-
     /** Dividend distribution */
 
     /**
@@ -132,17 +125,13 @@ contract DAO is VentureEth {
      */
     function proposeDividends(uint256 amount) public {
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        require(
-            dividendProposal == address(0),
-            "A proposal has already been submitted."
-        );
         Voting voting = new Voting(address(this), threshold);
         voting.registerProposal(
             address(this),
             abi.encodeWithSignature("releaseDividends(uint256)", amount)
         );
         voting.open();
-        dividendProposal = address(voting);
+        proposals.add(address(voting));
         emit ProfitProposed(address(voting));
     }
 
@@ -152,10 +141,26 @@ contract DAO is VentureEth {
      */
     function releaseDividends(uint256 amount) public {
         require(
-            dividendProposal == msg.sender,
+            proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
         _releaseDividends(amount);
-        dividendProposal = address(0);
+        proposals.remove(msg.sender);
+    }
+
+    /** Enumerators */
+
+    /**
+     * @notice Returns the invested ventures.
+     */
+    function enumerateVentures() public view returns (address[] memory) {
+        return ventures.enumerate();
+    }
+
+    /**
+     * @notice Returns the voting proposals.
+     */
+    function enumerateProposals() public view returns (address[] memory) {
+        return proposals.enumerate();
     }
 }
