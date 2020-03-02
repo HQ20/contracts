@@ -25,12 +25,12 @@ contract DAO is VentureEth {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event VentureProposed(address proposal);
+    event DividendsProposed(address proposal);
     event VentureAdded(address venture);
 
-    uint256 public investmentPool;
     uint256 public threshold;
 
-    mapping(address => address) private proposals;
+    EnumerableSet.AddressSet internal proposals;
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
@@ -54,6 +54,8 @@ contract DAO is VentureEth {
         revert("Withdraw is disabled.");
     }
 
+    /** Venture investment */
+
     /**
      * @notice Propose a venture. Must have approved the DAO to spend gage of your DAO tokens. venture must inherit from VentureEth.
      * @param venture The address of the VentureEth contract
@@ -71,7 +73,7 @@ contract DAO is VentureEth {
             abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
         );
         voting.open();
-        proposals[venture] = address(voting);
+        proposals.add(address(voting));
         emit VentureProposed(address(voting));
     }
 
@@ -85,11 +87,12 @@ contract DAO is VentureEth {
         uint256 investment
     ) public {
         require(
-            proposals[venture] == msg.sender,
+            proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
-        VentureEth(venture).invest.value(investment)();
+        proposals.remove(msg.sender);
         ventures.add(venture);
+        VentureEth(venture).invest.value(investment)();
         emit VentureAdded(venture);
     }
 
@@ -100,18 +103,52 @@ contract DAO is VentureEth {
     function retrieveVentureTokens(
         address venture
     ) public {
+        require(currentState == "LIVE", "DAO needs to be LIVE");
         VentureEth(venture).claim();
     }
 
     /**
-     * @notice Profit from an investment by claiming dividends for the DAO on the venture.
-     * @param venture The address of the VentureEth contract to profit from.
+     * @notice Instruct the DAO to claim dividends from a venture.
+     * @param venture The venture to claim dividends from.
      */
-    function profitFromVenture(address venture) public {
-        releaseDividends(
-            VentureEth(venture).claimDividends()
-        );
+    function claimDividendsFromVenture(
+        address venture
+    ) public returns(uint256) {
+        return VentureEth(venture).claimDividends();
     }
+
+    /** Dividend distribution */
+
+    /**
+     * @notice Propose to release DAO dividends.
+     * @param amount The ether amount to be released as dividends.
+     */
+    function proposeDividends(uint256 amount) public {
+        require(currentState == "LIVE", "DAO needs to be LIVE");
+        Voting voting = new Voting(address(this), threshold);
+        voting.registerProposal(
+            address(this),
+            abi.encodeWithSignature("releaseDividends(uint256)", amount)
+        );
+        voting.open();
+        proposals.add(address(voting));
+        emit DividendsProposed(address(voting));
+    }
+
+    /**
+     * @notice Hook for proposals to release dividends.
+     * @param amount The ether amount to be released as dividends.
+     */
+    function releaseDividends(uint256 amount) public {
+        require(
+            proposals.contains(msg.sender),
+            "Only a proposal can execute."
+        );
+        proposals.remove(msg.sender);
+        _releaseDividends(amount);
+    }
+
+    /** Enumerators */
 
     /**
      * @notice Returns the invested ventures.
@@ -120,4 +157,10 @@ contract DAO is VentureEth {
         return ventures.enumerate();
     }
 
+    /**
+     * @notice Returns the voting proposals.
+     */
+    function enumerateProposals() public view returns (address[] memory) {
+        return proposals.enumerate();
+    }
 }

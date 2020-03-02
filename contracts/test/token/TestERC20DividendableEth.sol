@@ -13,6 +13,6 @@ contract TestERC20DividendableEth is ERC20DividendableEth, ERC20Burnable
     {}
 
     function testReleaseDividends(uint256 amount) public {
-        releaseDividends(amount);
+        _releaseDividends(amount);
     }
 }
