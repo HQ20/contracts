@@ -145,28 +145,6 @@ contract('Voting', (accounts) => {
                         inputs: [],
                     }, [])
                 );
-                await voting.registerProposal(
-                    issuanceEth.address,
-                    web3.eth.abi.encodeFunctionCall({
-                        type: 'function',
-                        name: 'claim',
-                        inputs: [],
-                    }, [])
-                );
-                await voting.registerProposal(
-                    votingToken.address,
-                    web3.eth.abi.encodeFunctionCall({
-                        type: 'function',
-                        name: 'approve',
-                        inputs: [{
-                            name: 'spender',
-                            type: 'address',
-                        }, {
-                            name: 'amount',
-                            type: 'uint256',
-                        }],
-                    }, [owner, issued.toString()])
-                );
                 await voting.open();
             });
 
@@ -272,38 +250,12 @@ contract('Voting', (accounts) => {
                             await voting.enact({ value: ether('1').toString() }),
                             'ProposalEnacted',
                         );
-                        issuanceEth.startDistribution();
-                        expectEvent(
-                            await voting.enact(),
-                            'ProposalEnacted',
-                        );
-                        expectEvent(
-                            await voting.enact(),
-                            'ProposalEnacted',
-                        );
-                        await votingToken.transferFrom(voting.address, owner, issued);
-                        BN(await votingToken.balanceOf(owner)).should.be.bignumber.equal(issued);
-                    });
-
-                    /**
-                     * @test {Voting#enact}
-                     */
-                    it('no proposals can be enacted any further', async () => {
-                        await voting.enact({ value: ether('1').toString() }),
-                        issuanceEth.startDistribution();
-                        await voting.enact(),
-                        await voting.enact(),
-                        await expectRevert(
-                            voting.enact(),
-                            'No more proposals to enact.',
-                        );
+                        BN(await issuanceEth.amountRaised()).should.be.bignumber.equal(ether('1'));
                     });
                 });
             });
         });
-
     });
-
 });
 
 function bytes32ToString(text: string) {

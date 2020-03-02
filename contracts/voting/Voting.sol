@@ -38,8 +38,8 @@ contract Voting is Ownable, StateMachine {
     address[] public voters;
     mapping(address => uint256) public votes;
 
-    address[] public proposalContracts;
-    bytes[] public proposalData;
+    address public proposalContract;
+    bytes public proposalData;
 
     uint256 public threshold;
     uint256 public nextProposal;
@@ -72,15 +72,9 @@ contract Voting is Ownable, StateMachine {
             currentState == "PASSED",
             "Cannot enact proposal until vote passes."
         );
-        require(
-            nextProposal < proposalContracts.length,
-            "No more proposals to enact."
-        );
         // solium-disable-next-line security/no-call-value
-        (bool success, ) = proposalContracts[nextProposal]
-            .call.value(msg.value)(proposalData[nextProposal]);
+        (bool success, ) = proposalContract.call.value(msg.value)(proposalData);
         require(success, "Failed to enact proposal.");
-        nextProposal = nextProposal.add(1);
         emit ProposalEnacted();
     }
 
@@ -125,8 +119,8 @@ contract Voting is Ownable, StateMachine {
         bytes memory _proposalData
     ) public onlyOwner {
         require(currentState == "SETUP", "Can propose only when in SETUP");
-        proposalContracts.push(_proposalContract);
-        proposalData.push(_proposalData);
+        proposalContract = _proposalContract;
+        proposalData = _proposalData;
         emit ProposalRegistered();
     }
 
