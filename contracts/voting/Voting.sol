@@ -4,7 +4,6 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../state/StateMachine.sol";
 import "../math/DecimalMath.sol";
 
 
@@ -13,23 +12,22 @@ import "../math/DecimalMath.sol";
  * @title Voting
  * @dev Implements a simple voting process for proposals
  *
- * 1. Initialize the Voting with the votingToken address and the address and the callData of the proposals you wish to enact, should this Voting pass.
- * 2. Setup the Voting by providing a threshold. The threshold must be expressed as an integer between 1 and 10000, representing a double digit percentage of the total supply of the voting tokens, with the comma shifted two digits to the right.
- * 3. Open the voting.
- * 4. Cast votes.
- * 5. You can cancel your vote at any time. You should cancel it after the voting proposals have passed or after the voting has been Canceled.
- * 6. Validate the threshold.
- * 7. Enact the proposal.
+ * 1. Initialize the Voting with:
+ *      The votingToken address
+ *      The address and the callData of the proposals you wish to enact, should this Voting pass.
+ *      The voting threshold. The threshold must be expressed as an integer between 1 and 10000, representing a double digit percentage of the total supply of the voting tokens, with the comma shifted two digits to the right.
+ * 2. Cast votes.
+ * 3. You can cancel your vote at any time and recover your voting tokens.
+ * 4. Validate the threshold. If the voting threshold is met the voting proposal passes.
+ * 5. Enact the proposal.
  */
-contract Voting is Ownable, StateMachine {
+contract Voting is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
     using SafeMath for uint256;
     using DecimalMath for uint256;
 
     event VotingCreated();
-    event ThresholdSet();
     event ProposalEnacted();
-    event ProposalRegistered();
     event VoteCasted(address voter, uint256 votes);
     event VoteCanceled(address voter, uint256 votes);
 
@@ -42,34 +40,34 @@ contract Voting is Ownable, StateMachine {
     bytes public proposalData;
 
     uint256 public threshold;
-    uint256 public nextProposal;
+    bool public passed;
 
     /**
-     * @dev Initialize the issuance with the token to issue and the token to
-     * accept as payment.
+     * @dev Initialize the voting.
      */
     constructor(
         address _votingToken,
+        address _proposalContract,
+        bytes memory _proposalData,
         uint256 _threshold
-    ) public Ownable() StateMachine() {
+    ) public Ownable() {
         votingToken = IERC20(_votingToken);
         require(
             _threshold > 0,
             "Threshold cannot be zero."
         );
         threshold = _threshold;
-        _createTransition("SETUP", "OPEN");
-        _createTransition("OPEN", "PASSED");
+        proposalContract = _proposalContract;
+        proposalData = _proposalData;
         emit VotingCreated();
     }
 
     /**
-     * @dev Function to enact one proposal of this voting. This function should be called
-     * repeatedly until all the passed proposals have been enacted.
+     * @dev Function to enact one proposal of this voting.
      */
     function enact() external {
         require(
-            currentState == "PASSED",
+            passed == true,
             "Cannot enact proposal until vote passes."
         );
         // solium-disable-next-line security/no-low-level-calls
@@ -84,10 +82,6 @@ contract Voting is Ownable, StateMachine {
      * @param _votes The amount of votingToken tokens that will be casted.
      */
     function cast(uint256 _votes) external {
-        require(
-            currentState == "OPEN",
-            "Not open for voting."
-        );
         votingToken.transferFrom(msg.sender, address(this), _votes);
         if (votes[msg.sender] == 0){
             voters.push(msg.sender);
@@ -111,27 +105,6 @@ contract Voting is Ownable, StateMachine {
     }
 
     /**
-     * @dev Add a proposal to be enacted if the vote passes. A proposal is a contract address and
-     * data to pass on to it, usually a function call with encoded parameters.
-     */
-    function registerProposal(
-        address _proposalContract,
-        bytes memory _proposalData
-    ) public onlyOwner {
-        require(currentState == "SETUP", "Can propose only when in SETUP");
-        proposalContract = _proposalContract;
-        proposalData = _proposalData;
-        emit ProposalRegistered();
-    }
-
-    /**
-     * @dev Function to open the voting
-     */
-    function open() public onlyOwner {
-        _transition("OPEN");
-    }
-
-    /**
      * @dev Function to validate the threshold
      */
     function validate() public {
@@ -139,7 +112,7 @@ contract Voting is Ownable, StateMachine {
             votingToken.balanceOf(address(this)) >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
-        _transition("PASSED");
+        passed = true;
     }
 
     function thresholdVotes() internal view returns (uint256) {

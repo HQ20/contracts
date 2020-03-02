@@ -67,12 +67,11 @@ contract DAO is VentureEth {
     ) public {
         // Maybe use ERC165 to make sure venture it's a VentureEth
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(address(this), threshold);
-        voting.registerProposal(
+        Voting voting = new Voting(
             address(this),
-            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
-        );
-        voting.open();
+            address(this),
+            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment),
+            threshold);
         proposals.add(address(voting));
         emit VentureProposed(address(voting));
     }
@@ -125,12 +124,12 @@ contract DAO is VentureEth {
      */
     function proposeDividends(uint256 amount) public {
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(address(this), threshold);
-        voting.registerProposal(
+        Voting voting = new Voting(
             address(this),
-            abi.encodeWithSignature("releaseDividends(uint256)", amount)
+            address(this),
+            abi.encodeWithSignature("releaseDividends(uint256)", amount),
+            threshold
         );
-        voting.open();
         proposals.add(address(voting));
         emit DividendsProposed(address(voting));
     }
