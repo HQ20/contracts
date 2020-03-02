@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
 
@@ -48,8 +48,8 @@ contract('DAO', (accounts) => {
     describe('once DAO tokens issued to investors', () => {
 
         beforeEach(async () => {
-            await dao.setIssuePrice(ether('0.2'));
-            await dao.startIssuance();
+            await dao.setDAOprice(ether('0.2'));
+            await dao.startDAO();
             await dao.invest({ from: holder1, value: ether('1').toString() });
             await dao.invest({ from: holder2, value: ether('3').toString() });
             await dao.startDistribution();
@@ -157,6 +157,20 @@ contract('DAO', (accounts) => {
                         .bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
                 });
 
+                it('investors can reopen an investor round', async () => {
+                    voting1 = await Voting.at(
+                        (await dao.proposeInvestorRound()).logs[5].args.proposal
+                    );
+                    await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                    await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                    await voting1.cast(ether('3'), { from: holder1 });
+                    await voting1.cast(ether('8'), { from: holder2 });
+                    await voting1.validate();
+                    await voting1.cancel({ from: holder1 });
+                    await voting1.cancel({ from: holder2 });
+                    await voting1.enact();
+                });
+
             });
 
         });
@@ -164,3 +178,7 @@ contract('DAO', (accounts) => {
     });
 
 });
+
+function bytes32ToString(text: string) {
+    return web3.utils.toAscii(text).replace(/\0/g, '');
+}

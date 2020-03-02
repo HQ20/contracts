@@ -25,6 +25,8 @@ contract DAO is VentureEth {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event VentureProposed(address proposal);
+    event ProfitProposed(address proposal);
+    event RoundProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public investmentPool;
@@ -39,6 +41,13 @@ contract DAO is VentureEth {
         uint8 decimals,
         uint256 _threshold
     ) VentureEth(name, symbol, decimals) public {
+        // solium-disable-next-line security/no-low-level-calls
+        (bool success, ) = address(this).delegatecall(
+            abi.encodeWithSignature("transferOwnership(address)", address(this))
+        );
+        require(success, "Could not transfer ownership to the DAO.");
+        _createTransition("LIVE", "SETUP");
+        _createTransition("FAILED", "SETUP");
         threshold = _threshold;
     }
 
@@ -53,6 +62,59 @@ contract DAO is VentureEth {
     function withdraw(address payable) public onlyOwner nonReentrant {
         revert("Withdraw is disabled.");
     }
+
+    /** DAO investment round */
+
+    /**
+     * @notice To be called during an investor round.
+     * @param daoPrice The issue price of the DAO.
+     */
+    function setDAOprice(uint256 daoPrice) public {
+        require(
+            totalSupply() == 0 || proposals.contains(msg.sender),
+            "Could not set the DAO price."
+        );
+        setIssuePrice(daoPrice);
+        proposals.remove(msg.sender);
+    }
+
+    /**
+     * @notice To be called during an investor round.
+     */
+    function startDAO() public {
+        require(
+            totalSupply() == 0 || proposals.contains(msg.sender),
+            "Could not start the DAO."
+        );
+        startIssuance();
+        proposals.remove(msg.sender);
+    }
+
+    /**
+     * @notice To be called during an investment round.
+     */
+    function startDistribution() public {
+        require(
+            totalSupply() == 0 || proposals.contains(msg.sender),
+            "Could not start distribution."
+        );
+        super.startDistribution();
+        proposals.remove(msg.sender);
+    }
+
+    /**
+     * @notice To be called during an investment round.
+     */
+    function cancelAllInvestments() public {
+        require(
+            totalSupply() == 0 || proposals.contains(msg.sender),
+            "Could not cancel investments."
+        );
+        cancelAllInvestments();
+        proposals.remove(msg.sender);
+    }
+
+    /** Venture investment */
 
     /**
      * @notice Propose a venture. Must have approved the DAO to spend gage of your DAO tokens. venture must inherit from VentureEth.
@@ -112,6 +174,37 @@ contract DAO is VentureEth {
             VentureEth(venture).claimDividends()
         );
     }
+
+    /** Reopen investor round */
+
+    function proposeInvestorRound() public {
+        require(
+            currentState == "LIVE" || currentState == "FAILED",
+            "DAO needs to be LIVE or FAILED."
+        );
+        Voting voting = new Voting(address(this), threshold);
+        voting.registerProposal(
+            address(this),
+            abi.encodeWithSignature("reopenInvestorRound()", 0x0);
+        );
+        voting.open();
+        proposals.add(address(voting));
+        emit RoundProposed(address(voting));
+    }
+
+    /**
+     * @notice Hook for proposals to reopen investor rounds.
+     */
+    function reopenInvestorRound() public {
+        require(
+            proposals.contains(msg.sender),
+            "Only a proposal can execute."
+        );
+        _transition("SETUP");
+        proposals.remove(msg.sender);
+    }
+
+    /** Enumerators */
 
     /**
      * @notice Returns the invested ventures.
