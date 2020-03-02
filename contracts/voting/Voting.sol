@@ -1,13 +1,12 @@
 pragma solidity ^0.5.10;
 
-import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../state/StateMachine.sol";
-import "../utils/SafeCast.sol";
+import "../math/DecimalMath.sol";
+
 
 
 /**
@@ -25,9 +24,7 @@ import "../utils/SafeCast.sol";
 contract Voting is Ownable, StateMachine {
     using EnumerableSet for EnumerableSet.AddressSet;
     using SafeMath for uint256;
-    using FixidityLib for int256;
-    using SafeCast for int256;
-    using SafeCast for uint256;
+    using DecimalMath for uint256;
 
     event VotingCreated();
     event ThresholdSet();
@@ -36,7 +33,7 @@ contract Voting is Ownable, StateMachine {
     event VoteCasted(address voter, uint256 votes);
     event VoteCanceled(address voter, uint256 votes);
 
-    address public votingToken;
+    IERC20 public votingToken;
 
     address[] public voters;
     mapping(address => uint256) public votes;
@@ -55,7 +52,7 @@ contract Voting is Ownable, StateMachine {
         address _votingToken,
         uint256 _threshold
     ) public Ownable() StateMachine() {
-        votingToken = _votingToken;
+        votingToken = IERC20(_votingToken);
         require(
             _threshold > 0,
             "Threshold cannot be zero."
@@ -115,7 +112,7 @@ contract Voting is Ownable, StateMachine {
         );
         uint256 count = votes[msg.sender];
         votes[msg.sender] = 0;
-        IERC20(votingToken).transfer(msg.sender, count);
+        votingToken.transfer(msg.sender, count);
         emit VoteCanceled(msg.sender, count);
     }
 
@@ -145,18 +142,13 @@ contract Voting is Ownable, StateMachine {
      */
     function validate() public {
         require(
-            IERC20(votingToken).balanceOf(address(this)) >= thresholdVotes(),
+            votingToken.balanceOf(address(this)) >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
         _transition("PASSED");
     }
 
     function thresholdVotes() internal view returns (uint256) {
-        ERC20Detailed _votingToken = ERC20Detailed(votingToken);
-        int256 totalSupplyFixed = _votingToken.totalSupply()
-            .safeUintToInt().newFixed(_votingToken.decimals());
-        int256 thresholdFixed = threshold.safeUintToInt().newFixed(4);
-        return totalSupplyFixed.multiply(thresholdFixed)
-            .fromFixed(_votingToken.decimals()).safeIntToUint();
+        return votingToken.totalSupply().muld(threshold, 4);
     }
 }
