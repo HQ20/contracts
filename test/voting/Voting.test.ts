@@ -24,16 +24,18 @@ contract('Voting', (accounts) => {
     const balance2 = ether('10');
     const votes1 = ether('8');
     const votes2 = ether('4');
-    const issued = ether('0.5');
 
     let voting: VotingInstance;
     let issuanceEth: IssuanceEthInstance;
     let votingToken: ERC20MintableDetailedInstance;
+    let votedToken: ERC20MintableDetailedInstance;
 
     beforeEach(async () => {
         votingToken = await ERC20MintableDetailed.new('VotingToken', 'VOT', 18);
+        votedToken = await ERC20MintableDetailed.new('VotedToken', 'VTD', 18);
         issuanceEth = await IssuanceEth.new(votingToken.address);
         await votingToken.addMinter(issuanceEth.address);
+
         await issuanceEth.setIssuePrice(issuePrice);
         await issuanceEth.startIssuance();
     });
@@ -49,6 +51,7 @@ contract('Voting', (accounts) => {
             await votingToken.mint(voter2, balance2);
             await votingToken.approve(voting.address, votes1, { from: voter1 });
             await votingToken.approve(voting.address, votes2, { from: voter2 });
+            await votedToken.addMinter(voting.address);
         });
 
         /**
@@ -65,13 +68,19 @@ contract('Voting', (accounts) => {
             await voting.open();
             await expectRevert(
                 voting.registerProposal(
-                    issuanceEth.address,
+                    votedToken.address,
                     web3.eth.abi.encodeFunctionCall({
                         type: 'function',
-                        name: 'invest',
-                        payable: true,
-                        inputs: [],
-                    }, [])
+                        name: 'mint',
+                        payable: false,
+                        inputs: [{
+                            name: 'account',
+                            type: 'address',
+                        }, {
+                            name: 'amount',
+                            type: 'uint256',
+                        }],
+                    }, [owner, '1']),
                 ),
                 'Can propose only when in SETUP',
             );
@@ -80,13 +89,19 @@ contract('Voting', (accounts) => {
         it('can register proposals', async () => {
             expectEvent(
                 await voting.registerProposal(
-                    issuanceEth.address,
+                    votedToken.address,
                     web3.eth.abi.encodeFunctionCall({
                         type: 'function',
-                        name: 'invest',
-                        payable: true,
-                        inputs: [],
-                    }, [])
+                        name: 'mint',
+                        payable: false,
+                        inputs: [{
+                            name: 'account',
+                            type: 'address',
+                        }, {
+                            name: 'amount',
+                            type: 'uint256',
+                        }],
+                    }, [owner, '1']),
                 ),
                 'ProposalRegistered',
             );
@@ -107,7 +122,7 @@ contract('Voting', (accounts) => {
          */
         it('fails to enact invalid proposals', async () => {
             await voting.registerProposal(
-                issuanceEth.address,
+                votedToken.address,
                 web3.eth.abi.encodeFunctionCall({
                     type: 'function',
                     name: 'fail',
@@ -137,13 +152,19 @@ contract('Voting', (accounts) => {
 
             beforeEach(async () => {
                 await voting.registerProposal(
-                    issuanceEth.address,
+                    votedToken.address,
                     web3.eth.abi.encodeFunctionCall({
                         type: 'function',
-                        name: 'invest',
-                        payable: true,
-                        inputs: [],
-                    }, [])
+                        name: 'mint',
+                        payable: false,
+                        inputs: [{
+                            name: 'account',
+                            type: 'address',
+                        }, {
+                            name: 'amount',
+                            type: 'uint256',
+                        }],
+                    }, [owner, '1']),
                 );
                 await voting.open();
             });
@@ -247,10 +268,10 @@ contract('Voting', (accounts) => {
                      */
                     it('proposals can be enacted', async () => {
                         expectEvent(
-                            await voting.enact({ value: ether('1').toString() }),
+                            await voting.enact(),
                             'ProposalEnacted',
                         );
-                        BN(await issuanceEth.amountRaised()).should.be.bignumber.equal(ether('1'));
+                        BN(await votedToken.balanceOf(owner)).should.be.bignumber.equal('1');
                     });
                 });
             });

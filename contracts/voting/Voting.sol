@@ -67,13 +67,13 @@ contract Voting is Ownable, StateMachine {
      * @dev Function to enact one proposal of this voting. This function should be called
      * repeatedly until all the passed proposals have been enacted.
      */
-    function enact() external payable {
+    function enact() external {
         require(
             currentState == "PASSED",
             "Cannot enact proposal until vote passes."
         );
-        // solium-disable-next-line security/no-call-value
-        (bool success, ) = proposalContract.call.value(msg.value)(proposalData);
+        // solium-disable-next-line security/no-low-level-calls
+        (bool success, ) = proposalContract.call(proposalData);
         require(success, "Failed to enact proposal.");
         emit ProposalEnacted();
     }
@@ -88,7 +88,7 @@ contract Voting is Ownable, StateMachine {
             currentState == "OPEN",
             "Not open for voting."
         );
-        IERC20(votingToken).transferFrom(msg.sender, address(this), _votes);
+        votingToken.transferFrom(msg.sender, address(this), _votes);
         if (votes[msg.sender] == 0){
             voters.push(msg.sender);
         }
