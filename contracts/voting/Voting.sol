@@ -1,11 +1,8 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../math/DecimalMath.sol";
-
 
 
 /**
@@ -23,8 +20,6 @@ import "../math/DecimalMath.sol";
  *  5. Enact the proposal. There is no limit to how many times the proposal can be enacted from one successful vote.
  */
 contract Voting is Ownable {
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using SafeMath for uint256;
     using DecimalMath for uint256;
 
     event VotingCreated();
@@ -79,7 +74,7 @@ contract Voting is Ownable {
     /// @param _votes The amount of votingToken tokens that will be casted.
     function cast(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
-        votes[msg.sender] = votes[msg.sender].add(_votes);
+        votes[msg.sender] = votes[msg.sender].addd(_votes);
         emit VoteCasted(msg.sender, _votes);
     }
 
