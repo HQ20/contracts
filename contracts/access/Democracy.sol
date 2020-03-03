@@ -1,5 +1,6 @@
 pragma solidity ^0.5.10;
 import "./Roles.sol";
+import "./Renounceable.sol";
 import "./../voting/Voting.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
@@ -93,10 +94,10 @@ contract Democracy is Roles, Renounceable {
     /// @dev Propose a democratic action.
     /// @param proposalData The abi encoding of the proposal, as one function of this contract and any parameters.
     function propose(
-        bytes[] proposalData
+        bytes memory proposalData
     ) public onlyVoter {
         Voting voting = new Voting(
-            votingToken,
+            address(votingToken),
             address(this),
             proposalData,
             threshold
