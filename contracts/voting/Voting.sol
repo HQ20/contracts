@@ -56,10 +56,6 @@ contract Voting is Ownable {
         uint256 _threshold
     ) public Ownable() {
         votingToken = IERC20(_votingToken);
-        require(
-            _threshold > 0,
-            "Threshold cannot be zero."
-        );
         threshold = _threshold;
         targetContract = _targetContract;
         proposalData = _proposalData;
