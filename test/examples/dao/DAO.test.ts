@@ -95,10 +95,10 @@ contract('DAO', (accounts) => {
 
             beforeEach(async () => {
                 voting1 = await Voting.at(
-                    (await dao.proposeVenture(venture1.address, ether('1'))).logs[5].args.proposal
+                    (await dao.proposeVenture(venture1.address, ether('1'))).logs[1].args.proposal
                 );
                 voting2 = await Voting.at(
-                    (await dao.proposeVenture(venture2.address, ether('2'))).logs[5].args.proposal
+                    (await dao.proposeVenture(venture2.address, ether('2'))).logs[1].args.proposal
                 );
                 await dao.approve(voting1.address, ether('10'), { from: holder1 });
                 await dao.approve(voting1.address, ether('10'), { from: holder2 });
@@ -157,7 +157,7 @@ contract('DAO', (accounts) => {
 
                 it('investors can profit from venture dividends', async () => {
                     voting1 = await Voting.at(
-                        (await dao.proposeDividends(dividends1.add(dividends2).toString())).logs[5].args.proposal
+                        (await dao.proposeDividends(dividends1.add(dividends2).toString())).logs[1].args.proposal
                     );
                     await dao.approve(voting1.address, ether('10'), { from: holder1 });
                     await dao.approve(voting1.address, ether('10'), { from: holder2 });
