@@ -57,9 +57,15 @@ contract('Democracy', (accounts) => {
     /**
      * @test {Democracy#propose}
      */
-    /* it('proposals cannot be done by regular accounts.', async () => {
-        const contract = web3.eth.contract(abi).at(democracy.address);
-        const proposalData = contract['addVoter'].getData(voter1);
+    it('proposals cannot be done by regular accounts.', async () => {
+        const proposalData = web3.eth.abi.encodeFunctionCall({
+            name: 'addVoter',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'account',
+            }]
+        }, [voter1]);
         await expectRevert(
             democracy.propose(
                 proposalData,
@@ -67,7 +73,24 @@ contract('Democracy', (accounts) => {
             ),
             'Restricted to voters.',
         );
-    });*/
+    });
+
+    /**
+     * @test {Democracy#propose}
+     */
+    it('proposals can be done by voters.', async () => {
+        const proposalData = web3.eth.abi.encodeFunctionCall({
+            name: 'addVoter',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'account',
+            }]
+        }, [voter1]);
+        const tx = await democracy.propose(proposalData, { from: root });
+        tx.logs[0].event.should.be.equal('Proposal');
+    });
+
 
     /**
      * @test {Democracy#addLeader}
