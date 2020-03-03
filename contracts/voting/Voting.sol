@@ -34,7 +34,6 @@ contract Voting is Ownable {
 
     IERC20 public votingToken;
 
-    address[] public voters;
     mapping(address => uint256) public votes;
 
     address public targetContract;
@@ -88,9 +87,6 @@ contract Voting is Ownable {
      */
     function cast(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
-        if (votes[msg.sender] == 0){
-            voters.push(msg.sender);
-        }
         votes[msg.sender] = votes[msg.sender].add(_votes);
         emit VoteCasted(msg.sender, _votes);
     }
