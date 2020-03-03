@@ -91,12 +91,8 @@ contract Voting is Ownable {
      * @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
      */
     function cancel() external {
-        require(
-            votes[msg.sender] > 0,
-            "No votes casted."
-        );
         uint256 count = votes[msg.sender];
-        votes[msg.sender] = 0;
+        delete votes[msg.sender];
         votingToken.transfer(msg.sender, count);
         emit VoteCanceled(msg.sender, count);
     }
