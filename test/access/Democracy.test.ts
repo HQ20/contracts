@@ -1,16 +1,18 @@
 import { should } from 'chai';
-import { DemocracyInstance, ERC20MintableDetailedInstance } from '../../types/truffle-contracts';
+import { DemocracyInstance, ERC20MintableDetailedInstance, VotingInstance } from '../../types/truffle-contracts';
 // tslint:disable:no-var-requires
 const { expectRevert } = require('@openzeppelin/test-helpers');
 
 const Democracy = artifacts.require('Democracy') as Truffle.Contract<DemocracyInstance>;
 const Token = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const Voting = artifacts.require('Voting') as Truffle.Contract<VotingInstance>;
 should();
 
 /** @test {Democracy} contract */
 contract('Democracy', (accounts) => {
     let democracy: DemocracyInstance;
     let token: ERC20MintableDetailedInstance;
+    let voting: VotingInstance;
     const root = accounts[0];
     const voter1 = accounts[1];
     const threshold = 5000;
@@ -18,6 +20,7 @@ contract('Democracy', (accounts) => {
     beforeEach(async () => {
         token = await Token.new('VotingToken', 'VOT', 18);
         democracy = await Democracy.new(root, token.address, threshold);
+        await token.mint(root, 1);
     });
 
     /**
@@ -91,62 +94,125 @@ contract('Democracy', (accounts) => {
         tx.logs[0].event.should.be.equal('Proposal');
     });
 
-
     /**
-     * @test {Democracy#addLeader}
+     * @test {Democracy#addVoter}
      */
-    /* it('addLeader throws if not called by an leader account.', async () => {
-        await expectRevert(
-            democracy.addLeader(voter1, { from: voter1 }),
-            'Restricted to leaders.',
-        );
-    }); */
-
-    /**
-     * @test {Democracy#renounceLeader}
-     */
-    /* it('renounceLeader removes an account from the leader role.', async () => {
-        await democracy.renounceLeader({ from: root });
-        assert.isFalse(await democracy.isLeader(root));
-    }); */
+    it('voters can be added through a proposal.', async () => {
+        const proposalData = web3.eth.abi.encodeFunctionCall({
+            name: 'addVoter',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'account',
+            }]
+        }, [voter1]);
+        const votingAddress = (
+            await democracy.propose(proposalData, { from: root })
+        ).logs[0].args.proposal;
+        voting = await Voting.at(votingAddress);
+        await token.approve(voting.address, 1, { from: root });
+        await voting.cast(1, { from: root });
+        await voting.validate();
+        await voting.enact();
+        assert.isTrue(await democracy.isVoter(voter1));
+    });
 
     /**
      * @test {Democracy#removeVoter}
      */
-    /* it('removeVoter throws if not called by an leader account.', async () => {
-        await expectRevert(
-            democracy.removeVoter(voter1, { from: voter1 }),
-            'Restricted to leaders.',
-        );
-    }); */
+    it('voters can be removed through a proposal.', async () => {
+        const proposalData = web3.eth.abi.encodeFunctionCall({
+            name: 'removeVoter',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'account',
+            }]
+        }, [root]);
+        const votingAddress = (
+            await democracy.propose(proposalData, { from: root })
+        ).logs[0].args.proposal;
+        voting = await Voting.at(votingAddress);
+        await token.approve(voting.address, 1, { from: root });
+        await voting.cast(1, { from: root });
+        await voting.validate();
+        await voting.enact();
+        assert.isFalse(await democracy.isVoter(root));
+    });
 
     /**
-     * @test {Democracy#addVoter} and {Democracy#isVoter}
+     * @test {Democracy#addLeader}
      */
-    /* it('addVoter adds an account as an voter.', async () => {
-        await democracy.addVoter(voter1, { from: root });
-        assert.isTrue(await democracy.isVoter(voter1));
-    }); */
+    it('leaders can be added through a proposal.', async () => {
+        const proposalData = web3.eth.abi.encodeFunctionCall({
+            name: 'addLeader',
+            type: 'function',
+            inputs: [{
+                type: 'address',
+                name: 'account',
+            }]
+        }, [root]);
+        const votingAddress = (
+            await democracy.propose(proposalData, { from: root })
+        ).logs[0].args.proposal;
+        voting = await Voting.at(votingAddress);
+        await token.approve(voting.address, 1, { from: root });
+        await voting.cast(1, { from: root });
+        await voting.validate();
+        await voting.enact();
+        assert.isTrue(await democracy.isLeader(root));
+    });
 
-    /**
-     * @test {Democracy#addVoter} and {Democracy#isVoter}
-     */
-    /* it('addLeader adds an account as an leader.', async () => {
-        await democracy.addLeader(voter1, { from: root });
-        assert.isTrue(await democracy.isLeader(voter1));
-    }); */
-
-    /* describe('with existing voters', () => {
+    describe('with existing leaders', async () => {
         beforeEach(async () => {
-            await democracy.addVoter(voter1, { from: root });
-        }); */
+            const proposalData = web3.eth.abi.encodeFunctionCall({
+                name: 'addLeader',
+                type: 'function',
+                inputs: [{
+                    type: 'address',
+                    name: 'account',
+                }]
+            }, [root]);
+            const votingAddress = (
+                await democracy.propose(proposalData, { from: root })
+            ).logs[0].args.proposal;
+            voting = await Voting.at(votingAddress);
+            await token.approve(voting.address, 1, { from: root });
+            await voting.cast(1, { from: root });
+            await voting.validate();
+            await voting.enact();
+            await voting.cancel({ from: root });
+        });
 
         /**
-         * @test {Democracy#removeVoter}
+         * @test {Democracy#renounceLeader}
          */
-        /* it('removeVoter removes an voter.', async () => {
-            await democracy.removeVoter(voter1, { from: root });
-            assert.isFalse(await democracy.isVoter(voter1));
+        it('voters can renounce to their rights.', async () => {
+            await democracy.renounceLeader({ from: root });
+            assert.isFalse(await democracy.isLeader(root));
         });
-    });*/
+
+        /**
+         * @test {Democracy#removeLeader}
+         */
+        it('leaders can be removed through a proposal.', async () => {
+            const proposalData = web3.eth.abi.encodeFunctionCall({
+                name: 'removeLeader',
+                type: 'function',
+                inputs: [{
+                    type: 'address',
+                    name: 'account',
+                }]
+            }, [root]);
+            const votingAddress = (
+                await democracy.propose(proposalData, { from: root })
+            ).logs[0].args.proposal;
+            voting = await Voting.at(votingAddress);
+            await token.approve(voting.address, 1, { from: root });
+            await voting.cast(1, { from: root });
+            await voting.validate();
+            await voting.enact();
+            assert.isFalse(await democracy.isLeader(root));
+        });
+    });
 });
