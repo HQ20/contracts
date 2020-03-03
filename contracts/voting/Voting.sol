@@ -62,9 +62,7 @@ contract Voting is Ownable {
         emit VotingCreated();
     }
 
-    /**
-     * @dev Function to enact one proposal of this voting.
-     */
+    /// @dev Function to enact one proposal of this voting.
     function enact() external {
         require(
             passed == true,
@@ -76,20 +74,16 @@ contract Voting is Ownable {
         emit ProposalEnacted();
     }
 
-    /**
-     * @dev Use this function to cast votes. Must have approved this contract
-     * (from the frontend) to spend _votes of votingToken tokens.
-     * @param _votes The amount of votingToken tokens that will be casted.
-     */
+    /// @dev Use this function to cast votes. Must have approved this contract
+    /// (from the frontend) to spend _votes of votingToken tokens.
+    /// @param _votes The amount of votingToken tokens that will be casted.
     function cast(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
         votes[msg.sender] = votes[msg.sender].add(_votes);
         emit VoteCasted(msg.sender, _votes);
     }
 
-    /**
-     * @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
-     */
+    /// @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
     function cancel() external {
         uint256 count = votes[msg.sender];
         delete votes[msg.sender];
@@ -97,18 +91,22 @@ contract Voting is Ownable {
         emit VoteCanceled(msg.sender, count);
     }
 
-    /**
-     * @dev Function to validate the threshold
-     */
+    /// @dev Number of votes casted in favour of the proposal.
+    function castedVotes() public view returns (uint256) {
+        return votingToken.balanceOf(address(this));
+    }
+
+    /// @dev Number of votes needed to pass the proposal.
+    function thresholdVotes() public view returns (uint256) {
+        return votingToken.totalSupply().muld(threshold, 4);
+    }
+
+    /// @dev Function to validate the threshold
     function validate() public {
         require(
-            votingToken.balanceOf(address(this)) >= thresholdVotes(),
+            castedVotes() >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
         passed = true;
-    }
-
-    function thresholdVotes() internal view returns (uint256) {
-        return votingToken.totalSupply().muld(threshold, 4);
     }
 }
