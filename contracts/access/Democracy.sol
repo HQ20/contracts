@@ -45,10 +45,7 @@ contract Democracy is Roles, Renounceable {
 
     /// @dev Restricted to proposals. Same proposal cannot be used twice.
     modifier onlyProposal() {
-        require(
-            proposals.contains(msg.sender),
-            "Restricted to proposals."
-        );
+        require(proposals.contains(msg.sender), "Restricted to proposals.");
         _;
         proposals.remove(msg.sender);
     }
