@@ -1,11 +1,8 @@
 pragma solidity ^0.5.10;
 
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../math/DecimalMath.sol";
-
 
 
 /**
@@ -23,8 +20,6 @@ import "../math/DecimalMath.sol";
  *  5. Enact the proposal. There is no limit to how many times the proposal can be enacted from one successful vote.
  */
 contract Voting is Ownable {
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using SafeMath for uint256;
     using DecimalMath for uint256;
 
     event VotingCreated();
@@ -34,7 +29,6 @@ contract Voting is Ownable {
 
     IERC20 public votingToken;
 
-    address[] public voters;
     mapping(address => uint256) public votes;
 
     address public targetContract;
@@ -57,19 +51,13 @@ contract Voting is Ownable {
         uint256 _threshold
     ) public Ownable() {
         votingToken = IERC20(_votingToken);
-        require(
-            _threshold > 0,
-            "Threshold cannot be zero."
-        );
         threshold = _threshold;
         targetContract = _targetContract;
         proposalData = _proposalData;
         emit VotingCreated();
     }
 
-    /**
-     * @dev Function to enact one proposal of this voting.
-     */
+    /// @dev Function to enact one proposal of this voting.
     function enact() external {
         require(
             passed == true,
@@ -81,46 +69,39 @@ contract Voting is Ownable {
         emit ProposalEnacted();
     }
 
-    /**
-     * @dev Use this function to cast votes. Must have approved this contract
-     * (from the frontend) to spend _votes of votingToken tokens.
-     * @param _votes The amount of votingToken tokens that will be casted.
-     */
+    /// @dev Use this function to cast votes. Must have approved this contract
+    /// (from the frontend) to spend _votes of votingToken tokens.
+    /// @param _votes The amount of votingToken tokens that will be casted.
     function cast(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
-        if (votes[msg.sender] == 0){
-            voters.push(msg.sender);
-        }
-        votes[msg.sender] = votes[msg.sender].add(_votes);
+        votes[msg.sender] = votes[msg.sender].addd(_votes);
         emit VoteCasted(msg.sender, _votes);
     }
 
-    /**
-     * @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
-     */
+    /// @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
     function cancel() external {
-        require(
-            votes[msg.sender] > 0,
-            "No votes casted."
-        );
         uint256 count = votes[msg.sender];
-        votes[msg.sender] = 0;
+        delete votes[msg.sender];
         votingToken.transfer(msg.sender, count);
         emit VoteCanceled(msg.sender, count);
     }
 
-    /**
-     * @dev Function to validate the threshold
-     */
+    /// @dev Number of votes casted in favour of the proposal.
+    function castedVotes() public view returns (uint256) {
+        return votingToken.balanceOf(address(this));
+    }
+
+    /// @dev Number of votes needed to pass the proposal.
+    function thresholdVotes() public view returns (uint256) {
+        return votingToken.totalSupply().muld(threshold, 4);
+    }
+
+    /// @dev Function to validate the threshold
     function validate() public {
         require(
-            votingToken.balanceOf(address(this)) >= thresholdVotes(),
+            castedVotes() >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
         passed = true;
-    }
-
-    function thresholdVotes() internal view returns (uint256) {
-        return votingToken.totalSupply().muld(threshold, 4);
     }
 }

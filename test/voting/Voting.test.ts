@@ -56,39 +56,6 @@ contract('Voting', (accounts) => {
     });
 
     /**
-     * @test {Voting#enact}
-     */
-    /* it('fails to enact invalid proposals', async () => {
-        await voting.registerProposal(
-            votedToken.address,
-            web3.eth.abi.encodeFunctionCall({
-                type: 'function',
-                name: 'fail',
-                payable: false,
-                inputs: [],
-            }, [])
-        ),
-        await voting.open();
-        await voting.cast(votes1, { from: voter1 });
-        await voting.cast(votes2, { from: voter2 });
-        await voting.validate();
-        await expectRevert(
-            voting.enact(),
-            'Failed to enact proposal.',
-        );
-    }); */
-
-    /**
-     * @test {Voting#cancel}
-     */
-    it('voters cannot cancel vote if not casted', async () => {
-        await expectRevert(
-            voting.cancel({ from: voter1 }),
-            'No votes casted.',
-        );
-    });
-
-    /**
      * @test {Voting#cast}
      */
     it('votes can be casted', async () => {
