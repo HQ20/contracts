@@ -42,6 +42,13 @@ contract('Roles', (accounts) => {
         );
     });
 
+    it('does not enumerate members for non existing roles.', async () => {
+        await expectRevert(
+            roles.enumerateMembers(ADDED_ROLE),
+            'Role doesn\'t exist.',
+        );
+    });
+
     it('adds a new role.', async () => {
         const event = (
             await roles.addRole(ADDED_ROLE)
@@ -53,6 +60,13 @@ contract('Roles', (accounts) => {
     describe('with existing roles', () => {
         beforeEach(async () => {
             await roles.addRole(ADDED_ROLE);
+        });
+
+        it('does not allow to add the same role twice.', async () => {
+            await expectRevert(
+                roles.addRole(ADDED_ROLE),
+                'Role already exists.',
+            );
         });
 
         it('replies whether a role exists.', async () => {

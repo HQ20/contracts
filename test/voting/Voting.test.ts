@@ -151,4 +151,36 @@ contract('Voting', (accounts) => {
             });
         });
     });
+
+    /**
+     * @test {Voting#enact}
+     */
+    it('fails to enact invalid proposals', async () => {
+        voting = await Voting.new(
+            votingToken.address,
+            votedToken.address,
+            web3.eth.abi.encodeFunctionCall({
+                type: 'function',
+                name: 'mint',
+                payable: false,
+                inputs: [{
+                    name: 'account',
+                    type: 'address',
+                }, {
+                    name: 'amount',
+                    type: 'uint256',
+                }],
+            }, [owner, '1']),
+            threshold,
+        );
+        await votingToken.approve(voting.address, votes1, { from: voter1 });
+        await votingToken.approve(voting.address, votes2, { from: voter2 });
+        await voting.cast(votes1, { from: voter1 });
+        await voting.cast(votes2, { from: voter2 });
+        await voting.validate();
+        await expectRevert(
+            voting.enact(),
+            'Failed to enact proposal.',
+        );
+    });
 });
