@@ -18,7 +18,6 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
     using SafeMath for uint256;
     using FixidityLib for int256;
     using SafeCast for uint256;
-    using SafeCast for int256;
 
     mapping(address => uint256) public dividendsPerToken;
     mapping(address =>
