@@ -10,6 +10,9 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
  * @dev Implements a module to add voting-based actions to other contracts.
  */
 contract Democratic {
+
+    using EnumerableSet for EnumerableSet.AddressSet;
+
     event Proposal(address proposal);
 
     EnumerableSet.AddressSet internal proposals;
