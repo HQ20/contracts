@@ -1,11 +1,10 @@
 pragma solidity ^0.5.10;
 
-import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../token/ERC20MintableDetailed.sol";
-import "../../utils/SafeCast.sol";
+import "../../math/DecimalMath.sol";
 
 
 /**
@@ -16,13 +15,12 @@ import "../../utils/SafeCast.sol";
 contract ERC20MultiDividendable is ERC20MintableDetailed {
 
     using SafeMath for uint256;
-    using FixidityLib for int256;
-    using SafeCast for uint256;
+    using DecimalMath for uint256;
 
     mapping(address => uint256) public dividendsPerToken;
     mapping(address =>
         mapping(address => uint256)
-    ) public lastDividendsPerToken;
+    ) public lastDPT;
     mapping(uint256 => address) public dividendTokens;
     uint256 public tokenIndex;
 
@@ -39,14 +37,10 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
      * @param dividendToken The address of the token you wish to transfer to this contract
      */
     function releaseDividends(uint256 amount, address dividendToken) external {
-        IERC20 dividendTokenContract = IERC20(dividendToken);
         resolveDividendToken(dividendToken);
-        dividendTokenContract.transferFrom(msg.sender, address(this), amount);
-        int256 fixedSupply = this.totalSupply()
-            .safeUintToInt();
-        int256 fixedValue = amount.safeUintToInt().newFixed();
-        uint256 releasedDividends = fixedValue
-            .divide(fixedSupply).fromFixed(this.decimals()).safeIntToUint();
+        IERC20(dividendToken).transferFrom(msg.sender, address(this), amount);
+        uint256 releasedDividends = amount
+            .divd(this.totalSupply(), this.decimals());
         dividendsPerToken[dividendToken] = dividendsPerToken[dividendToken]
             .add(releasedDividends);
     }
@@ -66,10 +60,10 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
             owing > 0,
             "Account need not be updated now for this dividend token."
         );
-        IERC20(dividendToken).transfer(account, owing);
-        lastDividendsPerToken[account][dividendToken] = dividendsPerToken[
+        lastDPT[account][dividendToken] = dividendsPerToken[
                 dividendToken
             ];
+        IERC20(dividendToken).transfer(account, owing);
         return owing;
     }
 
@@ -95,11 +89,8 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
         address dividendToken
     ) internal view returns(uint256) {
         uint256 owedDividendsPerToken = dividendsPerToken[dividendToken]
-            .sub(lastDividendsPerToken[account][dividendToken]);
-        int256 fixedBalance = this.balanceOf(account)
-            .safeUintToInt();
-        int256 fixedOwed = owedDividendsPerToken
-            .safeUintToInt().newFixed(this.decimals());
-        return fixedBalance.multiply(fixedOwed).fromFixed().safeIntToUint();
+            .subd(lastDPT[account][dividendToken]);
+        return this.balanceOf(account)
+            .muld(owedDividendsPerToken, this.decimals());
     }
 }
