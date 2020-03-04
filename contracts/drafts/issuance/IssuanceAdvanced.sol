@@ -1,6 +1,5 @@
 pragma solidity ^0.5.10;
 
-import "@hq20/fixidity/contracts/FixidityLib.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -8,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../token/IERC20Detailed.sol";
 import "../../token/IERC20MintableDetailed.sol";
 import "./../../state/StateMachine.sol";
-import "../../utils/SafeCast.sol";
 import "../../math/DecimalMath.sol";
 
 
