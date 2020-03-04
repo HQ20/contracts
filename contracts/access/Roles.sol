@@ -12,18 +12,7 @@ contract Roles {
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
 
-    /**
-     * @notice A role, which will be used to group users.
-     * @dev The role id is its position in the roles array.
-     * @param admin The only role that can add or remove members from this role. To have the role
-     * members to be also the role admins you should pass roles.length as the admin role.
-     * @param members Addresses belonging to this role.
-     */
-    struct Role {
-        EnumerableSet.AddressSet members;
-    }
-
-    mapping (bytes32 => Role) private _roles;
+    mapping (bytes32 => EnumerableSet.AddressSet) private _roles;
 
     /**
      * @notice A method to verify whether an member is a member of a role
@@ -36,7 +25,7 @@ contract Roles {
         view
         returns(bool)
     {
-        return _roles[roleId].members.contains(account);
+        return _roles[roleId].contains(account);
     }
 
     /**
@@ -48,7 +37,7 @@ contract Roles {
         view
         returns (address[] memory)
     {
-        return _roles[roleId].members.enumerate();
+        return _roles[roleId].enumerate();
     }
 
     /**
@@ -64,7 +53,7 @@ contract Roles {
             "Address is member of role."
         );
 
-        _roles[roleId].members.add(account);
+        _roles[roleId].add(account);
         emit MemberAdded(account, roleId);
     }
 
@@ -81,7 +70,7 @@ contract Roles {
             "Address is not member of role."
         );
 
-        _roles[roleId].members.remove(account);
+        _roles[roleId].remove(account);
         emit MemberRemoved(account, roleId);
     }
 }
