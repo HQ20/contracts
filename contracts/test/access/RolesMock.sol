@@ -4,10 +4,6 @@ import "./../../access/Roles.sol";
 
 contract RolesMock is Roles {
 
-    function addRole(bytes32 roleId) public {
-        _addRole(roleId);
-    }
-
     function addMember(address account, bytes32 roleId) public {
         _addMember(account, roleId);
     }

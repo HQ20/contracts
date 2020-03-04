@@ -21,8 +21,6 @@ contract Democracy is Roles, Renounceable, Democratic {
         public
         Democratic(votingToken, threshold)
     {
-        _addRole(LEADER_ROLE_ID);
-        _addRole(VOTER_ROLE_ID);
         _addMember(root, VOTER_ROLE_ID);
     }
 

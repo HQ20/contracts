@@ -9,8 +9,6 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
  */
 contract Roles {
     using EnumerableSet for EnumerableSet.AddressSet;
-    event RoleAdded(bytes32 roleId);
-    event RoleRemoved(bytes32 roleId);
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
 
@@ -22,25 +20,10 @@ contract Roles {
      * @param members Addresses belonging to this role.
      */
     struct Role {
-        bool exists;
         EnumerableSet.AddressSet members;
     }
 
     mapping (bytes32 => Role) private _roles;
-
-    /**
-     * @notice A method to verify if a role exists.
-     * @param roleId The id of the role being verified.
-     * @return True or false.
-     * @dev roleExists of NO_ROLE returns false.
-     */
-    function roleExists(bytes32 roleId)
-        public
-        view
-        returns(bool)
-    {
-        return (_roles[roleId].exists);
-    }
 
     /**
      * @notice A method to verify whether an member is a member of a role
@@ -53,7 +36,6 @@ contract Roles {
         view
         returns(bool)
     {
-        require(roleExists(roleId), "Role doesn't exist.");
         return _roles[roleId].members.contains(account);
     }
 
@@ -66,26 +48,7 @@ contract Roles {
         view
         returns (address[] memory)
     {
-        require(roleExists(roleId), "Role doesn't exist.");
         return _roles[roleId].members.enumerate();
-    }
-
-    /**
-     * @notice A method to create a new role.
-     * @param roleId The id for role that is being created
-     */
-    function _addRole(bytes32 roleId)
-        internal
-    {
-        require(!roleExists(roleId), "Role already exists.");
-
-        _roles[roleId] = Role({
-            exists: true,
-            members: EnumerableSet.AddressSet({
-                values: new address[](0)
-            })
-        });
-        emit RoleAdded(roleId);
     }
 
     /**
@@ -96,7 +59,6 @@ contract Roles {
     function _addMember(address account, bytes32 roleId)
         internal
     {
-        require(roleExists(roleId), "Role doesn't exist.");
         require(
             !hasRole(account, roleId),
             "Address is member of role."
@@ -114,7 +76,6 @@ contract Roles {
     function _removeMember(address account, bytes32 roleId)
         internal
     {
-        require(roleExists(roleId), "Role doesn't exist.");
         require(
             hasRole(account, roleId),
             "Address is not member of role."
