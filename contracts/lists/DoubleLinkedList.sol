@@ -67,7 +67,6 @@ contract DoubleLinkedList {
      */
     function addHead(address _data)
         public
-        returns (bool)
     {
         uint256 objectId = _createObject(_data);
         _link(objectId, head);
@@ -80,7 +79,6 @@ contract DoubleLinkedList {
      */
     function addTail(address _data)
         public
-        returns (bool)
     {
         if (head == 0) {
             addHead(_data);
@@ -123,7 +121,6 @@ contract DoubleLinkedList {
      */
     function insertAfter(uint256 _prevId, address _data)
         public
-        returns (bool)
     {
         if (_prevId == tail) {
             addTail(_data);
@@ -142,7 +139,6 @@ contract DoubleLinkedList {
      */
     function insertBefore(uint256 _nextId, address _data)
         public
-        returns (bool)
     {
         if (_nextId == head) {
             addHead(_data);

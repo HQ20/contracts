@@ -38,10 +38,10 @@
     },
     "peerDependencies": {
         "@openzeppelin/contracts": "2.5.0",
-        "@hq20/fixidity": "^0.1.0-alpha.1"
+        "@hq20/fixidity": "^0.1.0-alpha.2"
     },
     "devDependencies": {
-        "@hq20/fixidity": "0.1.0-alpha.1",
+        "@hq20/fixidity": "0.1.0-alpha.2",
         "@openzeppelin/contracts": "2.5.0",
         "@openzeppelin/test-helpers": "0.5.4",
         "@truffle/hdwallet-provider": "1.0.32",
