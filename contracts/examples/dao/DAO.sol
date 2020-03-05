@@ -24,7 +24,6 @@ contract DAO is VentureEth, Democratic {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event VotingProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public threshold;
