@@ -14,7 +14,6 @@ contract('Renounceable', (accounts) => {
 
     beforeEach(async () => {
         roles = await Renounceable.new();
-        await roles.addRole(ADDED_ROLE);
         await roles.addMember(user1, ADDED_ROLE);
     });
 
