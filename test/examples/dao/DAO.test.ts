@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { balance, BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
 
@@ -297,6 +297,34 @@ contract('DAO', (accounts) => {
                         await dao.claim({ from: holder4 });
                         BN(await dao.balanceOf(holder3)).should.be.bignumber.equal(ether('1'));
                         BN(await dao.balanceOf(holder4)).should.be.bignumber.equal(ether('3'));
+                    });
+
+                    it('investors can cancel new founding round', async () => {
+                        const daoTracker = await balance.tracker(dao.address);
+                        await daoTracker.get();
+                        await dao.invest({ from: holder3, value: ether('1').toString() });
+                        await dao.invest({ from: holder4, value: ether('3').toString() });
+                        voting1 = await Voting.at(
+                            (await dao.propose(
+                                web3.eth.abi.encodeFunctionCall({
+                                    type: 'function',
+                                    name: 'cancelAllNewInvestments',
+                                    payable: false,
+                                    inputs: [],
+                                }, []),
+                            )).logs[1].args.proposal
+                        );
+                        await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                        await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                        await voting1.cast(ether('3'), { from: holder1 });
+                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.validate();
+                        await voting1.cancel({ from: holder1 });
+                        await voting1.cancel({ from: holder2 });
+                        await voting1.enact();
+                        await dao.cancelInvestment({ from: holder3 });
+                        await dao.cancelInvestment({ from: holder4 });
+                        BN(await daoTracker.delta()).should.be.bignumber.equal(ether('0'));
                     });
 
                 });
