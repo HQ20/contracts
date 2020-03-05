@@ -95,6 +95,17 @@ contract DAO is VentureEth, Democratic {
     }
 
     /**
+     * @notice Cancel an investment of the DAO.
+     * @param venture The address of the VentureEth contract from which to cancel the investment.
+     */
+    function cancelVenture(
+        address venture
+    ) public onlyProposal {
+        VentureEth(venture).cancelInvestment();
+        ventures.remove(venture);
+    }
+
+    /**
      * @notice Instruct the DAO to claim dividends from a venture.
      * @param venture The venture to claim dividends from.
      */

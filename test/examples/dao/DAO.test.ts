@@ -156,13 +156,40 @@ contract('DAO', (accounts) => {
                 await voting2.enact();
             });
 
-            it('retrieve tokens from invested venture', async () => {
+            it('can retrieve tokens from invested venture', async () => {
                 await venture1.startDistribution();
                 await venture2.startDistribution();
                 await dao.retrieveVentureTokens(venture1.address);
                 await dao.retrieveVentureTokens(venture2.address);
                 BN(await venture1.balanceOf(dao.address)).should.be.bignumber.equal(ether('10'));
                 BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.2'));
+            });
+
+            it('can cancel investment in venture', async () => {
+                const daoTracker = await balance.tracker(dao.address);
+                await daoTracker.get();
+                voting1 = await Voting.at(
+                    (await dao.propose(
+                        web3.eth.abi.encodeFunctionCall({
+                            type: 'function',
+                            name: 'cancelVenture',
+                            payable: false,
+                            inputs: [{
+                                name: 'venture',
+                                type: 'address',
+                            }],
+                        }, [venture1.address])
+                    )).logs[1].args.proposal
+                );
+                await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                await voting1.cast(ether('3'), { from: holder1 });
+                await voting1.cast(ether('8'), { from: holder2 });
+                await voting1.validate();
+                await voting1.cancel({ from: holder1 });
+                await voting1.cancel({ from: holder2 });
+                await voting1.enact();
+                BN(await daoTracker.delta()).should.be.bignumber.equal(ether('1'));
             });
 
             describe('once venture tokens are retrieved', async () => {
