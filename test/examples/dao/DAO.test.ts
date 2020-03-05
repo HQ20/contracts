@@ -335,7 +335,7 @@ contract('DAO', (accounts) => {
                             (await dao.propose(
                                 web3.eth.abi.encodeFunctionCall({
                                     type: 'function',
-                                    name: 'cancelAllNewInvestments',
+                                    name: 'cancelInvestmentRound',
                                     payable: false,
                                     inputs: [],
                                 }, []),

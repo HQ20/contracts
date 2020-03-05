@@ -28,7 +28,6 @@ contract DAO is VentureEth, Democratic {
 
     uint256 public threshold;
 
-    EnumerableSet.AddressSet internal proposals;
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
@@ -48,13 +47,6 @@ contract DAO is VentureEth, Democratic {
      * @dev Fallback function. Required when collecting ether dividends from ventures.
      */
     function () external payable {}
-
-    /**
-     * @notice The withdraw function inherited from VentureEth is disabled. The funds can be transferred exclusively by the vote of the investors.
-     */
-    function withdraw(address payable) public onlyOwner nonReentrant {
-        revert("Withdraw is disabled.");
-    }
 
     /**
      * @notice To be called during the first investment round.
@@ -146,7 +138,7 @@ contract DAO is VentureEth, Democratic {
     /**
      * @notice Hook for proposals to cancel all new investments in a non-initial investment round.
      */
-    function cancelAllNewInvestments() public onlyProposal {
+    function cancelInvestmentRound() public onlyProposal {
         this.cancelAllInvestments();
     }
 
