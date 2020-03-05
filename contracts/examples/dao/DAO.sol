@@ -25,8 +25,8 @@ contract DAO is VentureEth {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event VentureProposed(address proposal);
-    event ProfitProposed(address proposal);
     event RoundProposed(address proposal);
+    event DividendsProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public threshold;
@@ -84,12 +84,11 @@ contract DAO is VentureEth {
     ) public {
         // Maybe use ERC165 to make sure venture it's a VentureEth
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(address(this), threshold);
-        voting.registerProposal(
+        Voting voting = new Voting(
             address(this),
-            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment)
-        );
-        voting.open();
+            address(this),
+            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment),
+            threshold);
         proposals.add(address(voting));
         emit VentureProposed(address(voting));
     }
@@ -107,9 +106,9 @@ contract DAO is VentureEth {
             proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
-        VentureEth(venture).invest.value(investment)();
-        ventures.add(venture);
         proposals.remove(msg.sender);
+        ventures.add(venture);
+        VentureEth(venture).invest.value(investment)();
         emit VentureAdded(venture);
     }
 
@@ -142,14 +141,14 @@ contract DAO is VentureEth {
      */
     function proposeDividends(uint256 amount) public {
         require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(address(this), threshold);
-        voting.registerProposal(
+        Voting voting = new Voting(
             address(this),
-            abi.encodeWithSignature("releaseDividends(uint256)", amount)
+            address(this),
+            abi.encodeWithSignature("releaseDividends(uint256)", amount),
+            threshold
         );
-        voting.open();
         proposals.add(address(voting));
-        emit ProfitProposed(address(voting));
+        emit DividendsProposed(address(voting));
     }
 
     /**
@@ -161,8 +160,8 @@ contract DAO is VentureEth {
             proposals.contains(msg.sender),
             "Only a proposal can execute."
         );
-        _releaseDividends(amount);
         proposals.remove(msg.sender);
+        _releaseDividends(amount);
     }
 
     /** Reopen investor round */

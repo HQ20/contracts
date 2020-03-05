@@ -17,49 +17,18 @@ contract('Roles', (accounts) => {
         roles = await Roles.new();
     });
 
-    it('replies whether a role does not exist', async () => {
-        assert.isFalse(await roles.roleExists(ADDED_ROLE));
-    });
-
-    it('does not add members to non existing roles', async () => {
-        await expectRevert(
-            roles.addMember(user1, ADDED_ROLE),
-            'Role doesn\'t exist.',
-        );
-    });
-
-    it('does not remove members from non existing roles', async () => {
-        await expectRevert(
-            roles.removeMember(user1, ADDED_ROLE),
-            'Role doesn\'t exist.',
-        );
-    });
-
-    it('does not check membership for non existing roles.', async () => {
-        await expectRevert(
-            roles.hasRole(user1, ADDED_ROLE),
-            'Role doesn\'t exist.',
-        );
-    });
-
-    it('adds a new role.', async () => {
-        const event = (
-            await roles.addRole(ADDED_ROLE)
-        ).logs[0];
-        assert.equal(event.event, 'RoleAdded');
-        assert.isTrue(await roles.roleExists(event.args.roleId));
+    it('roles that do not exist do not have members', async () => {
+        assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
+        const members = await roles.enumerateMembers(ADDED_ROLE);
+        expect(members).to.have.members([]);
     });
 
     describe('with existing roles', () => {
         beforeEach(async () => {
-            await roles.addRole(ADDED_ROLE);
+            // await roles.addRole(ADDED_ROLE);
         });
 
-        it('replies whether a role exists.', async () => {
-            assert.isTrue(await roles.roleExists(ADDED_ROLE));
-        });
-
-        it('replies if a member doe not belong to a role.', async () => {
+        it('replies if a member does not belong to a role.', async () => {
             assert.isFalse(await roles.hasRole(user1, ADDED_ROLE));
         });
 

@@ -9,7 +9,7 @@ should();
 /** @test {Hierarchy} contract */
 contract('Hierarchy', (accounts) => {
     let hierarchy: HierarchyInstance;
-    const ROOT_ROLE_ID = stringToBytes32('ROOT');
+    const ROOT_ROLE_ID = stringToBytes32('');
     const ADDED_ROLE_ID = stringToBytes32('ADDED');
     const root = accounts[0];
     const user1 = accounts[1];
@@ -37,9 +37,9 @@ contract('Hierarchy', (accounts) => {
     /**
      * @test {Hierarchy#addRole}
      */
-    it('addRole throws if not called by a member of the admin role.', async () => {
+    it('addAdminRole throws if not called by a member of the admin role.', async () => {
         await expectRevert(
-            hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 }),
+            hierarchy.addAdminRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: user1 }),
             'Restricted to members.',
         );
     });
@@ -75,21 +75,21 @@ contract('Hierarchy', (accounts) => {
     /**
      * @test {Hierarchy#addMember}
      */
-    it('adds a role.', async () => {
+    it('adds an admin role.', async () => {
         expectEvent(
-            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root }),
+            await hierarchy.addAdminRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root }),
             'AdminRoleSet',
             {
                 roleId: ADDED_ROLE_ID,
                 adminRoleId: ROOT_ROLE_ID,
             },
         );
-        assert.isTrue(await hierarchy.roleExists(ADDED_ROLE_ID));
+        assert.equal(await hierarchy.getAdminRole(ADDED_ROLE_ID), ROOT_ROLE_ID);
     });
 
     describe('with existing users and roles', () => {
         beforeEach(async () => {
-            await hierarchy.addRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root });
+            await hierarchy.addAdminRole(ADDED_ROLE_ID, ROOT_ROLE_ID, { from: root });
             await hierarchy.addMember(user1, ADDED_ROLE_ID, { from: root });
         });
 

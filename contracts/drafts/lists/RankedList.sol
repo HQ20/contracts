@@ -72,7 +72,6 @@ contract RankedList {
      */
     function insert(uint256 _rank, address _data)
         public
-        returns (bool)
     {
         uint256 nextId = findRank(_rank);
         if (nextId == 0) {
@@ -114,7 +113,6 @@ contract RankedList {
      */
     function _addHead(uint256 _rank, address _data)
         internal
-        returns (bool)
     {
         uint256 objectId = _createObject(_rank, _data);
         _link(objectId, head);
@@ -127,7 +125,6 @@ contract RankedList {
      */
     function _addTail(uint256 _rank, address _data)
         internal
-        returns (bool)
     {
         if (head == 0) {
             _addHead(_rank, _data);
@@ -144,7 +141,6 @@ contract RankedList {
      */
     function _insertAfter(uint256 _prevId, uint256 _rank, address _data)
         internal
-        returns (bool)
     {
         if (_prevId == tail) {
             _addTail(_rank, _data);
@@ -163,7 +159,6 @@ contract RankedList {
      */
     function _insertBefore(uint256 _nextId, uint256 _rank, address _data)
         internal
-        returns (bool)
     {
         if (_nextId == head) {
             _addHead(_rank, _data);

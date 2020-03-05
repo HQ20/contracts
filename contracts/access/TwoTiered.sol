@@ -15,8 +15,6 @@ contract TwoTiered is Roles, Renounceable {
 
     /// @dev Create an admin and a user role, and add `root` to the admin role as a member.
     constructor (address root) public {
-        _addRole(ADMIN_ROLE_ID);
-        _addRole(USER_ROLE_ID);
         _addMember(root, ADMIN_ROLE_ID);
     }
 

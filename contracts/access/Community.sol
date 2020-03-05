@@ -10,11 +10,10 @@ import "./Renounceable.sol";
  */
 contract Community is Roles, Renounceable {
 
-    bytes32 public constant COMMUNITY_ROLE_ID = "COMMUNITY";
+    bytes32 public constant COMMUNITY_ROLE_ID = "";
 
     /// @dev Create the community role, with `root` as a member.
     constructor (address root) public {
-        _addRole(COMMUNITY_ROLE_ID);
         _addMember(root, COMMUNITY_ROLE_ID);
     }
 

@@ -94,7 +94,6 @@ contract LinkedList {
      */
     function addHead(address _data)
         public
-        returns (bool)
     {
         uint256 objectId = _createObject(_data);
         _link(objectId, head);
@@ -106,7 +105,6 @@ contract LinkedList {
      */
     function addTail(address _data)
         public
-        returns (bool)
     {
         if (head == 0) {
             addHead(_data);
@@ -141,7 +139,6 @@ contract LinkedList {
      */
     function insertAfter(uint256 _prevId, address _data)
         public
-        returns (bool)
     {
         Object memory prevObject = objects[_prevId];
         uint256 newObjectId = _createObject(_data);
@@ -154,7 +151,6 @@ contract LinkedList {
      */
     function insertBefore(uint256 _nextId, address _data)
         public
-        returns (bool)
     {
         if (_nextId == head) {
             addHead(_data);
