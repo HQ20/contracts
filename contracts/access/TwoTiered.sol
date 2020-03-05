@@ -9,7 +9,6 @@ import "./Renounceable.sol";
  * @notice Implements a two-role Roles
  */
 contract TwoTiered is Roles, Renounceable {
-
     bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
     bytes32 public constant USER_ROLE_ID = "USER";
 
