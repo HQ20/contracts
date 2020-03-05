@@ -60,7 +60,6 @@ contract DAO is VentureEth, Democratic {
      * @notice To be called during the first investment round.
      */
     function startDistribution() public onlyOwner {
-        require(totalSupply() == 0, "Not in initial funding round.");
         // solium-disable-next-line security/no-low-level-calls
         (bool success, ) = address(this).delegatecall(
             abi.encodeWithSignature("transferOwnership(address)", address(this))
