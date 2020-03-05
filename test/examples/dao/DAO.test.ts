@@ -38,25 +38,12 @@ contract('DAO', (accounts) => {
     let voting1: VotingInstance;
     let voting2: VotingInstance;
 
-    beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 18, 5001);
-        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 19);
-        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 17);
-    });
-
-    /**
-     * @test {DAO#withdraw}
-     */
-    it('cannot withdraw funds under any circumstances', async () => {
-        await expectRevert(
-            dao.withdraw(holder1),
-            'Withdraw is disabled.',
-        );
-    });
-
     describe('once DAO tokens issued to investors', () => {
 
         beforeEach(async () => {
+            dao = await DAO.new('DAOToken', 'DAO', 18, 5001);
+            venture1 = await VentureEth.new('VentureToken1', 'VNT1', 19);
+            venture2 = await VentureEth.new('VentureToken2', 'VNT2', 17);
             await dao.setIssuePrice(ether('0.2'));
             await dao.startIssuance();
             await dao.invest({ from: holder1, value: ether('1').toString() });
