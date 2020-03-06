@@ -1,12 +1,12 @@
-# Voting
+# OneTokenOneVote
 
 ## Description
 
-A Voting contract that can be used for registering proposals, casting votes, validating the majority and enacting the proposals. A proposal consists in calling some data (a function signature and encoded arguments) on a contract's address.
+A voting contract that can be used for registering proposals, casting votes, validating the majority and enacting the proposals. A proposal consists in calling some data (a function signature and encoded arguments) on a contract's address.
 
 ## Usage
 
- 1. Initialize the Voting with:
+ 1. Initialize the voting with:
       The address of the contract that will be used as a voting token.
       The address of the target contract for a proposal to be enacted.
       The proposal data, obtained as an abi encoding of a function in the target contract with any desired arguments.
