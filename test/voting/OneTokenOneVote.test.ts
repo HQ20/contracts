@@ -1,9 +1,8 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { ERC20MintableDetailedInstance, OneTokenOneVoteInstance, IssuanceEthInstance } from '../../types/truffle-contracts';
+import { ERC20MintableDetailedInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
 
-const IssuanceEth = artifacts.require('IssuanceEth') as Truffle.Contract<IssuanceEthInstance>;
 const Voting = artifacts.require('OneTokenOneVote') as Truffle.Contract<OneTokenOneVoteInstance>;
 const ERC20MintableDetailed = artifacts.require(
         'ERC20MintableDetailed'
@@ -56,11 +55,11 @@ contract('OneTokenOneVote', (accounts) => {
     });
 
     /**
-     * @test {Voting#cast}
+     * @test {Voting#vote}
      */
     it('votes can be casted', async () => {
         expectEvent(
-            await voting.cast(votes1, { from: voter1 }),
+            await voting.vote(votes1, { from: voter1 }),
             'VoteCasted',
             {
                 voter: voter1,
@@ -73,18 +72,18 @@ contract('OneTokenOneVote', (accounts) => {
      * @test {Voting#validate}
      */
     it('cannot validate the vote', async () => {
-        await voting.cast(votes1, { from: voter1 }),
+        await voting.vote(votes1, { from: voter1 }),
         await expectRevert(
             voting.validate(),
-            'Not enough votes to meet the threshold.'
+            'Not enough votes to pass.'
         );
     });
 
     describe('once voted', () => {
 
         beforeEach(async () => {
-            await voting.cast(votes1, { from: voter1 });
-            await voting.cast(votes2, { from: voter2 });
+            await voting.vote(votes1, { from: voter1 });
+            await voting.vote(votes2, { from: voter2 });
         });
 
         /**
@@ -93,7 +92,7 @@ contract('OneTokenOneVote', (accounts) => {
         it('cannot enact proposal yet', async () => {
             await expectRevert(
                 voting.enact(),
-                'Cannot enact proposal until vote passes.',
+                'Cannot execute until vote passes.',
             );
         });
 
@@ -175,8 +174,8 @@ contract('OneTokenOneVote', (accounts) => {
         );
         await votingToken.approve(voting.address, votes1, { from: voter1 });
         await votingToken.approve(voting.address, votes2, { from: voter2 });
-        await voting.cast(votes1, { from: voter1 });
-        await voting.cast(votes2, { from: voter2 });
+        await voting.vote(votes1, { from: voter1 });
+        await voting.vote(votes2, { from: voter2 });
         await voting.validate();
         await expectRevert(
             voting.enact(),

@@ -55,12 +55,13 @@ contract OneTokenOneVote is Ownable {
         emit VotingCreated();
     }
 
+    modifier proposalPassed() {
+        require(passed == true, "Cannot execute until vote passes.");
+        _;
+    }
+
     /// @dev Function to enact one proposal of this voting.
-    function enact() external {
-        require(
-            passed == true,
-            "Cannot enact proposal until vote passes."
-        );
+    function enact() external proposalPassed {
         // solium-disable-next-line security/no-low-level-calls
         (bool success, ) = targetContract.call(proposalData);
         require(success, "Failed to enact proposal.");
@@ -70,7 +71,7 @@ contract OneTokenOneVote is Ownable {
     /// @dev Use this function to cast votes. Must have approved this contract
     /// (from the frontend) to spend _votes of votingToken tokens.
     /// @param _votes The amount of votingToken tokens that will be casted.
-    function cast(uint256 _votes) external {
+    function vote(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
         votes[msg.sender] = votes[msg.sender].addd(_votes);
         emit VoteCasted(msg.sender, _votes);
@@ -98,7 +99,7 @@ contract OneTokenOneVote is Ownable {
     function validate() public {
         require(
             inFavour() >= thresholdVotes(),
-            "Not enough votes to meet the threshold."
+            "Not enough votes to pass."
         );
         passed = true;
         emit VotingValidated();
