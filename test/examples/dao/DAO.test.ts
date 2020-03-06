@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
 // tslint:disable-next-line:no-var-requires
-const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { balance, BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
 
@@ -21,7 +21,16 @@ chai.should();
 
 contract('DAO', (accounts) => {
 
-    const [ holder1, holder2, ventureHolder1, ventureHolder2, ventureClient1, ventureClient2 ] = accounts;
+    const [
+        holder1,
+        holder2,
+        holder3,
+        holder4,
+        ventureHolder1,
+        ventureHolder2,
+        ventureClient1,
+        ventureClient2
+    ] = accounts;
 
     let dao: DAOInstance;
     let venture1: VentureEthInstance;
@@ -29,25 +38,12 @@ contract('DAO', (accounts) => {
     let voting1: VotingInstance;
     let voting2: VotingInstance;
 
-    beforeEach(async () => {
-        dao = await DAO.new('DAOToken', 'DAO', 18, 5001);
-        venture1 = await VentureEth.new('VentureToken1', 'VNT1', 19);
-        venture2 = await VentureEth.new('VentureToken2', 'VNT2', 17);
-    });
-
-    /**
-     * @test {DAO#proposeVenture}
-     */
-    it('cannot propose venture if DAO not in "LIVE" state', async () => {
-        await expectRevert(
-            dao.proposeVenture(venture1.address, ether('1')),
-            'DAO needs to be LIVE.',
-        );
-    });
-
     describe('once DAO tokens issued to investors', () => {
 
         beforeEach(async () => {
+            dao = await DAO.new('DAOToken', 'DAO', 18, 5001);
+            venture1 = await VentureEth.new('VentureToken1', 'VNT1', 19);
+            venture2 = await VentureEth.new('VentureToken2', 'VNT2', 17);
             await dao.setIssuePrice(ether('0.2'));
             await dao.startIssuance();
             await dao.invest({ from: holder1, value: ether('1').toString() });
@@ -62,32 +58,35 @@ contract('DAO', (accounts) => {
         });
 
         /**
-         * @test {DAO#withdraw}
-         */
-        it('cannot withdraw funds under any circumstances', async () => {
-            await expectRevert(
-                dao.withdraw(holder1),
-                'Withdraw is disabled.',
-            );
-        });
-
-        /**
          * @test {DAO#investVenture}
          */
         it('cannot invest in venture from outside voting contract', async () => {
             await expectRevert(
                 dao.investVenture(venture1.address, ether('1')),
-                'Only a proposal can execute.',
+                'Restricted to proposals.',
             );
         });
 
         /**
-         * @test {DAO#proposeVenture}
+         * @test {DAO#propose}
          */
         it('can propose venture', async () => {
             expectEvent(
-                await dao.proposeVenture(venture1.address, ether('1')),
-                'VentureProposed',
+                await dao.propose(
+                    web3.eth.abi.encodeFunctionCall({
+                        type: 'function',
+                        name: 'investVenture',
+                        payable: false,
+                        inputs: [{
+                            name: 'venture',
+                            type: 'address',
+                        }, {
+                            name: 'investment',
+                            type: 'uint256',
+                        }],
+                    }, [venture1.address, ether('1').toString()])
+                ),
+                'Proposal',
             );
         });
 
@@ -95,10 +94,36 @@ contract('DAO', (accounts) => {
 
             beforeEach(async () => {
                 voting1 = await Voting.at(
-                    (await dao.proposeVenture(venture1.address, ether('1'))).logs[1].args.proposal
+                    (await dao.propose(
+                        web3.eth.abi.encodeFunctionCall({
+                            type: 'function',
+                            name: 'investVenture',
+                            payable: false,
+                            inputs: [{
+                                name: 'venture',
+                                type: 'address',
+                            }, {
+                                name: 'investment',
+                                type: 'uint256',
+                            }],
+                        }, [venture1.address, ether('1').toString()])
+                    )).logs[1].args.proposal
                 );
                 voting2 = await Voting.at(
-                    (await dao.proposeVenture(venture2.address, ether('2'))).logs[1].args.proposal
+                    (await dao.propose(
+                        web3.eth.abi.encodeFunctionCall({
+                            type: 'function',
+                            name: 'investVenture',
+                            payable: false,
+                            inputs: [{
+                                name: 'venture',
+                                type: 'address',
+                            }, {
+                                name: 'investment',
+                                type: 'uint256',
+                            }],
+                        }, [venture2.address, ether('2').toString()])
+                    )).logs[1].args.proposal
                 );
                 await dao.approve(voting1.address, ether('10'), { from: holder1 });
                 await dao.approve(voting1.address, ether('10'), { from: holder2 });
@@ -118,13 +143,40 @@ contract('DAO', (accounts) => {
                 await voting2.enact();
             });
 
-            it('retrieve tokens from invested venture', async () => {
+            it('can retrieve tokens from invested venture', async () => {
                 await venture1.startDistribution();
                 await venture2.startDistribution();
                 await dao.retrieveVentureTokens(venture1.address);
                 await dao.retrieveVentureTokens(venture2.address);
                 BN(await venture1.balanceOf(dao.address)).should.be.bignumber.equal(ether('10'));
                 BN(await venture2.balanceOf(dao.address)).should.be.bignumber.equal(ether('0.2'));
+            });
+
+            it('can cancel investment in venture', async () => {
+                const daoTracker = await balance.tracker(dao.address);
+                await daoTracker.get();
+                voting1 = await Voting.at(
+                    (await dao.propose(
+                        web3.eth.abi.encodeFunctionCall({
+                            type: 'function',
+                            name: 'cancelVenture',
+                            payable: false,
+                            inputs: [{
+                                name: 'venture',
+                                type: 'address',
+                            }],
+                        }, [venture1.address])
+                    )).logs[1].args.proposal
+                );
+                await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                await voting1.cast(ether('3'), { from: holder1 });
+                await voting1.cast(ether('8'), { from: holder2 });
+                await voting1.validate();
+                await voting1.cancel({ from: holder1 });
+                await voting1.cancel({ from: holder2 });
+                await voting1.enact();
+                BN(await daoTracker.delta()).should.be.bignumber.equal(ether('1'));
             });
 
             describe('once venture tokens are retrieved', async () => {
@@ -157,7 +209,17 @@ contract('DAO', (accounts) => {
 
                 it('investors can profit from venture dividends', async () => {
                     voting1 = await Voting.at(
-                        (await dao.proposeDividends(dividends1.add(dividends2).toString())).logs[1].args.proposal
+                        (await dao.propose(
+                            web3.eth.abi.encodeFunctionCall({
+                                type: 'function',
+                                name: 'releaseDividends',
+                                payable: false,
+                                inputs: [{
+                                    name: 'amount',
+                                    type: 'uint256',
+                                }],
+                            }, [dividends1.add(dividends2).toString()])
+                        )).logs[1].args.proposal
                     );
                     await dao.approve(voting1.address, ether('10'), { from: holder1 });
                     await dao.approve(voting1.address, ether('10'), { from: holder2 });
@@ -173,6 +235,114 @@ contract('DAO', (accounts) => {
                         .bignumber.gt(ether('2.95')).and.bignumber.lt(ether('3.05'));
                 });
 
+                it('investors can reopen an investor round', async () => {
+                    voting1 = await Voting.at(
+                        (await dao.propose(
+                            web3.eth.abi.encodeFunctionCall({
+                                type: 'function',
+                                name: 'restartInvestorRound',
+                                payable: false,
+                                inputs: [{
+                                    name: '_issuePrice',
+                                    type: 'uint256',
+                                }],
+                            }, [ether('1').toString()])
+                        )).logs[1].args.proposal
+                    );
+                    await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                    await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                    await voting1.cast(ether('3'), { from: holder1 });
+                    await voting1.cast(ether('8'), { from: holder2 });
+                    await voting1.validate();
+                    await voting1.cancel({ from: holder1 });
+                    await voting1.cancel({ from: holder2 });
+                    await voting1.enact();
+                    bytes32ToString(await dao.currentState()).should.be.equal('OPEN');
+                });
+
+                describe('once investing round is restarted', () => {
+
+                    beforeEach(async () => {
+                        voting1 = await Voting.at(
+                            (await dao.propose(
+                                web3.eth.abi.encodeFunctionCall({
+                                    type: 'function',
+                                    name: 'restartInvestorRound',
+                                    payable: false,
+                                    inputs: [{
+                                        name: '_issuePrice',
+                                        type: 'uint256',
+                                    }],
+                                }, [ether('1').toString()])
+                            )).logs[1].args.proposal
+                        );
+                        await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                        await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                        await voting1.cast(ether('3'), { from: holder1 });
+                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.validate();
+                        await voting1.cancel({ from: holder1 });
+                        await voting1.cancel({ from: holder2 });
+                        await voting1.enact();
+                    });
+
+                    it('new investors can claim dao tokens', async () => {
+                        await dao.invest({ from: holder3, value: ether('1').toString() });
+                        await dao.invest({ from: holder4, value: ether('3').toString() });
+                        voting1 = await Voting.at(
+                            (await dao.propose(
+                                web3.eth.abi.encodeFunctionCall({
+                                    type: 'function',
+                                    name: 'restartDistribution',
+                                    payable: false,
+                                    inputs: [],
+                                }, []),
+                            )).logs[1].args.proposal
+                        );
+                        await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                        await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                        await voting1.cast(ether('3'), { from: holder1 });
+                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.validate();
+                        await voting1.cancel({ from: holder1 });
+                        await voting1.cancel({ from: holder2 });
+                        await voting1.enact();
+                        await dao.claim({ from: holder3 });
+                        await dao.claim({ from: holder4 });
+                        BN(await dao.balanceOf(holder3)).should.be.bignumber.equal(ether('1'));
+                        BN(await dao.balanceOf(holder4)).should.be.bignumber.equal(ether('3'));
+                    });
+
+                    it('investors can cancel new founding round', async () => {
+                        const daoTracker = await balance.tracker(dao.address);
+                        await daoTracker.get();
+                        await dao.invest({ from: holder3, value: ether('1').toString() });
+                        await dao.invest({ from: holder4, value: ether('3').toString() });
+                        voting1 = await Voting.at(
+                            (await dao.propose(
+                                web3.eth.abi.encodeFunctionCall({
+                                    type: 'function',
+                                    name: 'cancelInvestmentRound',
+                                    payable: false,
+                                    inputs: [],
+                                }, []),
+                            )).logs[1].args.proposal
+                        );
+                        await dao.approve(voting1.address, ether('10'), { from: holder1 });
+                        await dao.approve(voting1.address, ether('10'), { from: holder2 });
+                        await voting1.cast(ether('3'), { from: holder1 });
+                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.validate();
+                        await voting1.cancel({ from: holder1 });
+                        await voting1.cancel({ from: holder2 });
+                        await voting1.enact();
+                        await dao.cancelInvestment({ from: holder3 });
+                        await dao.cancelInvestment({ from: holder4 });
+                        BN(await daoTracker.delta()).should.be.bignumber.equal(ether('0'));
+                    });
+
+                });
+
             });
 
         });
@@ -180,3 +350,7 @@ contract('DAO', (accounts) => {
     });
 
 });
+
+function bytes32ToString(text: string) {
+    return web3.utils.toAscii(text).replace(/\0/g, '');
+}

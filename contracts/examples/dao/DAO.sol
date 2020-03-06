@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "./VentureEth.sol";
-import "./../../voting/Voting.sol";
+import "../../voting/Democratic.sol";
 
 
 /**
@@ -19,27 +19,28 @@ import "./../../voting/Voting.sol";
  * 6. Increase the DAO pool with returns (if any) on the tokens from a venture.
  * 7. Claim ether dividends from the DAO on behalf of your DAO tokens.
  */
-contract DAO is VentureEth {
+contract DAO is VentureEth, Democratic {
 
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event VentureProposed(address proposal);
-    event DividendsProposed(address proposal);
     event VentureAdded(address venture);
 
     uint256 public threshold;
 
-    EnumerableSet.AddressSet internal proposals;
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint256 _threshold
-    ) VentureEth(name, symbol, decimals) public {
-        threshold = _threshold;
+        uint256 threshold
+    )
+    VentureEth(name, symbol, decimals)
+    Democratic(address(this), threshold)
+    public {
+        _createTransition("LIVE", "SETUP");
+        _createTransition("FAILED", "SETUP");
     }
 
     /**
@@ -48,33 +49,18 @@ contract DAO is VentureEth {
     function () external payable {}
 
     /**
-     * @notice The withdraw function inherited from VentureEth is disabled. The funds can be transferred exclusively by the vote of the investors.
+     * @notice To be called during the first investment round.
      */
-    function withdraw(address payable) public onlyOwner nonReentrant {
-        revert("Withdraw is disabled.");
+    function startDistribution() public onlyOwner {
+        // solium-disable-next-line security/no-low-level-calls
+        (bool success, ) = address(this).delegatecall(
+            abi.encodeWithSignature("transferOwnership(address)", address(this))
+        );
+        require(success, "Could not transfer ownership to the DAO.");
+        _transition("LIVE");
     }
 
     /** Venture investment */
-
-    /**
-     * @notice Propose a venture. Must have approved the DAO to spend gage of your DAO tokens. venture must inherit from VentureEth.
-     * @param venture The address of the VentureEth contract
-     * @param investment The ether to invest in the venture.
-     */
-    function proposeVenture(
-        address venture,
-        uint256 investment
-    ) public {
-        // Maybe use ERC165 to make sure venture it's a VentureEth
-        require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(
-            address(this),
-            address(this),
-            abi.encodeWithSignature("investVenture(address,uint256)", venture, investment),
-            threshold);
-        proposals.add(address(voting));
-        emit VentureProposed(address(voting));
-    }
 
     /**
      * @notice Fund a venture proposal.
@@ -84,12 +70,7 @@ contract DAO is VentureEth {
     function investVenture(
         address venture,
         uint256 investment
-    ) public {
-        require(
-            proposals.contains(msg.sender),
-            "Only a proposal can execute."
-        );
-        proposals.remove(msg.sender);
+    ) public onlyProposal {
         ventures.add(venture);
         VentureEth(venture).invest.value(investment)();
         emit VentureAdded(venture);
@@ -102,8 +83,18 @@ contract DAO is VentureEth {
     function retrieveVentureTokens(
         address venture
     ) public {
-        require(currentState == "LIVE", "DAO needs to be LIVE");
         VentureEth(venture).claim();
+    }
+
+    /**
+     * @notice Cancel an investment of the DAO.
+     * @param venture The address of the VentureEth contract from which to cancel the investment.
+     */
+    function cancelVenture(
+        address venture
+    ) public onlyProposal {
+        VentureEth(venture).cancelInvestment();
+        ventures.remove(venture);
     }
 
     /**
@@ -119,32 +110,36 @@ contract DAO is VentureEth {
     /** Dividend distribution */
 
     /**
-     * @notice Propose to release DAO dividends.
-     * @param amount The ether amount to be released as dividends.
-     */
-    function proposeDividends(uint256 amount) public {
-        require(currentState == "LIVE", "DAO needs to be LIVE");
-        Voting voting = new Voting(
-            address(this),
-            address(this),
-            abi.encodeWithSignature("releaseDividends(uint256)", amount),
-            threshold
-        );
-        proposals.add(address(voting));
-        emit DividendsProposed(address(voting));
-    }
-
-    /**
      * @notice Hook for proposals to release dividends.
      * @param amount The ether amount to be released as dividends.
      */
-    function releaseDividends(uint256 amount) public {
-        require(
-            proposals.contains(msg.sender),
-            "Only a proposal can execute."
-        );
-        proposals.remove(msg.sender);
+    function releaseDividends(uint256 amount) public onlyProposal {
         _releaseDividends(amount);
+    }
+
+    /** Restart investor round */
+
+    /**
+     * @notice Hook for proposals to restart investor rounds.
+     */
+    function restartInvestorRound(uint256 _issuePrice) public onlyProposal {
+        _transition("SETUP");
+        this.setIssuePrice(_issuePrice);
+        this.startIssuance();
+    }
+
+    /**
+     * @notice Hook for proposals to start distribution in a non-initial investment round.
+     */
+    function restartDistribution() public onlyProposal {
+        _transition("LIVE");
+    }
+
+    /**
+     * @notice Hook for proposals to cancel all new investments in a non-initial investment round.
+     */
+    function cancelInvestmentRound() public onlyProposal {
+        this.cancelAllInvestments();
     }
 
     /** Enumerators */
@@ -154,12 +149,5 @@ contract DAO is VentureEth {
      */
     function enumerateVentures() public view returns (address[] memory) {
         return ventures.enumerate();
-    }
-
-    /**
-     * @notice Returns the voting proposals.
-     */
-    function enumerateProposals() public view returns (address[] memory) {
-        return proposals.enumerate();
     }
 }
