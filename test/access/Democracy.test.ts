@@ -111,7 +111,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isTrue(await democracy.isVoter(voter1));
@@ -134,7 +134,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isFalse(await democracy.isVoter(root));
@@ -157,7 +157,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isTrue(await democracy.isLeader(root));
@@ -178,7 +178,7 @@ contract('Democracy', (accounts) => {
             ).logs[0].args.proposal;
             voting = await Voting.at(votingAddress);
             await token.approve(voting.address, 1, { from: root });
-            await voting.cast(1, { from: root });
+            await voting.vote(1, { from: root });
             await voting.validate();
             await voting.enact();
             await voting.cancel({ from: root });
@@ -209,7 +209,7 @@ contract('Democracy', (accounts) => {
             ).logs[0].args.proposal;
             voting = await Voting.at(votingAddress);
             await token.approve(voting.address, 1, { from: root });
-            await voting.cast(1, { from: root });
+            await voting.vote(1, { from: root });
             await voting.validate();
             await voting.enact();
             assert.isFalse(await democracy.isLeader(root));
