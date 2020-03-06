@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
  */
 contract Roles {
     using EnumerableSet for EnumerableSet.AddressSet;
+
     event MemberAdded(address member, bytes32 roleId);
     event MemberRemoved(address member, bytes32 roleId);
 
@@ -29,8 +30,20 @@ contract Roles {
     }
 
     /**
+     * @notice A method to count the members of a role
+     * @param roleId The role to count the member of.
+     */
+    function countMembers(bytes32 roleId)
+        public
+        view
+        returns (uint256)
+    {
+        return _roles[roleId].length();
+    }
+
+    /**
      * @notice A method to enumerate the members from a role
-     * @param roleId The role to remove the member from.
+     * @param roleId The role to enumerate the member from.
      */
     function enumerateMembers(bytes32 roleId)
         public

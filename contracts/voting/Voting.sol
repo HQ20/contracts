@@ -23,17 +23,15 @@ contract Voting is Ownable {
     using DecimalMath for uint256;
 
     event VotingCreated();
+    event VotingValidated();
     event ProposalEnacted();
     event VoteCasted(address voter, uint256 votes);
     event VoteCanceled(address voter, uint256 votes);
 
     IERC20 public votingToken;
-
     mapping(address => uint256) public votes;
-
     address public targetContract;
     bytes public proposalData;
-
     uint256 public threshold;
     bool public passed;
 
@@ -87,7 +85,7 @@ contract Voting is Ownable {
     }
 
     /// @dev Number of votes casted in favour of the proposal.
-    function castedVotes() public view returns (uint256) {
+    function inFavour() public view returns (uint256) {
         return votingToken.balanceOf(address(this));
     }
 
@@ -99,9 +97,10 @@ contract Voting is Ownable {
     /// @dev Function to validate the threshold
     function validate() public {
         require(
-            castedVotes() >= thresholdVotes(),
+            inFavour() >= thresholdVotes(),
             "Not enough votes to meet the threshold."
         );
         passed = true;
+        emit VotingValidated();
     }
 }
