@@ -115,26 +115,6 @@ contract('OneManOneVote', (accounts) => {
             });
 
             /**
-             * @test {Voting#vote}
-             */
-            it('votes cannot be casted', async () => {
-                await expectRevert(
-                    voting.vote({ from: voter1 }),
-                    'Cannot execute once vote passes.'
-                );
-            });
-
-            /**
-             * @test {Voting#cancel}
-             */
-            it('votes cannot be canceled', async () => {
-                await expectRevert(
-                    voting.cancel({ from: voter1 }),
-                    'Cannot execute once vote passes.'
-                );
-            });
-
-            /**
              * @test {Voting#enact}
              */
             it('proposals can be enacted', async () => {
