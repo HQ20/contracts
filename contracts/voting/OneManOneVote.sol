@@ -61,11 +61,6 @@ contract OneManOneVote is TwoTiered {
         _;
     }
 
-    modifier proposalNotPassed() {
-        require(passed != true, "Cannot execute once vote passes.");
-        _;
-    }
-
     /// @dev Function to enact one proposal of this voting.
     function enact() external onlyAdmin proposalPassed {
         // solium-disable-next-line security/no-low-level-calls
@@ -75,13 +70,13 @@ contract OneManOneVote is TwoTiered {
     }
 
     /// @dev Use this function to cast your vote.
-    function vote() external onlyUser proposalNotPassed {
+    function vote() external onlyUser {
         votes.add(msg.sender);
         emit VoteCasted(msg.sender);
     }
 
     /// @dev Use this function to cancel your vote.
-    function cancel() external onlyUser proposalNotPassed {
+    function cancel() external onlyUser {
         votes.remove(msg.sender);
         emit VoteCanceled(msg.sender);
     }
@@ -97,7 +92,7 @@ contract OneManOneVote is TwoTiered {
     }
 
     /// @dev Function to validate the threshold
-    function validate() public onlyAdmin proposalNotPassed {
+    function validate() public onlyAdmin {
         require(
             inFavour() >= thresholdVotes(),
             "Not enough votes to pass."
