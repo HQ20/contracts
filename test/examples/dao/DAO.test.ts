@@ -3,7 +3,7 @@ import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
-import { DAOInstance, VentureEthInstance, VotingInstance } from '../../../types/truffle-contracts';
+import { DAOInstance, VentureEthInstance, OneTokenOneVoteInstance } from '../../../types/truffle-contracts';
 
 const DAO = artifacts.require(
     'DAO',
@@ -12,8 +12,8 @@ const VentureEth = artifacts.require(
     'VentureEth',
 ) as Truffle.Contract<VentureEthInstance>;
 const Voting = artifacts.require(
-    'Voting',
-) as Truffle.Contract<VotingInstance>;
+    'OneTokenOneVote',
+) as Truffle.Contract<OneTokenOneVoteInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -35,8 +35,8 @@ contract('DAO', (accounts) => {
     let dao: DAOInstance;
     let venture1: VentureEthInstance;
     let venture2: VentureEthInstance;
-    let voting1: VotingInstance;
-    let voting2: VotingInstance;
+    let voting1: OneTokenOneVoteInstance;
+    let voting2: OneTokenOneVoteInstance;
 
     describe('once DAO tokens issued to investors', () => {
 
@@ -129,14 +129,14 @@ contract('DAO', (accounts) => {
                 await dao.approve(voting1.address, ether('10'), { from: holder2 });
                 await dao.approve(voting2.address, ether('10'), { from: holder1 });
                 await dao.approve(voting2.address, ether('10'), { from: holder2 });
-                await voting1.cast(ether('3'), { from: holder1 });
-                await voting1.cast(ether('8'), { from: holder2 });
+                await voting1.vote(ether('3'), { from: holder1 });
+                await voting1.vote(ether('8'), { from: holder2 });
                 await voting1.validate();
                 await voting1.cancel({ from: holder1 });
                 await voting1.cancel({ from: holder2 });
                 await voting1.enact();
-                await voting2.cast(ether('2'), { from: holder1 });
-                await voting2.cast(ether('10'), { from: holder2 });
+                await voting2.vote(ether('2'), { from: holder1 });
+                await voting2.vote(ether('10'), { from: holder2 });
                 await voting2.validate();
                 await voting2.cancel({ from: holder1 });
                 await voting2.cancel({ from: holder2 });
@@ -170,8 +170,8 @@ contract('DAO', (accounts) => {
                 );
                 await dao.approve(voting1.address, ether('10'), { from: holder1 });
                 await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                await voting1.cast(ether('3'), { from: holder1 });
-                await voting1.cast(ether('8'), { from: holder2 });
+                await voting1.vote(ether('3'), { from: holder1 });
+                await voting1.vote(ether('8'), { from: holder2 });
                 await voting1.validate();
                 await voting1.cancel({ from: holder1 });
                 await voting1.cancel({ from: holder2 });
@@ -223,8 +223,8 @@ contract('DAO', (accounts) => {
                     );
                     await dao.approve(voting1.address, ether('10'), { from: holder1 });
                     await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                    await voting1.cast(ether('3'), { from: holder1 });
-                    await voting1.cast(ether('8'), { from: holder2 });
+                    await voting1.vote(ether('3'), { from: holder1 });
+                    await voting1.vote(ether('8'), { from: holder2 });
                     await voting1.validate();
                     await voting1.cancel({ from: holder1 });
                     await voting1.cancel({ from: holder2 });
@@ -251,8 +251,8 @@ contract('DAO', (accounts) => {
                     );
                     await dao.approve(voting1.address, ether('10'), { from: holder1 });
                     await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                    await voting1.cast(ether('3'), { from: holder1 });
-                    await voting1.cast(ether('8'), { from: holder2 });
+                    await voting1.vote(ether('3'), { from: holder1 });
+                    await voting1.vote(ether('8'), { from: holder2 });
                     await voting1.validate();
                     await voting1.cancel({ from: holder1 });
                     await voting1.cancel({ from: holder2 });
@@ -278,8 +278,8 @@ contract('DAO', (accounts) => {
                         );
                         await dao.approve(voting1.address, ether('10'), { from: holder1 });
                         await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                        await voting1.cast(ether('3'), { from: holder1 });
-                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.vote(ether('3'), { from: holder1 });
+                        await voting1.vote(ether('8'), { from: holder2 });
                         await voting1.validate();
                         await voting1.cancel({ from: holder1 });
                         await voting1.cancel({ from: holder2 });
@@ -301,8 +301,8 @@ contract('DAO', (accounts) => {
                         );
                         await dao.approve(voting1.address, ether('10'), { from: holder1 });
                         await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                        await voting1.cast(ether('3'), { from: holder1 });
-                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.vote(ether('3'), { from: holder1 });
+                        await voting1.vote(ether('8'), { from: holder2 });
                         await voting1.validate();
                         await voting1.cancel({ from: holder1 });
                         await voting1.cancel({ from: holder2 });
@@ -330,8 +330,8 @@ contract('DAO', (accounts) => {
                         );
                         await dao.approve(voting1.address, ether('10'), { from: holder1 });
                         await dao.approve(voting1.address, ether('10'), { from: holder2 });
-                        await voting1.cast(ether('3'), { from: holder1 });
-                        await voting1.cast(ether('8'), { from: holder2 });
+                        await voting1.vote(ether('3'), { from: holder1 });
+                        await voting1.vote(ether('8'), { from: holder2 });
                         await voting1.validate();
                         await voting1.cancel({ from: holder1 });
                         await voting1.cancel({ from: holder2 });

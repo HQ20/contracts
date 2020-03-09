@@ -1,5 +1,5 @@
 pragma solidity ^0.5.10;
-import "./../voting/Voting.sol";
+import "./../voting/OneTokenOneVote.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
@@ -44,7 +44,7 @@ contract Democratic {
     function propose(
         bytes memory proposalData
     ) public {
-        Voting voting = new Voting(
+        OneTokenOneVote voting = new OneTokenOneVote(
             address(votingToken),
             address(this),
             proposalData,
