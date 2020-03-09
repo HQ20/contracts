@@ -8,7 +8,7 @@ import "../access/TwoTiered.sol";
  * @title OneManOneVote
  * @dev Implements a simple voting process
  *
- * 1. Initialize the Voting with:
+ * 1. Initialize the voting with:
  *       The address of the account that will be the initial electoral officer (admin).
  *       The address of the target contract for a proposal to be enacted.
  *       The proposal data, obtained as an abi encoding of a function in the target contract with any desired arguments.

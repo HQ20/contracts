@@ -6,10 +6,10 @@ import "../math/DecimalMath.sol";
 
 
 /**
- * @title Voting
+ * @title OneTokenOneVote
  * @dev Implements a simple voting process for proposals
  *
- * 1. Initialize the Voting with:
+ * 1. Initialize the voting with:
  *       The address of the contract that will be used as a voting token.
  *       The address of the target contract for a proposal to be enacted.
  *       The proposal data, obtained as an abi encoding of a function in the target contract with any desired arguments.
@@ -19,7 +19,7 @@ import "../math/DecimalMath.sol";
  *  4. Validate the threshold. If the voting threshold is met the voting proposal passes. A voting can be validated any number of times, but once the validation is successful the voting is considered successful forever.
  *  5. Enact the proposal. There is no limit to how many times the proposal can be enacted from one successful vote.
  */
-contract Voting is Ownable {
+contract OneTokenOneVote is Ownable {
     using DecimalMath for uint256;
 
     event VotingCreated();
@@ -55,12 +55,13 @@ contract Voting is Ownable {
         emit VotingCreated();
     }
 
+    modifier proposalPassed() {
+        require(passed == true, "Cannot execute until vote passes.");
+        _;
+    }
+
     /// @dev Function to enact one proposal of this voting.
-    function enact() external {
-        require(
-            passed == true,
-            "Cannot enact proposal until vote passes."
-        );
+    function enact() external proposalPassed {
         // solium-disable-next-line security/no-low-level-calls
         (bool success, ) = targetContract.call(proposalData);
         require(success, "Failed to enact proposal.");
@@ -70,7 +71,7 @@ contract Voting is Ownable {
     /// @dev Use this function to cast votes. Must have approved this contract
     /// (from the frontend) to spend _votes of votingToken tokens.
     /// @param _votes The amount of votingToken tokens that will be casted.
-    function cast(uint256 _votes) external {
+    function vote(uint256 _votes) external {
         votingToken.transferFrom(msg.sender, address(this), _votes);
         votes[msg.sender] = votes[msg.sender].addd(_votes);
         emit VoteCasted(msg.sender, _votes);
@@ -98,7 +99,7 @@ contract Voting is Ownable {
     function validate() public {
         require(
             inFavour() >= thresholdVotes(),
-            "Not enough votes to meet the threshold."
+            "Not enough votes to pass."
         );
         passed = true;
         emit VotingValidated();

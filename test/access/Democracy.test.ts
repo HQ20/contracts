@@ -1,18 +1,18 @@
 import { should } from 'chai';
-import { DemocracyInstance, ERC20MintableDetailedInstance, VotingInstance } from '../../types/truffle-contracts';
+import { DemocracyInstance, ERC20MintableDetailedInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
 // tslint:disable:no-var-requires
 const { expectRevert } = require('@openzeppelin/test-helpers');
 
 const Democracy = artifacts.require('Democracy') as Truffle.Contract<DemocracyInstance>;
 const Token = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
-const Voting = artifacts.require('Voting') as Truffle.Contract<VotingInstance>;
+const Voting = artifacts.require('OneTokenOneVote') as Truffle.Contract<OneTokenOneVoteInstance>;
 should();
 
 /** @test {Democracy} contract */
 contract('Democracy', (accounts) => {
     let democracy: DemocracyInstance;
     let token: ERC20MintableDetailedInstance;
-    let voting: VotingInstance;
+    let voting: OneTokenOneVoteInstance;
     const root = accounts[0];
     const voter1 = accounts[1];
     const threshold = 5000;
@@ -111,7 +111,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isTrue(await democracy.isVoter(voter1));
@@ -134,7 +134,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isFalse(await democracy.isVoter(root));
@@ -157,7 +157,7 @@ contract('Democracy', (accounts) => {
         ).logs[0].args.proposal;
         voting = await Voting.at(votingAddress);
         await token.approve(voting.address, 1, { from: root });
-        await voting.cast(1, { from: root });
+        await voting.vote(1, { from: root });
         await voting.validate();
         await voting.enact();
         assert.isTrue(await democracy.isLeader(root));
@@ -178,7 +178,7 @@ contract('Democracy', (accounts) => {
             ).logs[0].args.proposal;
             voting = await Voting.at(votingAddress);
             await token.approve(voting.address, 1, { from: root });
-            await voting.cast(1, { from: root });
+            await voting.vote(1, { from: root });
             await voting.validate();
             await voting.enact();
             await voting.cancel({ from: root });
@@ -209,7 +209,7 @@ contract('Democracy', (accounts) => {
             ).logs[0].args.proposal;
             voting = await Voting.at(votingAddress);
             await token.approve(voting.address, 1, { from: root });
-            await voting.cast(1, { from: root });
+            await voting.vote(1, { from: root });
             await voting.validate();
             await voting.enact();
             assert.isFalse(await democracy.isLeader(root));
