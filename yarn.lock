@@ -1602,10 +1602,10 @@ caseless@^0.12.0, caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chai-bn@0.2.0, chai-bn@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/chai-bn/-/chai-bn-0.2.0.tgz#7da60617531e5a8bdf9fbd5d848e693b7405a5cb"
-  integrity sha512-h+XqIFikre13N3uiZSc50PZ0VztVjuD/Gytle07EUFkbd8z31tWp37DLAsR1dPozmOLA3yu4hi3IFjJDQ5CKBg==
+chai-bn@0.2.1, chai-bn@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/chai-bn/-/chai-bn-0.2.1.tgz#1dad95e24c3afcd8139ab0262e9bbefff8a30ab7"
+  integrity sha512-01jt2gSXAw7UYFPT5K8d7HYjdXj2vyeIuE+0T/34FWzlNcVbs1JkPxRu7rYMfQnJhrHT8Nr6qjSf5ZwwLU2EYg==
 
 chai@4.2.0, chai@^4.2.0:
   version "4.2.0"
