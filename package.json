@@ -71,7 +71,7 @@
         "truffle-typings": "1.0.8",
         "ts-generator": "0.0.8",
         "ts-node": "8.6.2",
-        "tslint": "6.0.0",
+        "tslint": "6.1.0",
         "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
         "typescript": "3.8.3"
