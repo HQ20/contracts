@@ -44,7 +44,7 @@
         "@openzeppelin/test-helpers": "0.5.5",
         "@truffle/hdwallet-provider": "1.0.33",
         "@types/bignumber.js": "5.0.0",
-        "@types/chai": "4.2.10",
+        "@types/chai": "4.2.11",
         "@types/mocha": "7.0.2",
         "@types/node": "13.9.1",
         "bignumber.js": "9.0.0",
