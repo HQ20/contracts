@@ -56,7 +56,7 @@
         "eth-gas-reporter": "0.2.15",
         "ethlint": "1.2.5",
         "ganache-cli": "6.9.1",
-        "ganache-time-traveler": "1.0.11",
+        "ganache-time-traveler": "1.0.14",
         "girino": "0.0.1-alpha",
         "highlight.js": "9.18.1",
         "markdown-it": "10.0.0",
