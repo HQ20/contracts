@@ -2531,10 +2531,10 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@0.2.15:
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.15.tgz#663752ac05bad1054c3c54d6fa611865a6a75fc1"
-  integrity sha512-nia5IswXUX9XQvc9b3t/PeS+uZFGeq2thzPOot4uLbovpoQRFjxOpo1lz8gbKIfsdOsKYC7pCaTdcScio8bX3Q==
+eth-gas-reporter@0.2.16:
+  version "0.2.16"
+  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.16.tgz#e4d93b4bde057b0dd1472df98c0e5a157fd5bc36"
+  integrity sha512-E/RdhLK93XiiHxdrh3WmpjrH42o9IA+6KRSPOjsbbCpRazzQq9aKaIz4e+GRlHKP+dpamna4GNxILJOTIdVebA==
   dependencies:
     "@ethersproject/abi" "5.0.0-beta.142"
     cli-table3 "^0.5.0"
