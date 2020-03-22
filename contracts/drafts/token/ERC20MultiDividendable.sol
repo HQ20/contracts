@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -36,7 +36,9 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
      * @param amount The amount of dividendTokens to transfer from msg.sender to this contract
      * @param dividendToken The address of the token you wish to transfer to this contract
      */
-    function releaseDividends(uint256 amount, address dividendToken) external {
+    function releaseDividends(uint256 amount, address dividendToken)
+        external virtual
+    {
         resolveDividendToken(dividendToken);
         IERC20(dividendToken).transferFrom(msg.sender, address(this), amount);
         uint256 releasedDividends = amount
@@ -54,7 +56,7 @@ contract ERC20MultiDividendable is ERC20MintableDetailed {
     function claimDividends(
         address payable account,
         address dividendToken
-    ) public returns (uint256) {
+    ) public virtual returns (uint256) {
         uint owing = dividendsOwing(account, dividendToken);
         require(
             owing > 0,

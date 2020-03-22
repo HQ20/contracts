@@ -3,14 +3,14 @@ import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
 
-import { TestERC20MintableInstance, TestERC20MultiDividendableInstance } from '../../../types/truffle-contracts';
+import { ERC20MintableInstance, TestERC20MultiDividendableInstance } from '../../../types/truffle-contracts';
 
 const TestERC20MultiDividendable = artifacts.require(
     'TestERC20MultiDividendable',
 ) as Truffle.Contract<TestERC20MultiDividendableInstance>;
-const TestERC20Mintable = artifacts.require(
-    'TestERC20Mintable',
-) as Truffle.Contract<TestERC20MintableInstance>;
+const ERC20Mintable = artifacts.require(
+    'ERC20Mintable',
+) as Truffle.Contract<ERC20MintableInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -21,13 +21,13 @@ contract('ERC20DividendableToken', (accounts) => {
     const [user1, user2, account1, account2] = accounts;
 
     let dividendable: TestERC20MultiDividendableInstance;
-    let mintable1: TestERC20MintableInstance;
-    let mintable2: TestERC20MintableInstance;
+    let mintable1: ERC20MintableInstance;
+    let mintable2: ERC20MintableInstance;
 
     beforeEach(async () => {
         dividendable = await TestERC20MultiDividendable.new('MultiDividendableToken', 'MDT', 19);
-        mintable1 = await TestERC20Mintable.new();
-        mintable2 = await TestERC20Mintable.new();
+        mintable1 = await ERC20Mintable.new();
+        mintable2 = await ERC20Mintable.new();
         await mintable1.mint(user1, ether('100'));
         await mintable2.mint(user2, ether('100'));
         await dividendable.mint(account1, ether('40'));

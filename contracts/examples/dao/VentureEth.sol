@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../../issuance/IssuanceEth.sol";
@@ -32,7 +32,7 @@ IssuanceEth {
     ERC20DividendableEth(name, symbol, decimals)
     IssuanceEth(address(this))
     {
-        addMinter(address(this));
+        addMember(address(this));
     }
 
 }

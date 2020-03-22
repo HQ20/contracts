@@ -1,5 +1,5 @@
-pragma solidity ^0.5.10;
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.0;
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "./IWhitelist.sol";
 import "./WhitelistInterfaceId.sol";
@@ -34,7 +34,9 @@ contract WhitelistERC165 is Ownable, ERC165, IWhitelist, WhitelistInterfaceId {
      */
     function isMember(address _member)
         public
+        virtual
         view
+        override
         returns(bool)
     {
         return members[_member];
@@ -46,6 +48,8 @@ contract WhitelistERC165 is Ownable, ERC165, IWhitelist, WhitelistInterfaceId {
      */
     function addMember(address _member)
         public
+        virtual
+        override
         onlyOwner
     {
         require(
@@ -63,6 +67,8 @@ contract WhitelistERC165 is Ownable, ERC165, IWhitelist, WhitelistInterfaceId {
      */
     function removeMember(address _member)
         public
+        virtual
+        override
         onlyOwner
     {
         require(

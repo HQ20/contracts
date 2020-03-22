@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./Roles.sol";
 
 
@@ -10,7 +10,7 @@ import "./Roles.sol";
 contract Renounceable is Roles {
 
     /// @dev Remove oneself from the role specified.
-    function renounceMembership(bytes32 roleId) public {
+    function renounceMembership(bytes32 roleId) public virtual {
         _removeMember(msg.sender, roleId);
     }
 }

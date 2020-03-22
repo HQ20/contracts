@@ -1,6 +1,6 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../token/IERC20MintableDetailed.sol";
@@ -56,7 +56,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
      * @notice Use this function to claim your issuance tokens
      * @dev Each user will call this function on his behalf
      */
-    function claim() external nonReentrant {
+    function claim() external virtual nonReentrant {
         require(
             currentState == "LIVE",
             "Cannot claim now."
@@ -79,7 +79,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function for an investor to cancel his investment
      */
-    function cancelInvestment() external nonReentrant {
+    function cancelInvestment() external virtual nonReentrant {
         require (
             currentState == "OPEN" || currentState == "FAILED",
             "Cannot cancel now."
@@ -97,7 +97,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @notice Invest into the issuance by sending ether to this function
      */
-    function invest() public payable {
+    function invest() public virtual payable {
         require(
             currentState == "OPEN",
             "Not open for investments."
@@ -117,7 +117,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function startIssuance() public onlyOwner {
+    function startIssuance() public virtual onlyOwner {
         require(
             issuePrice > 0,
             "Issue price not set."
@@ -128,21 +128,26 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to move to the distributing phase
      */
-    function startDistribution() public onlyOwner {
+    function startDistribution() public virtual onlyOwner {
         _transition("LIVE");
     }
 
     /**
      * @dev Function to cancel all investments
      */
-    function cancelAllInvestments() public onlyOwner{
+    function cancelAllInvestments() public virtual onlyOwner{
         _transition("FAILED");
     }
 
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function withdraw(address payable _wallet) public onlyOwner nonReentrant {
+    function withdraw(address payable _wallet)
+        public
+        virtual
+        onlyOwner
+        nonReentrant
+    {
         require(
             currentState == "LIVE",
             "Cannot withdraw funds now."
@@ -152,7 +157,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         _wallet.transfer(amount);
     }
 
-    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
+    function setIssuePrice(uint256 _issuePrice) public virtual onlyOwner {
         require(
             currentState == "SETUP",
             "Cannot setup now."

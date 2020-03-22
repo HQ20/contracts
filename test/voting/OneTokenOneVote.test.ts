@@ -51,7 +51,7 @@ contract('OneTokenOneVote', (accounts) => {
         await votingToken.mint(voter2, balance2);
         await votingToken.approve(voting.address, votes1, { from: voter1 });
         await votingToken.approve(voting.address, votes2, { from: voter2 });
-        await votedToken.addMinter(voting.address);
+        await votedToken.addMember(voting.address);
     });
 
     /**

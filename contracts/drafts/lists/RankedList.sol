@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -42,6 +42,7 @@ contract RankedList {
      */
     function get(uint256 _id)
         public
+        virtual
         view
         returns (uint256, uint256, uint256, uint256, address)
     {
@@ -54,6 +55,7 @@ contract RankedList {
      */
     function findRank(uint256 _rank)
         public
+        virtual
         view
         returns (uint256)
     {
@@ -72,6 +74,7 @@ contract RankedList {
      */
     function insert(uint256 _rank, address _data)
         public
+        virtual
     {
         uint256 nextId = findRank(_rank);
         if (nextId == 0) {
@@ -87,6 +90,7 @@ contract RankedList {
      */
     function remove(uint256 _id)
         public
+        virtual
     {
         Object memory removeObject = objects[_id];
         if (head == _id && tail == _id) {

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./Roles.sol";
 import "./Renounceable.sol";
 
@@ -30,32 +30,32 @@ contract TwoTiered is Roles, Renounceable {
     }
 
     /// @dev Return `true` if the account belongs to the admin role.
-    function isAdmin(address account) public view returns (bool) {
+    function isAdmin(address account) public virtual view returns (bool) {
         return hasRole(account, ADMIN_ROLE_ID);
     }
 
     /// @dev Return `true` if the account belongs to the user role.
-    function isUser(address account) public view returns (bool) {
+    function isUser(address account) public virtual view returns (bool) {
         return hasRole(account, USER_ROLE_ID);
     }
 
     /// @dev Add an account to the user role. Restricted to admins.
-    function addUser(address account) public onlyAdmin {
+    function addUser(address account) public virtual onlyAdmin {
         _addMember(account, USER_ROLE_ID);
     }
 
     /// @dev Add an account to the admin role. Restricted to admins.
-    function addAdmin(address account) public onlyAdmin {
+    function addAdmin(address account) public virtual onlyAdmin {
         _addMember(account, ADMIN_ROLE_ID);
     }
 
     /// @dev Remove an account from the user role. Restricted to admins.
-    function removeUser(address account) public onlyAdmin {
+    function removeUser(address account) public virtual onlyAdmin {
         _removeMember(account, USER_ROLE_ID);
     }
 
     /// @dev Remove oneself from the admin role.
-    function renounceAdmin() public {
+    function renounceAdmin() public virtual {
         renounceMembership(ADMIN_ROLE_ID);
     }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./UniswapFactory.sol";
@@ -62,8 +62,8 @@ contract UniswapExchange {
         factory = IUniswapFactory(factoryAddress);
     }
 
-    /// FALLBACK FUNCTION
-    function() external payable {
+    /// RECEIVE FUNCTION
+    receive() external virtual payable {
         require(
             msg.value != 0,
             "Need to send some ether."
@@ -79,7 +79,7 @@ contract UniswapExchange {
     /// EXTERNAL FUNCTIONS
     /// @notice Initializes the exchange
     /// @param _tokenAmount the number of tokens to initialize the exchange with
-    function initializeExchange(uint256 _tokenAmount) external payable {
+    function initializeExchange(uint256 _tokenAmount) external virtual payable {
         require(
             invariant == 0 && totalShares == 0,
             "Invariant or totalShares != 0"
@@ -105,6 +105,7 @@ contract UniswapExchange {
         uint256 _timeout
     )
         external
+        virtual
         payable
     {
         require(
@@ -130,6 +131,7 @@ contract UniswapExchange {
         address _recipient
     )
         external
+        virtual
         payable
     {
         require(
@@ -159,6 +161,7 @@ contract UniswapExchange {
         uint256 _timeout
     )
         external
+        virtual
     {
         require(
             // solium-disable-next-line security/no-block-members
@@ -185,6 +188,7 @@ contract UniswapExchange {
         address payable _recipient
     )
         external
+        virtual
     {
         require(
             // solium-disable-next-line security/no-block-members
@@ -215,6 +219,7 @@ contract UniswapExchange {
         uint256 _timeout
     )
         external
+        virtual
     {
         require(
             // solium-disable-next-line security/no-block-members
@@ -244,6 +249,7 @@ contract UniswapExchange {
         uint256 _timeout
     )
         external
+        virtual
     {
         require(
             // solium-disable-next-line security/no-block-members
@@ -269,6 +275,7 @@ contract UniswapExchange {
         uint256 _minTokens
     )
         external
+        virtual
         payable
         returns (bool)
     {
@@ -296,6 +303,7 @@ contract UniswapExchange {
         uint256 _minShares
     )
         external
+        virtual
         payable
         exchangeInitialized
     {
@@ -334,6 +342,7 @@ contract UniswapExchange {
         uint256 _minTokens
     )
         external
+        virtual
     {
         require(
             _sharesBurned > 0,
@@ -367,6 +376,7 @@ contract UniswapExchange {
         address _provider
     )
         external
+        virtual
         view
         returns(uint256 _shares)
     {

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./ERC20MintableDetailed.sol";
@@ -27,7 +27,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     /**
      * @notice Send ether to this function in orther to disburse dividends
      */
-    function releaseDividends() external payable {
+    function releaseDividends() external virtual payable {
         _releaseDividends(msg.value);
     }
 
@@ -35,7 +35,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
      * @dev Function to update the account of the sender
      * @notice Will revert if account need not be updated
      */
-    function claimDividends() public returns(uint256) {
+    function claimDividends() public virtual returns(uint256) {
         return _claimDividends(msg.sender);
     }
 

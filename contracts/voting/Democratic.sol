@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./../voting/OneTokenOneVote.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
@@ -35,7 +35,9 @@ contract Democratic {
     /**
      * @notice Returns the voting proposals.
      */
-    function enumerateProposals() public view returns (address[] memory) {
+    function enumerateProposals()
+        public virtual view returns (address[] memory)
+    {
         return proposals.enumerate();
     }
 
@@ -43,7 +45,7 @@ contract Democratic {
     /// @param proposalData The abi encoding of the proposal, as one function of this contract and any parameters.
     function propose(
         bytes memory proposalData
-    ) public {
+    ) public virtual {
         OneTokenOneVote voting = new OneTokenOneVote(
             address(votingToken),
             address(this),

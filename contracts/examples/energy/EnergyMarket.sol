@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@hq20/contracts/contracts/access/Whitelist.sol";
@@ -43,7 +43,9 @@ contract EnergyMarket is ERC20, TwoTiered {
     /**
      * @dev The production price for each time slot.
      */
-    function getProductionPrice(uint256 _time) public view returns(uint256) {
+    function getProductionPrice(uint256 _time)
+        public virtual view returns(uint256)
+    {
         return uint256(
             max(
                 0,
@@ -56,7 +58,9 @@ contract EnergyMarket is ERC20, TwoTiered {
     /**
      * @dev The consumption price for each time slot
      */
-    function getConsumptionPrice(uint256 _time) public view returns(uint256) {
+    function getConsumptionPrice(uint256 _time)
+        public virtual view returns(uint256)
+    {
         return uint256(
             max(
                 0,
@@ -71,7 +75,7 @@ contract EnergyMarket is ERC20, TwoTiered {
      * time and be paid the production price. Only whitelisted smart meters can
      * call this function.
      */
-    function produce(uint256 _time) public {
+    function produce(uint256 _time) public virtual {
         require(isUser(msg.sender), "Unknown meter.");
         this.transfer(
             msg.sender,
@@ -86,7 +90,7 @@ contract EnergyMarket is ERC20, TwoTiered {
      * time by paying the consumption price. Only whitelisted smart meters can
      * call this function.
      */
-    function consume(uint256 _time) public {
+    function consume(uint256 _time) public virtual {
         require(isUser(msg.sender), "Unknown meter.");
         this.transferFrom(
             msg.sender,

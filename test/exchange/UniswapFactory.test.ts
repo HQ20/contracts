@@ -1,12 +1,12 @@
 import chai = require('chai');
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
-import { TestERC20MintableInstance } from '../../types/truffle-contracts';
+import { ERC20MintableDetailedInstance } from '../../types/truffle-contracts';
 import { UniswapFactoryInstance } from '../../types/truffle-contracts';
 
 // tslint:disable-next-line:max-line-length
-const TestERC20Mintable = artifacts.require('./test/issuance/TestERC20Mintable.sol') as Truffle.Contract<TestERC20MintableInstance>;
-const UniswapFactory = artifacts.require('./exchange/UniswapFactory.sol') as Truffle.Contract<UniswapFactoryInstance>;
+const ERC20MintableDetailed = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const UniswapFactory = artifacts.require('UniswapFactory') as Truffle.Contract<UniswapFactoryInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -19,7 +19,7 @@ contract('UniswapFactory - launchExchange', (accounts) => {
      * @test {UniswapFactory#launchExchange}
      */
     it('Launch an exchange for test token.', async () => {
-        const token = await TestERC20Mintable.new('TestERC20Mintable', 'TST', 18);
+        const token = await ERC20MintableDetailed.new('ERC20MintableDetailed', 'TST', 18);
         const uniswapFactory = await UniswapFactory.new();
         expectEvent(
             await uniswapFactory.launchExchange(token.address),
@@ -34,7 +34,7 @@ contract('UniswapFactory - launchExchange', (accounts) => {
      * @test {UniswapFactory#launchExchange}
      */
     it('Cannot launch an exchnage for an already existing token', async () => {
-        const token = await TestERC20Mintable.new('TestERC20Mintable', 'TST', 18);
+        const token = await ERC20MintableDetailed.new('ERC20MintableDetailed', 'TST', 18);
         const uniswapFactory = await UniswapFactory.new();
         await uniswapFactory.launchExchange(token.address);
         await expectRevert(
@@ -58,11 +58,11 @@ contract('UniswapFactory - launchExchange', (accounts) => {
 
 /** @test {UniswapFactory} contract */
 contract('UniswapFactory - view methods', (accounts) => {
-    let token: TestERC20MintableInstance;
+    let token: ERC20MintableDetailedInstance;
     let uniswapFactory: UniswapFactoryInstance;
 
     beforeEach(async () => {
-        token = await TestERC20Mintable.new('TestERC20Mintable', 'TST', 18);
+        token = await ERC20MintableDetailed.new('ERC20MintableDetailed', 'TST', 18);
         uniswapFactory = await UniswapFactory.new();
         await uniswapFactory.launchExchange(token.address);
     });

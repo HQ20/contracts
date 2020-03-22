@@ -1,10 +1,9 @@
-pragma solidity ^0.5.10;
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.0;
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./../../../../examples/introspection/erc165/ERC20Whitelisted.sol";
 
 
 contract ERC20WhitelistedMock is ERC20Whitelisted, Ownable {
-    IWhitelist whitelist;
 
     constructor (address whitelistAddress)
         public

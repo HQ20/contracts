@@ -150,10 +150,10 @@
     fs-extra "^8.1.0"
     try-require "^1.2.1"
 
-"@openzeppelin/contracts@2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-2.5.0.tgz#e327a98ba1d26b7756ff62885a0aa0967a375449"
-  integrity sha512-t3jm8FrhL9tkkJTofkznTqo/XXdHi21w5yXwalEnaMOp22ZwZ0f/mmKdlgMMLPFa6bSVHbY88mKESwJT/7m5Lg==
+"@openzeppelin/contracts@3.0.0":
+  version "3.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.0.0-rc.0.tgz#6cc5128f509b6310668547899a4115f8512c32ff"
+  integrity sha512-Ts7h4/5tNiRN2iiH10Mp+6CgmK/PETDHYIJ/tpUrXgGjWR51T/Dr8kxa41GeHHhmAsuo+CkcuG9L4di6qth/Mw==
 
 "@openzeppelin/test-helpers@0.5.5":
   version "0.5.5"
@@ -238,7 +238,7 @@
     ethereumjs-wallet "^0.6.3"
     source-map-support "^0.5.16"
     web3 "1.2.1"
-    web3-provider-engine "git+https://github.com/trufflesuite/provider-engine.git#web3-one"
+    web3-provider-engine "https://github.com/trufflesuite/provider-engine#web3-one"
 
 "@truffle/interface-adapter@^0.3.0":
   version "0.3.3"
@@ -7863,7 +7863,6 @@ web3-net@1.2.6:
 
 "web3-provider-engine@git+https://github.com/trufflesuite/provider-engine.git#web3-one":
   version "14.0.6"
-  uid "3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
   resolved "git+https://github.com/trufflesuite/provider-engine.git#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
   dependencies:
     async "^2.5.0"

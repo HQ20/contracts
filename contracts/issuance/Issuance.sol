@@ -1,6 +1,6 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -66,7 +66,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
      * (from the frontend) to spend _amount of currencyToken tokens.
      * @param _amount The amount of currencyToken tokens that will be invested.
      */
-    function invest(uint256 _amount) external {
+    function invest(uint256 _amount) external virtual {
         require(
             currentState == "OPEN",
             "Not open for investments."
@@ -84,7 +84,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         emit InvestmentAdded(msg.sender, _amount);
     }
 
-    function claim() external nonReentrant {
+    function claim() external virtual nonReentrant {
         require(
             currentState == "LIVE",
             "Cannot claim now."
@@ -107,7 +107,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function for an investor to cancel his investment
      */
-    function cancelInvestment() external nonReentrant {
+    function cancelInvestment() external virtual nonReentrant {
         require (
             currentState == "OPEN" || currentState == "FAILED",
             "Cannot cancel now."
@@ -125,7 +125,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to open the issuance to investors
      */
-    function startIssuance() public onlyOwner {
+    function startIssuance() public virtual onlyOwner {
         require(
             issuePrice > 0,
             "Issue price not set."
@@ -136,21 +136,21 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
     /**
      * @dev Function to move to the distributing phase
      */
-    function startDistribution() public onlyOwner {
+    function startDistribution() public virtual onlyOwner {
         _transition("LIVE");
     }
 
     /**
      * @dev Function to cancel all investments
      */
-    function cancelAllInvestments() public onlyOwner{
+    function cancelAllInvestments() public virtual onlyOwner{
         _transition("FAILED");
     }
 
     /**
      * @dev Function to transfer all collected tokens to the wallet of the owner
      */
-    function withdraw(address _wallet) public onlyOwner {
+    function withdraw(address _wallet) public virtual onlyOwner {
         require(
             currentState == "LIVE",
             "Cannot withdraw funds now."
@@ -160,7 +160,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         IERC20(currencyToken).transfer(_wallet, amountRaised);
     }
 
-    function setIssuePrice(uint256 _issuePrice) public onlyOwner {
+    function setIssuePrice(uint256 _issuePrice) public virtual onlyOwner {
         require(
             currentState == "SETUP",
             "Cannot setup now."

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -35,6 +35,7 @@ contract StateMachine {
      */
     function transitionExists(bytes32 originState, bytes32 targetState)
         public
+        virtual
         view
         returns(bool)
     {

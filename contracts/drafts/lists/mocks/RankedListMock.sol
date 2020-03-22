@@ -1,76 +1,56 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "../RankedList.sol";
 
 
 contract RankedListMock is RankedList{
 
+
     function addHead(uint256 _rank, address _data)
         public
     {
-        return super._addHead(_rank, _data);
+        _addHead(_rank, _data);
     }
 
     function addTail(uint256 _rank, address _data)
         public
     {
-        return super._addTail(_rank, _data);
+        _addTail(_rank, _data);
     }
 
     function insertAfter(uint256 _prevId, uint256 _rank, address _data)
         public
     {
-        return super._insertAfter(_prevId, _rank, _data);
+        _insertAfter(_prevId, _rank, _data);
     }
 
     function insertBefore(uint256 _nextId, uint256 _rank, address _data)
         public
     {
-        return super._insertBefore(_nextId, _rank, _data);
+        _insertBefore(_nextId, _rank, _data);
     }
 
-    function _setHead(uint256 _id)
-        internal
+    function setHead(uint256 _id)
+        public
     {
-        head = _id;
-        emit NewHead(_id);
+        _setHead(_id);
     }
 
-    function _setTail(uint256 _id)
-        internal
+    function setTail(uint256 _id)
+        public
     {
-        tail = _id;
-        emit NewTail(_id);
+        _setTail(_id);
     }
 
-    function _createObject(uint256 _rank, address _data)
-        internal
+    function createObject(uint256 _rank, address _data)
+        public
         returns (uint256)
     {
-        uint256 newId = idCounter;
-        idCounter += 1;
-        Object memory object = Object(
-            newId,
-            0,
-            0,
-            _rank,
-            _data
-        );
-        objects[object.id] = object;
-        emit ObjectCreated(
-            object.id,
-            object.rank,
-            object.data
-        );
-        return object.id;
+        return _createObject(_rank, _data);
     }
 
-    function _link(uint256 _prevId, uint256 _nextId)
-        internal
+    function link(uint256 _prevId, uint256 _nextId)
+        public
     {
-        if (_prevId != 0 && _nextId != 0) {
-            objects[_prevId].next = _nextId;
-            objects[_nextId].prev = _prevId;
-            emit ObjectsLinked(_prevId, _nextId);
-        }
+        _link(_prevId, _nextId);
     }
 }

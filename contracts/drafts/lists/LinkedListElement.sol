@@ -1,5 +1,5 @@
-pragma solidity ^0.5.10;
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.0;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
 /**
@@ -23,7 +23,7 @@ contract LinkedListElement is Ownable {
     /**
      * @dev The LinkedListElement can only be linked by the contract that created it.
      */
-    function setNext(LinkedListElement _next) public onlyOwner
+    function setNext(LinkedListElement _next) public virtual onlyOwner
     {
         next = _next;
         emit NextSet(address(this), address(next));
