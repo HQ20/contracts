@@ -7014,10 +7014,10 @@ truffle-typings@1.0.8:
     "@types/mocha" "^5.2.5"
     "@types/web3" "^1.0.18"
 
-truffle@5.1.17:
-  version "5.1.17"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.17.tgz#9c821274afee807b64a04e680a89e8688981cdb4"
-  integrity sha512-x8CNCjtsX3B34Q6TI467+kgxqzjCRMvLsGIqf/MHo1NpntP1tIOySGJ+idEg857X0hJz8zfOVz9QKbvrrsKUGQ==
+truffle@5.1.18:
+  version "5.1.18"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.18.tgz#2fefaed849698b7fb865b417a197d1b6d9229db3"
+  integrity sha512-9oxmLmyTXML5Auxl8adPd3kLcOZVhYNapCmPUcMnYCOXthxa3NEOW9y3PTcoDnwFyuIOETGIiJp4Ew9bmY8v6Q==
   dependencies:
     app-module-path "^2.2.0"
     mocha "5.2.0"
