@@ -1,11 +1,13 @@
 pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/math/SignedSafeMath.sol";
 
 
 /// @dev Implements simple fixed point math add, sub, mul and div operations.
 /// @author Alberto Cuesta Cañada
 library DecimalMath {
     using SafeMath for uint256;
+    using SignedSafeMath for int256;
 
     /// @dev Returns 1 in the fixed point representation, with `decimals` decimals.
     function unit(uint8 decimals) internal pure returns (uint256) {
@@ -17,8 +19,18 @@ library DecimalMath {
         return x.add(y);
     }
 
+    /// @dev Adds x and y, assuming they are both fixed point with 18 decimals.
+    function addd(int256 x, int256 y) internal pure returns (int256) {
+        return x.add(y);
+    }
+
     /// @dev Substracts y from x, assuming they are both fixed point with 18 decimals.
     function subd(uint256 x, uint256 y) internal pure returns (uint256) {
+        return x.sub(y);
+    }
+
+    /// @dev Substracts y from x, assuming they are both fixed point with 18 decimals.
+    function subd(int256 x, int256 y) internal pure returns (int256) {
         return x.sub(y);
     }
 
@@ -27,13 +39,23 @@ library DecimalMath {
         return muld(x, y, 18);
     }
 
+    /// @dev Multiplies x and y, assuming they are both fixed point with 18 digits.
+    function muld(int256 x, int256 y) internal pure returns (int256) {
+        return muld(x, y, 18);
+    }
+
     /// @dev Multiplies x and y, assuming they are both fixed point with `decimals` digits.
-    function muld(
-        uint256 x,
-        uint256 y,
-        uint8 decimals
-    ) internal pure returns (uint256) {
+    function muld(uint256 x, uint256 y, uint8 decimals)
+        internal pure returns (uint256)
+    {
         return x.mul(y).div(unit(decimals));
+    }
+
+    /// @dev Multiplies x and y, assuming they are both fixed point with `decimals` digits.
+    function muld(int256 x, int256 y, uint8 decimals)
+        internal pure returns (int256)
+    {
+        return x.mul(y).div(int256(unit(decimals)));
     }
 
     /// @dev Divides x between y, assuming they are both fixed point with 18 digits.
@@ -41,13 +63,22 @@ library DecimalMath {
         return divd(x, y, 18);
     }
 
+    /// @dev Divides x between y, assuming they are both fixed point with 18 digits.
+    function divd(int256 x, int256 y) internal pure returns (int256) {
+        return divd(x, y, 18);
+    }
+
     /// @dev Divides x between y, assuming they are both fixed point with `decimals` digits.
-    function divd(
-        uint256 x,
-        uint256 y,
-        uint8 decimals
-    ) internal pure returns (uint256) {
+    function divd(uint256 x, uint256 y, uint8 decimals)
+        internal pure returns (uint256)
+    {
         return x.mul(unit(decimals)).div(y);
     }
 
+    /// @dev Divides x between y, assuming they are both fixed point with `decimals` digits.
+    function divd(int256 x, int256 y, uint8 decimals)
+        internal pure returns (int256)
+    {
+        return x.mul(int(unit(decimals))).div(y);
+    }
 }

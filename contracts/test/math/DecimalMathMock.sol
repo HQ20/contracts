@@ -5,6 +5,7 @@ import "../../math/DecimalMath.sol";
 contract DecimalMathMock {
     using DecimalMath for uint8;
     using DecimalMath for uint256;
+    using DecimalMath for int256;
 
     function unit(uint8 decimals) public virtual pure returns (uint256) {
         return decimals.unit();
@@ -14,7 +15,15 @@ contract DecimalMathMock {
         return x.addd(y);
     }
 
+    function adddInt(int256 x, int256 y) public virtual pure returns (int256) {
+        return x.addd(y);
+    }
+
     function subd(uint256 x, uint256 y) public virtual pure returns (uint256) {
+        return x.subd(y);
+    }
+
+    function subdInt(int256 x, int256 y) public virtual pure returns (int256) {
         return x.subd(y);
     }
 
@@ -22,11 +31,19 @@ contract DecimalMathMock {
         return x.muld(y);
     }
 
-    function muld2(
-        uint256 x,
-        uint256 y,
-        uint8 decimals
-    ) public virtual pure returns (uint256) {
+    function muldInt(int256 x, int256 y) public virtual pure returns (int256) {
+        return x.muld(y);
+    }
+
+    function muld2(uint256 x, uint256 y, uint8 decimals)
+        public virtual pure returns (uint256)
+    {
+        return x.muld(y, decimals);
+    }
+
+    function muld2Int(int256 x, int256 y, uint8 decimals)
+        public virtual pure returns (int256)
+    {
         return x.muld(y, decimals);
     }
 
@@ -34,11 +51,19 @@ contract DecimalMathMock {
         return x.divd(y);
     }
 
-    function divd2(
-        uint256 x,
-        uint256 y,
-        uint8 decimals
-    ) public virtual pure returns (uint256) {
+    function divdInt(int256 x, int256 y) public virtual pure returns (int256) {
+        return x.divd(y);
+    }
+
+    function divd2(uint256 x, uint256 y, uint8 decimals)
+        public virtual pure returns (uint256)
+    {
+        return x.divd(y, decimals);
+    }
+
+    function divd2Int(int256 x, int256 y, uint8 decimals)
+        public virtual pure returns (int256)
+    {
         return x.divd(y, decimals);
     }
 }

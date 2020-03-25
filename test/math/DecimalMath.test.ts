@@ -21,7 +21,7 @@ contract('DecimalMath', () => {
     let decimal6_18: BN;
     let decimal1_16: BN;
     let decimal2_16: BN;
-
+    let minus1: BN;
 
     beforeEach(async () => {
         tokenMath = await DecimalMath.new();
@@ -33,6 +33,7 @@ contract('DecimalMath', () => {
         decimal6_18 = decimal1_18.mul(new BN('6'));
         decimal1_16 = new BN(await tokenMath.unit(decimals16.toString()));
         decimal2_16 = decimal1_16.mul(new BN('2'));
+        minus1 = new BN('-1');
     });
 
     /**
@@ -46,33 +47,75 @@ contract('DecimalMath', () => {
      * @test {DecimalMath#addd()}
      */
     it('adds decimal values.', async () => {
-        BN(await tokenMath.addd(decimal1_18.toString(), decimal1_18.toString())).should.be.bignumber.equal(decimal2_18);
+        BN(await tokenMath.addd(
+            decimal1_18.toString(),
+            decimal1_18.toString(),
+        )).should.be.bignumber.equal(decimal2_18);
+        BN(await tokenMath.adddInt(
+            decimal1_18.mul(minus1).toString(),
+            decimal1_18.mul(minus1).toString(),
+        )).should.be.bignumber.equal(decimal2_18.mul(minus1));
     });
 
     /**
      * @test {DecimalMath#subd()}
      */
     it('substracts decimal values.', async () => {
-        BN(await tokenMath.subd(decimal3_18.toString(), decimal2_18.toString())).should.be.bignumber.equal(decimal1_18);
+        BN(await tokenMath.subd(
+            decimal3_18.toString(),
+            decimal2_18.toString(),
+        )).should.be.bignumber.equal(decimal1_18);
+        BN(await tokenMath.subdInt(
+            decimal3_18.mul(minus1).toString(),
+            decimal2_18.mul(minus1).toString(),
+        )).should.be.bignumber.equal(decimal1_18.mul(minus1));
     });
 
     /**
      * @test {DecimalMath#muld()}
      */
     it('multiplies decimal values.', async () => {
-        BN(await (tokenMath).muld(decimal2_18.toString(), decimal3_18.toString()))
-            .should.be.bignumber.equal(decimal6_18);
-        BN(await tokenMath.muld2(decimal2_16.toString(), decimal3_18.toString(), decimals16.toString()))
-            .should.be.bignumber.equal(decimal6_18);
+        BN(await tokenMath.muld(
+            decimal2_18.toString(),
+            decimal3_18.toString(),
+        )).should.be.bignumber.equal(decimal6_18);
+        BN(await tokenMath.muldInt(
+            decimal2_18.mul(minus1).toString(),
+            decimal3_18.toString(),
+        )).should.be.bignumber.equal(decimal6_18.mul(minus1));
+        BN(await tokenMath.muld2(
+            decimal2_16.toString(),
+            decimal3_18.toString(),
+            decimals16.toString(),
+        )).should.be.bignumber.equal(decimal6_18);
+        BN(await tokenMath.muld2Int(
+            decimal2_16.mul(minus1).toString(),
+            decimal3_18.toString(),
+            decimals16.toString(),
+        )).should.be.bignumber.equal(decimal6_18.mul(minus1));
     });
 
     /**
      * @test {DecimalMath#divd()}
      */
     it('divides decimal values.', async () => {
-        BN(await tokenMath.divd(decimal6_18.toString(), decimal3_18.toString()))
-            .should.be.bignumber.equal(decimal2_18);
-        BN(await (tokenMath).divd2(decimal6_18.toString(), decimal3_18.toString(), decimals16.toString()))
-            .should.be.bignumber.equal(decimal2_16);
+        BN(await tokenMath.divd(
+            decimal6_18.toString(),
+            decimal3_18.toString(),
+        )).should.be.bignumber.equal(decimal2_18);
+        BN(await tokenMath.divdInt(
+            decimal6_18.mul(minus1).toString(),
+            decimal3_18.toString(),
+        )).should.be.bignumber.equal(decimal2_18.mul(minus1));
+        BN(await tokenMath.divd2(
+            decimal6_18.toString(),
+            decimal3_18.toString(),
+            decimals16.toString(),
+        )).should.be.bignumber.equal(decimal2_16);
+        BN(await tokenMath.divd2Int(
+            decimal6_18.mul(minus1).toString(),
+            decimal3_18.toString(),
+            decimals16.toString(),
+        )).should.be.bignumber.equal(decimal2_16.mul(minus1));
     });
 });
