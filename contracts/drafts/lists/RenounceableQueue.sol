@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -30,6 +30,7 @@ contract RenounceableQueue {
      */
     function next(uint256 _id)
         public
+        virtual
         view
         returns (bool, uint256)
     {
@@ -44,6 +45,7 @@ contract RenounceableQueue {
      */
     function prev(uint256 _id)
         public
+        virtual
         view
         returns (bool, uint256)
     {
@@ -58,6 +60,7 @@ contract RenounceableQueue {
      */
     function get(uint256 _id)
         public
+        virtual
         view
         returns (address)
     {
@@ -69,6 +72,7 @@ contract RenounceableQueue {
      */
     function find(address _data)
         public
+        virtual
         view
         returns (bool, uint256)
     {
@@ -85,8 +89,10 @@ contract RenounceableQueue {
      */
     function addHead(address _data)
         public
+        virtual
     {
-        head = objects.push(_data) - 1;
+        objects.push(_data);
+        head = objects.length - 1;
         emit ObjectCreated(head, _data);
         emit NewHead(head);
     }
@@ -96,6 +102,7 @@ contract RenounceableQueue {
      */
     function remove(uint256 _id)
         public
+        virtual
     {
         if (_id == head) {
             (,head) = next(head);

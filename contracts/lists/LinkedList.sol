@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -36,6 +36,7 @@ contract LinkedList {
      */
     function get(uint256 _id)
         public
+        virtual
         view
         returns (uint256, uint256, address)
     {
@@ -48,6 +49,7 @@ contract LinkedList {
      */
     function findPrevId(uint256 _id)
         public
+        virtual
         view
         returns (uint256)
     {
@@ -64,6 +66,7 @@ contract LinkedList {
      */
     function findTailId()
         public
+        virtual
         view
         returns (uint256)
     {
@@ -79,6 +82,7 @@ contract LinkedList {
      */
     function findIdForData(address _data)
         public
+        virtual
         view
         returns (uint256)
     {
@@ -94,6 +98,7 @@ contract LinkedList {
      */
     function addHead(address _data)
         public
+        virtual
     {
         uint256 objectId = _createObject(_data);
         _link(objectId, head);
@@ -105,6 +110,7 @@ contract LinkedList {
      */
     function addTail(address _data)
         public
+        virtual
     {
         if (head == 0) {
             addHead(_data);
@@ -121,6 +127,7 @@ contract LinkedList {
      */
     function remove(uint256 _id)
         public
+        virtual
     {
         Object memory removeObject = objects[_id];
         if (head == _id) {
@@ -139,6 +146,7 @@ contract LinkedList {
      */
     function insertAfter(uint256 _prevId, address _data)
         public
+        virtual
     {
         Object memory prevObject = objects[_prevId];
         uint256 newObjectId = _createObject(_data);
@@ -151,6 +159,7 @@ contract LinkedList {
      */
     function insertBefore(uint256 _nextId, address _data)
         public
+        virtual
     {
         if (_nextId == head) {
             addHead(_data);

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 
@@ -23,6 +23,7 @@ contract Roles {
      */
     function hasRole(address account, bytes32 roleId)
         public
+        virtual
         view
         returns(bool)
     {
@@ -35,6 +36,7 @@ contract Roles {
      */
     function countMembers(bytes32 roleId)
         public
+        virtual
         view
         returns (uint256)
     {
@@ -47,6 +49,7 @@ contract Roles {
      */
     function enumerateMembers(bytes32 roleId)
         public
+        virtual
         view
         returns (address[] memory)
     {

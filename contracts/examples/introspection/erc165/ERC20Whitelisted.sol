@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 import "./IWhitelist.sol";
@@ -18,6 +18,8 @@ contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
 
     function transfer(address recipient, uint256 amount)
         public
+        virtual
+        override
         returns(bool)
     {
         require(
@@ -29,6 +31,8 @@ contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
 
     function transferFrom(address sender, address recipient, uint256 amount)
         public
+        virtual
+        override
         returns(bool)
     {
         require(
@@ -40,6 +44,7 @@ contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
 
     function _mint(address account, uint256 amount)
         internal
+        override
     {
         require(
             whitelist.isMember(account),

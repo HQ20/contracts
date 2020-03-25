@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -40,6 +40,7 @@ contract DoubleLinkedList {
      */
     function get(uint256 _id)
         public
+        virtual
         view
         returns (uint256, uint256, uint256, address)
     {
@@ -52,6 +53,7 @@ contract DoubleLinkedList {
      */
     function findIdForData(address _data)
         public
+        virtual
         view
         returns (uint256)
     {
@@ -67,6 +69,7 @@ contract DoubleLinkedList {
      */
     function addHead(address _data)
         public
+        virtual
     {
         uint256 objectId = _createObject(_data);
         _link(objectId, head);
@@ -79,6 +82,7 @@ contract DoubleLinkedList {
      */
     function addTail(address _data)
         public
+        virtual
     {
         if (head == 0) {
             addHead(_data);
@@ -95,6 +99,7 @@ contract DoubleLinkedList {
      */
     function remove(uint256 _id)
         public
+        virtual
     {
         Object memory removeObject = objects[_id];
         if (head == _id && tail == _id) {
@@ -121,6 +126,7 @@ contract DoubleLinkedList {
      */
     function insertAfter(uint256 _prevId, address _data)
         public
+        virtual
     {
         if (_prevId == tail) {
             addTail(_data);
@@ -139,6 +145,7 @@ contract DoubleLinkedList {
      */
     function insertBefore(uint256 _nextId, address _data)
         public
+        virtual
     {
         if (_nextId == head) {
             addHead(_data);

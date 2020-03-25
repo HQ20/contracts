@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./Roles.sol";
 import "./Renounceable.sol";
 import "./../voting/Democratic.sol";
@@ -37,50 +37,50 @@ contract Democracy is Roles, Renounceable, Democratic {
     }
 
     /// @dev Return `true` if the account belongs to the leader role.
-    function isLeader(address account) public view returns (bool) {
+    function isLeader(address account) public virtual view returns (bool) {
         return hasRole(account, LEADER_ROLE_ID);
     }
 
     /// @dev Return `true` if the account belongs to the voter role.
-    function isVoter(address account) public view returns (bool) {
+    function isVoter(address account) public virtual view returns (bool) {
         return hasRole(account, VOTER_ROLE_ID);
     }
 
     /// @dev Add an account to the voter role. Restricted to proposals.
-    function addVoter(address account) public onlyProposal {
+    function addVoter(address account) public virtual onlyProposal {
         _addMember(account, VOTER_ROLE_ID);
     }
 
     /// @dev Add an account to the leader role. Restricted to proposals.
-    function addLeader(address account) public onlyProposal {
+    function addLeader(address account) public virtual onlyProposal {
         _addMember(account, LEADER_ROLE_ID);
     }
 
     /// @dev Remove an account from the voter role. Restricted to proposals.
-    function removeVoter(address account) public onlyProposal {
+    function removeVoter(address account) public virtual onlyProposal {
         _removeMember(account, VOTER_ROLE_ID);
     }
 
     /// @dev Remove an account from the leader role. Restricted to proposals.
-    function removeLeader(address account) public onlyProposal {
+    function removeLeader(address account) public virtual onlyProposal {
         _removeMember(account, LEADER_ROLE_ID);
     }
 
     /// @dev Remove oneself from the leader role.
-    function renounceLeader() public {
+    function renounceLeader() public virtual {
         renounceMembership(LEADER_ROLE_ID);
     }
 
     /// @dev Remove oneself from the voter role.
-    function renounceVoter() public {
+    function renounceVoter() public virtual {
         renounceMembership(VOTER_ROLE_ID);
     }
 
     /// @dev Propose a democratic action.
     /// @param proposalData The abi encoding of the proposal, as one function of this contract and any parameters.
-    function propose(
+    function propose (
         bytes memory proposalData
-    ) public onlyVoter {
+    ) public virtual override onlyVoter {
         super.propose(proposalData);
     }
 }

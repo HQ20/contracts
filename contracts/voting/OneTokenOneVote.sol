@@ -1,6 +1,6 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../math/DecimalMath.sol";
 
@@ -61,7 +61,7 @@ contract OneTokenOneVote is Ownable {
     }
 
     /// @dev Function to enact one proposal of this voting.
-    function enact() external proposalPassed {
+    function enact() external virtual proposalPassed {
         // solium-disable-next-line security/no-low-level-calls
         (bool success, ) = targetContract.call(proposalData);
         require(success, "Failed to enact proposal.");
@@ -71,14 +71,14 @@ contract OneTokenOneVote is Ownable {
     /// @dev Use this function to cast votes. Must have approved this contract
     /// (from the frontend) to spend _votes of votingToken tokens.
     /// @param _votes The amount of votingToken tokens that will be casted.
-    function vote(uint256 _votes) external {
+    function vote(uint256 _votes) external virtual {
         votingToken.transferFrom(msg.sender, address(this), _votes);
         votes[msg.sender] = votes[msg.sender].addd(_votes);
         emit VoteCasted(msg.sender, _votes);
     }
 
     /// @dev Use this function to retrieve your votingToken votes in case you changed your mind or the voting has passed
-    function cancel() external {
+    function cancel() external virtual {
         uint256 count = votes[msg.sender];
         delete votes[msg.sender];
         votingToken.transfer(msg.sender, count);
@@ -86,17 +86,17 @@ contract OneTokenOneVote is Ownable {
     }
 
     /// @dev Number of votes casted in favour of the proposal.
-    function inFavour() public view returns (uint256) {
+    function inFavour() public virtual view returns (uint256) {
         return votingToken.balanceOf(address(this));
     }
 
     /// @dev Number of votes needed to pass the proposal.
-    function thresholdVotes() public view returns (uint256) {
+    function thresholdVotes() public virtual view returns (uint256) {
         return votingToken.totalSupply().muld(threshold, 4);
     }
 
     /// @dev Function to validate the threshold
-    function validate() public {
+    function validate() public virtual {
         require(
             inFavour() >= thresholdVotes(),
             "Not enough votes to pass."

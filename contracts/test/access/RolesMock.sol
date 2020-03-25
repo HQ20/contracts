@@ -1,14 +1,14 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./../../access/Roles.sol";
 
 
 contract RolesMock is Roles {
 
-    function addMember(address account, bytes32 roleId) public {
+    function addMember(address account, bytes32 roleId) public virtual {
         _addMember(account, roleId);
     }
 
-    function removeMember(address account, bytes32 roleId) public {
+    function removeMember(address account, bytes32 roleId) public virtual {
         _removeMember(account, roleId);
     }
 }

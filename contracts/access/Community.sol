@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./Roles.sol";
 import "./Renounceable.sol";
 
@@ -24,17 +24,17 @@ contract Community is Roles, Renounceable {
     }
 
     /// @dev Return `true` if the `account` belongs to the community.
-    function isMember(address account) public view returns (bool) {
+    function isMember(address account) public virtual view returns (bool) {
         return hasRole(account, COMMUNITY_ROLE_ID);
     }
 
     /// @dev Add a member of the community. Caller must already belong to the community.
-    function addMember(address account) public onlyMember {
+    function addMember(address account) public virtual onlyMember {
         _addMember(account, COMMUNITY_ROLE_ID);
     }
 
     /// @dev Remove oneself as a member of the community.
-    function leaveCommunity() public { // Roles will check membership.
+    function leaveCommunity() public virtual { // Roles will check membership.
         renounceMembership(COMMUNITY_ROLE_ID);
     }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 
 /**
@@ -12,6 +12,7 @@ contract StringConversion {
      */
     function byteAt(bytes32 _data, uint256 _at)
         public
+        virtual
         pure
         returns (bytes1)
     {
@@ -26,6 +27,7 @@ contract StringConversion {
      */
     function resizeBytes(bytes memory _bytes, uint256 _length)
         public
+        virtual
         pure
         returns (bytes memory)
     {
@@ -43,6 +45,7 @@ contract StringConversion {
      */
     function trimEmptyChars(bytes32 _bytes)
         public
+        virtual
         pure
         returns (bytes memory)
     {
@@ -65,6 +68,7 @@ contract StringConversion {
      */
     function bytes32ToString(bytes32 _data)
         public
+        virtual
         pure
         returns (string memory)
     {
@@ -77,6 +81,7 @@ contract StringConversion {
      */
     function stringToBytes32(string memory _data)
         public
+        virtual
         pure
         returns (bytes32 result)
     {

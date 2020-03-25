@@ -10,7 +10,6 @@ jobs:
   - stage: Tests
     script: yarn test:ci
   - script: yarn coverage:ci
-  - script: yarn lint
 
 deploy:
   provider: npm

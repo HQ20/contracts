@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../../access/TwoTiered.sol";
@@ -18,6 +18,7 @@ contract ERC20MintableHQ20 is ERC20, TwoTiered {
     /// @dev Only Users can mint new tokens
     function mint(address account, uint256 amount)
         public
+        virtual
         onlyUser
         returns (bool)
     {

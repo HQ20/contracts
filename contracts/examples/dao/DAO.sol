@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -26,8 +26,6 @@ contract DAO is VentureEth, Democratic {
 
     event VentureAdded(address venture);
 
-    uint256 public threshold;
-
     EnumerableSet.AddressSet internal ventures;
 
     constructor(
@@ -46,12 +44,12 @@ contract DAO is VentureEth, Democratic {
     /**
      * @dev Fallback function. Required when collecting ether dividends from ventures.
      */
-    function () external payable {}
+    receive() external virtual payable {}
 
     /**
      * @notice To be called during the first investment round.
      */
-    function startDistribution() public onlyOwner {
+    function startDistribution() public virtual override onlyOwner {
         // solium-disable-next-line security/no-low-level-calls
         (bool success, ) = address(this).delegatecall(
             abi.encodeWithSignature("transferOwnership(address)", address(this))
@@ -70,7 +68,7 @@ contract DAO is VentureEth, Democratic {
     function investVenture(
         address venture,
         uint256 investment
-    ) public onlyProposal {
+    ) public virtual onlyProposal {
         ventures.add(venture);
         VentureEth(venture).invest.value(investment)();
         emit VentureAdded(venture);
@@ -82,7 +80,7 @@ contract DAO is VentureEth, Democratic {
      */
     function retrieveVentureTokens(
         address venture
-    ) public {
+    ) public virtual {
         VentureEth(venture).claim();
     }
 
@@ -92,7 +90,7 @@ contract DAO is VentureEth, Democratic {
      */
     function cancelVenture(
         address venture
-    ) public onlyProposal {
+    ) public virtual onlyProposal {
         VentureEth(venture).cancelInvestment();
         ventures.remove(venture);
     }
@@ -103,7 +101,7 @@ contract DAO is VentureEth, Democratic {
      */
     function claimDividendsFromVenture(
         address venture
-    ) public returns(uint256) {
+    ) public virtual returns(uint256) {
         return VentureEth(venture).claimDividends();
     }
 
@@ -113,7 +111,7 @@ contract DAO is VentureEth, Democratic {
      * @notice Hook for proposals to release dividends.
      * @param amount The ether amount to be released as dividends.
      */
-    function releaseDividends(uint256 amount) public onlyProposal {
+    function releaseDividends(uint256 amount) public virtual onlyProposal {
         _releaseDividends(amount);
     }
 
@@ -122,7 +120,7 @@ contract DAO is VentureEth, Democratic {
     /**
      * @notice Hook for proposals to restart investor rounds.
      */
-    function restartInvestorRound(uint256 _issuePrice) public onlyProposal {
+    function restartInvestorRound(uint256 _issuePrice) public virtual onlyProposal {
         _transition("SETUP");
         this.setIssuePrice(_issuePrice);
         this.startIssuance();
@@ -131,14 +129,14 @@ contract DAO is VentureEth, Democratic {
     /**
      * @notice Hook for proposals to start distribution in a non-initial investment round.
      */
-    function restartDistribution() public onlyProposal {
+    function restartDistribution() public virtual onlyProposal {
         _transition("LIVE");
     }
 
     /**
      * @notice Hook for proposals to cancel all new investments in a non-initial investment round.
      */
-    function cancelInvestmentRound() public onlyProposal {
+    function cancelInvestmentRound() public virtual onlyProposal {
         this.cancelAllInvestments();
     }
 
@@ -147,7 +145,7 @@ contract DAO is VentureEth, Democratic {
     /**
      * @notice Returns the invested ventures.
      */
-    function enumerateVentures() public view returns (address[] memory) {
+    function enumerateVentures() public virtual view returns (address[] memory) {
         return ventures.enumerate();
     }
 }

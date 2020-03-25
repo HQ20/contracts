@@ -1,6 +1,6 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -32,6 +32,7 @@ contract Classifieds {
 
     constructor (address _currencyTokenAddress, address _itemTokenAddress)
         public
+        virtual
     {
         currencyToken = IERC20(_currencyTokenAddress);
         itemToken = IERC721(_itemTokenAddress);
@@ -44,6 +45,7 @@ contract Classifieds {
      */
     function getTrade(uint256 _trade)
         public
+        virtual
         view
         returns(address, uint256, uint256, bytes32)
     {
@@ -58,6 +60,7 @@ contract Classifieds {
      */
     function openTrade(uint256 _item, uint256 _price)
         public
+        virtual
     {
         itemToken.transferFrom(msg.sender, address(this), _item);
         trades[tradeCounter] = Trade({
@@ -78,6 +81,7 @@ contract Classifieds {
      */
     function executeTrade(uint256 _trade)
         public
+        virtual
     {
         Trade memory trade = trades[_trade];
         require(trade.status == "Open", "Trade is not Open.");
@@ -93,6 +97,7 @@ contract Classifieds {
      */
     function cancelTrade(uint256 _trade)
         public
+        virtual
     {
         Trade memory trade = trades[_trade];
         require(

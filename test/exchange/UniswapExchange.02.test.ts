@@ -2,20 +2,14 @@ import chai = require('chai');
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
 import {
-    TestERC20MintableInstance,
+    ERC20MintableDetailedInstance,
     TestUniswapExchangeInstance,
     TestUniswapFactoryInstance,
 } from '../../types/truffle-contracts';
 
-const TestERC20Mintable = artifacts.require(
-    './test/issuance/TestERC20Mintable.sol',
-    ) as Truffle.Contract<TestERC20MintableInstance>;
-const UniswapExchange = artifacts.require(
-    './test/exchange/TestUniswapExchange.sol',
-    ) as Truffle.Contract<TestUniswapExchangeInstance>;
-const UniswapFactory = artifacts.require(
-    './test/exchange/TestUniswapFactory.sol',
-    ) as Truffle.Contract<TestUniswapFactoryInstance>;
+const ERC20MintableDetailed = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const UniswapExchange = artifacts.require('TestUniswapExchange') as Truffle.Contract<TestUniswapExchangeInstance>;
+const UniswapFactory = artifacts.require('TestUniswapFactory') as Truffle.Contract<TestUniswapFactoryInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -24,7 +18,7 @@ chai.should();
 /** @test {UniswapExchange} contract */
 contract('UniswapExchange - Internal Trades', (accounts) => {
 
-    let token: TestERC20MintableInstance;
+    let token: ERC20MintableDetailedInstance;
     let uniswapFactory: TestUniswapFactoryInstance;
     let uniswapExchange: TestUniswapExchangeInstance;
     const initialiser1 = accounts[1];
@@ -33,7 +27,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
     const swapper2 = accounts[4];
 
     beforeEach(async () => {
-        token = await TestERC20Mintable.new('TestERC20Mintable', 'TST', 18);
+        token = await ERC20MintableDetailed.new('ERC20MintableDetailed', 'TST', 18);
         uniswapFactory = await UniswapFactory.new();
         uniswapExchange = await UniswapExchange.at(
             (await uniswapFactory.testLaunchExchange(token.address)).logs[0].args.exchange,
@@ -129,7 +123,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
      */
     it('Token to token out internal', async () => {
         // Initialize another exchange
-        const token2 = await TestERC20Mintable.new('TestERC20Mintable2', 'TST2', 18);
+        const token2 = await ERC20MintableDetailed.new('ERC20Mintable2', 'TST2', 18);
         const uniswapExchange2 = await UniswapExchange.at(
             (await uniswapFactory.launchExchange(token2.address)).logs[0].args.exchange,
         );
@@ -193,7 +187,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
      * @test {UniswapExchange#tokenToTokenOut}
      */
     it('Token to token out internal with invalid exchange address reverts', async () => {
-        const token2 = await TestERC20Mintable.new('TestERC20Mintable2', 'TST2', 18);
+        const token2 = await ERC20MintableDetailed.new('ERC20Mintable2', 'TST2', 18);
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
         const tokenAmount = ether('0.5');
         const minEth = ether('0.2');

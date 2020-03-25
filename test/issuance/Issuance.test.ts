@@ -37,7 +37,7 @@ contract('Issuance', (accounts) => {
             issuanceToken.address,
             currencyToken.address,
         );
-        await issuanceToken.addMinter(issuance.address);
+        await issuanceToken.addMember(issuance.address);
         await currencyToken.mint(investor1, balance1);
         await currencyToken.mint(investor2, balance2);
         await currencyToken.approve(issuance.address, investment1, { from: investor1 });

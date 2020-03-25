@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./RolesMock.sol";
 import "./../../access/Renounceable.sol";
 

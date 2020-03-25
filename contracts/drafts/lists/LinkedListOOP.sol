@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./LinkedListElement.sol";
 
 
@@ -19,7 +19,7 @@ contract LinkedListOOP {
     /**
      * @dev Prepend a LinkedListElement at the head of this list.
      */
-    function addHead(address _data) public
+    function addHead(address _data) public virtual
     {
         LinkedListElement create = new LinkedListElement(_data);
         create.setNext(head);
@@ -30,7 +30,7 @@ contract LinkedListOOP {
     /**
      * @dev Create a LinkedListElement after the one passed as an address.
      */
-    function insertAfter(address _prev, address _data) public
+    function insertAfter(address _prev, address _data) public virtual
     {
         LinkedListElement create = new LinkedListElement(_data);
         LinkedListElement prev = LinkedListElement(_prev);
@@ -42,7 +42,7 @@ contract LinkedListOOP {
     /**
      * @dev Remove the LinkedListElement after the one passed as an address.
      */
-    function removeAfter(address _prev) public
+    function removeAfter(address _prev) public virtual
     {
         LinkedListElement prev = LinkedListElement(_prev);
         LinkedListElement del = prev.next();
@@ -55,7 +55,7 @@ contract LinkedListOOP {
     /**
      * Travel the list from the head and return the address of the first LinkedListElement with matching `_data`.
      */
-    function findFirst(address _data) public view returns (address)
+    function findFirst(address _data) public virtual view returns (address)
     {
         LinkedListElement current = head;
         while (

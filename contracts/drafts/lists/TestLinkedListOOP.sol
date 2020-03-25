@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./LinkedListOOP.sol";
 
 
@@ -12,7 +12,7 @@ contract TestLinkedListOOP is LinkedListOOP {
     /**
      * @dev Run `findFirst(...) transactionally.
      */
-    function findFirstWithGas(address _data) public returns (address)
+    function findFirstWithGas(address _data) public virtual returns (address)
     {
         emit ViewToTransaction();
         return findFirst(_data);

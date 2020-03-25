@@ -1,16 +1,10 @@
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send, time } = require('@openzeppelin/test-helpers');
-import { ClassifiedsInstance, TestERC20MintableInstance, TestERC721MintableInstance } from '../../types/truffle-contracts';
+import { ClassifiedsInstance, ERC20MintableInstance, ERC721MintableInstance } from '../../types/truffle-contracts';
 
-const Classifieds = artifacts.require(
-    './classifieds/Classifieds.sol',
-) as Truffle.Contract<ClassifiedsInstance>;
-const TestERC20Mintable = artifacts.require(
-    './test/issuance/TestERC20Mintable.sol',
-) as Truffle.Contract<TestERC20MintableInstance>;
-const TestERC721Mintable = artifacts.require(
-    './test/classifieds/TestERC721Mintable.sol',
-) as Truffle.Contract<TestERC721MintableInstance>;
+const Classifieds = artifacts.require('Classifieds') as Truffle.Contract<ClassifiedsInstance>;
+const ERC20Mintable = artifacts.require('ERC20Mintable.sol') as Truffle.Contract<ERC20MintableInstance>;
+const ERC721Mintable = artifacts.require('ERC721Mintable.sol') as Truffle.Contract<ERC721MintableInstance>;
 
 // tslint:disable:no-var-requires
 const chai = require('chai');
@@ -25,8 +19,8 @@ contract('Classifieds', (accounts) => {
     const filler = accounts[2];
 
     let classifieds: ClassifiedsInstance;
-    let erc20token: TestERC20MintableInstance;
-    let erc721token: TestERC721MintableInstance;
+    let erc20token: ERC20MintableInstance;
+    let erc721token: ERC721MintableInstance;
 
     const ERC721id = 42;
     const POSTER = 0;
@@ -36,8 +30,8 @@ contract('Classifieds', (accounts) => {
 
     beforeEach(async () => {
         snapshot = await time.latest();
-        erc20token = await TestERC20Mintable.new();
-        erc721token = await TestERC721Mintable.new();
+        erc20token = await ERC20Mintable.new();
+        erc721token = await ERC721Mintable.new();
         classifieds = await Classifieds.new(erc20token.address, erc721token.address);
     });
 

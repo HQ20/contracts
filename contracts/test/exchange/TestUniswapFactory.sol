@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "./TestUniswapExchange.sol";
 import "../../exchange/UniswapFactory.sol";
 
@@ -7,7 +7,7 @@ contract TestUniswapFactory is UniswapFactory {
 
     function testLaunchExchange(
         address _token
-    ) public returns (address exchange) {
+    ) public virtual returns (address exchange) {
         require(
             tokenToExchange[_token] == address(0),
             "Already an exchange for that."

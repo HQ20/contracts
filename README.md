@@ -30,7 +30,7 @@ $ yarn add @hq20/contracts
 ## Usage
 
 ```solidity
-pragma solidity ^0.5.10;
+pragma solidity ^0.6.0;
 import "@hq20/contracts/contracts/access/Roles.sol"
 
 
