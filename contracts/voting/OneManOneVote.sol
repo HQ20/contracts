@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "../math/DecimalMath.sol";
-import "../access/TwoTiered.sol";
+import "../access/Administered.sol";
 
 
 /**
@@ -21,7 +21,7 @@ import "../access/TwoTiered.sol";
  * 6. Electoral officers enact the proposal. There is no limit to how many times the proposal can be enacted from one successful vote.
  * As-is, this contract can be easily abused by dishonest electoral officers. A time-bound voting process with a limit block for voter enrollment and a limit block for vote casting would be more robust.
  */
-contract OneManOneVote is TwoTiered {
+contract OneManOneVote is Administered {
     using DecimalMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -49,7 +49,7 @@ contract OneManOneVote is TwoTiered {
         address _targetContract,
         bytes memory _proposalData,
         uint256 _threshold
-    ) public TwoTiered(_root) {
+    ) public Administered(_root) {
         threshold = _threshold;
         targetContract = _targetContract;
         proposalData = _proposalData;

@@ -42,7 +42,7 @@ contract('OneManOneVote', (accounts) => {
             }, [owner, '1']),
             threshold,
         );
-        await votedToken.addMember(voting.address);
+        await votedToken.addAdmin(voting.address);
         await voting.addUser(voter1, { from: officer });
         await voting.addUser(voter2, { from: officer });
     });
