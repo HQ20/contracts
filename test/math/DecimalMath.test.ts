@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
-const { BN } = require('@openzeppelin/test-helpers');
+const { BN, expectRevert } = require('@openzeppelin/test-helpers');
 import { DecimalMathMockInstance } from '../../types/truffle-contracts';
 
 const DecimalMath = artifacts.require('DecimalMathMock') as Truffle.Contract<DecimalMathMockInstance>;
@@ -34,6 +34,16 @@ contract('DecimalMath', () => {
         decimal1_16 = new BN(await tokenMath.unit(decimals16.toString()));
         decimal2_16 = decimal1_16.mul(new BN('2'));
         minus1 = new BN('-1');
+    });
+
+    /**
+     * @test {DecimalMath#unit()}
+     */
+    it('rejects units beyond MAXINT256.', async () => {
+        await expectRevert(
+            tokenMath.unit(new BN('78')),
+            'Too many decimals',
+        );
     });
 
     /**

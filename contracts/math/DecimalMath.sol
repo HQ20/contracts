@@ -11,6 +11,7 @@ library DecimalMath {
 
     /// @dev Returns 1 in the fixed point representation, with `decimals` decimals.
     function unit(uint8 decimals) internal pure returns (uint256) {
+        require(decimals <= 77, "Too many decimals");
         return 10**uint256(decimals);
     }
 
