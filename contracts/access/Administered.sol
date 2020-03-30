@@ -4,11 +4,11 @@ import "./Renounceable.sol";
 
 
 /**
- * @title TwoTiered
+ * @title Administered
  * @author Alberto Cuesta Canada
- * @notice Implements a two-role Roles
+ * @notice Implements Admin and User roles.
  */
-contract TwoTiered is Roles, Renounceable {
+contract Administered is Roles, Renounceable {
     bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
     bytes32 public constant USER_ROLE_ID = "USER";
 

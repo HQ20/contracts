@@ -32,7 +32,7 @@ IssuanceEth {
     ERC20DividendableEth(name, symbol, decimals)
     IssuanceEth(address(this))
     {
-        addMember(address(this));
+        addAdmin(address(this));
     }
 
 }

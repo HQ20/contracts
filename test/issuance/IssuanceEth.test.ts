@@ -30,7 +30,7 @@ contract('IssuanceEth', (accounts) => {
     beforeEach(async () => {
         issuanceToken = await ERC20MintableDetailed.new('IssuanceToken', 'ISST', 17);
         issuanceEth = await IssuanceEth.new(issuanceToken.address);
-        await issuanceToken.addMember(issuanceEth.address);
+        await issuanceToken.addAdmin(issuanceEth.address);
     });
 
     /**

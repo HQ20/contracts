@@ -28,15 +28,15 @@ In `Community.sol`:
 * function `leaveCommunity()`: Removes the caller as a member.
 
 
-# TwoTiered
+# Administered
 
 This is an Ethereum project extending `Roles.sol` that implements a simple two-tier access control system.
 
 ## Usage
 
-In `TwoTiered.sol`:
+In `Administered.sol`:
 
-* constructor `(address root)`: The address deploying TwoTiered.sol will be the first admin. Only admins can execute transactional methods.
+* constructor `(address root)`: The address deploying Administered.sol will be the first admin. Only admins can execute transactional methods.
 
 * function `isUser(address account)`: Returns `true` if `account` is an user, and `false` otherwise.
 * function `isAdmin(address account)`: Returns `true` if `account` is an admin, and `false` otherwise.
