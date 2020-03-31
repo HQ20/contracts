@@ -44,8 +44,14 @@ uint256 half = decimalHalf.div(decimalOne);             // = 0, because decimals
 All operations assume that operands are decimal numbers with 18 digits.
 * `function unit(uint8 decimals)`: Returns 1 in decimal representation, right padded by `decimals` zeros.
 * `function addd(uint256 x, uint256 y)`: Adds x and y.
+* `function addd(int256 x, int256 y)`: Adds x and y.
 * `function subd(uint256 x, uint256 y)`: Substracts y from x.
+* `function subd(int256 x, int256 y)`: Substracts y from x.
 * `function muld(uint256 x, uint256 y)`: Multiplies x and y.
+* `function muld(int256 x, int256 y)`: Multiplies x and y.
 * `function divd(uint256 x, uint256 y)`: Divides x by y.
+* `function divd(int256 x, int256 y)`: Divides x by y.
 * `function muld(uint256 x, uint256 y, uint8 decimals)` Multiplies x and y, for decimal numbers with `decimals` decimals.
+* `function muld(int256 x, int256 y, uint8 decimals)` Multiplies x and y, for decimal numbers with `decimals` decimals.
 * `function divd(uint256 x, uint256 y, uint8 decimals)` Divides x by y, for decimal numbers with `decimals` decimals.
+* `function divd(int256 x, int256 y, uint8 decimals)` Divides x by y, for decimal numbers with `decimals` decimals.
