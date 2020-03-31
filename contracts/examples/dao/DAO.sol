@@ -44,7 +44,7 @@ contract DAO is VentureEth, Democratic {
     /**
      * @dev Fallback function. Required when collecting ether dividends from ventures.
      */
-    receive() external virtual payable {}
+    receive() external virtual override payable {}
 
     /**
      * @notice To be called during the first investment round.
@@ -66,7 +66,7 @@ contract DAO is VentureEth, Democratic {
      * @param investment The ether to invest in the venture.
      */
     function investVenture(
-        address venture,
+        address payable venture,
         uint256 investment
     ) public virtual onlyProposal {
         ventures.add(venture);
@@ -79,7 +79,7 @@ contract DAO is VentureEth, Democratic {
      * @param venture The address of the VentureEth contract to retrieve tokens from.
      */
     function retrieveVentureTokens(
-        address venture
+        address payable venture
     ) public virtual {
         VentureEth(venture).claim();
     }
@@ -89,7 +89,7 @@ contract DAO is VentureEth, Democratic {
      * @param venture The address of the VentureEth contract from which to cancel the investment.
      */
     function cancelVenture(
-        address venture
+        address payable venture
     ) public virtual onlyProposal {
         VentureEth(venture).cancelInvestment();
         ventures.remove(venture);
@@ -100,7 +100,7 @@ contract DAO is VentureEth, Democratic {
      * @param venture The venture to claim dividends from.
      */
     function claimDividendsFromVenture(
-        address venture
+        address payable venture
     ) public virtual returns(uint256) {
         return VentureEth(venture).claimDividends();
     }

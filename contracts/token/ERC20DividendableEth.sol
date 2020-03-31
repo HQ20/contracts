@@ -23,6 +23,9 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         ERC20MintableDetailed(name, symbol, decimals) public
     {}
 
+    /// @dev Receive function
+    receive() external virtual payable {}
+
     /// @dev Send ether to this function in order to release dividends
     function releaseDividends()
         external virtual payable
@@ -72,17 +75,15 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     function _beforeTokenTransfer(address from, address to, uint256 amount)
         internal virtual override
     {
-        if (this.balanceOf(to) == 0){
-            // If transferring, initializes to the dpt of the sender
-            // If minting, initializes to contract dpt
-            // What about burning? Does it modify claimedDPT[address(0)]?
-            claimedDPT[to] = claimedDPT[from];
-        }
-        else{
-            int256 weight = amount.divd(this.balanceOf(to).addd(amount)).toInt();
-            int256 differentialDPT = claimedDPT[from].subd(claimedDPT[to]);
-            int256 weightedDPT = differentialDPT.muld(weight);
-            claimedDPT[to] = claimedDPT[to].addd(weightedDPT);
-        }
+        // If burning, do nothing
+        if (to == address(0)) return;
+
+        // If transferring to an empty account, reset its claimed DTP
+        if (this.balanceOf(to) == 0) delete claimedDPT[to];
+
+        int256 weight = amount.divd(this.balanceOf(to).addd(amount)).toInt();
+        int256 differentialDPT = claimedDPT[from].subd(claimedDPT[to]);
+        int256 weightedDPT = differentialDPT.muld(weight);
+        claimedDPT[to] = claimedDPT[to].addd(weightedDPT);
     }
 }
