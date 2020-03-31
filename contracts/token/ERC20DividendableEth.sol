@@ -75,6 +75,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         if (this.balanceOf(to) == 0){
             // If transferring, initializes to the dpt of the sender
             // If minting, initializes to contract dpt
+            // What about burning? Does it modify claimedDPT[address(0)]?
             claimedDPT[to] = claimedDPT[from];
         }
         else{
