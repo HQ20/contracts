@@ -67,17 +67,47 @@ contract('ERC20DividendableEth', (accounts) => {
             BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
                 .should.be.bignumber.equal(claimedDividends2);
         });
-    });
 
-    /**
-     * @test {ERC20DividendableEth#claimDividends}
-     */
-    it('dividends can be claimed after minting tokens', async () => {
-        await erc20dividendableEth.releaseDividends({ from: user1, value: releasedDividends.toString()});
-        await erc20dividendableEth.mint(account2, balance1.add(balance2));
-        await erc20dividendableEth.releaseDividends({ from: user1, value: releasedDividends.toString()});
-        BN(await erc20dividendableEth.claimDividends.call({ from: account1 }))
+        /**
+         * @test {ERC20DividendableEth#claimDividends}
+         */
+        it('dividends can be claimed after minting tokens', async () => {
+            await erc20dividendableEth.mint(account2, balance1.add(balance2));
+            BN(await erc20dividendableEth.claimDividends.call({ from: account1 }))
+            .should.be.bignumber.equal(claimedDividends1);
+            BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
             .should.be.bignumber.equal(claimedDividends2);
+        });
+
+        /**
+         * @test {ERC20DividendableEth#claimDividends}
+         */
+        it('dividends can be claimed after transferring tokens', async () => {
+            await erc20dividendableEth.transfer(account2, balance1, { from: account1 });
+            await expectRevert(erc20dividendableEth.claimDividends({ from: account1 }), 'Account need not be updated now.');
+            BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.equal(claimedDividends1.add(claimedDividends2));
+        });
+
+        /**
+         * @test {ERC20DividendableEth#claimDividends}
+         */
+        it('dividends are adjusted downwards after transferring tokens', async () => {
+            await erc20dividendableEth.claimDividends({ from: account1 })
+            await erc20dividendableEth.transfer(account2, balance1, { from: account1 });
+            BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.equal(claimedDividends2);
+        });
+
+        /**
+         * @test {ERC20DividendableEth#claimDividends}
+         */
+        it('dividends are adjusted upwards after transferring tokens', async () => {
+            await erc20dividendableEth.claimDividends({ from: account2 })
+            await erc20dividendableEth.transfer(account2, balance1, { from: account1 });
+            BN(await erc20dividendableEth.claimDividends.call({ from: account2 }))
+            .should.be.bignumber.equal(claimedDividends1);
+        });
     });
 
     /**

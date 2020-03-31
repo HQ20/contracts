@@ -4,6 +4,7 @@ import "./ERC20MintableDetailed.sol";
 import "../math/DecimalMath.sol";
 import "../utils/SafeCast.sol";
 
+
 /**
  * @title ERC20DividendableEth
  * @dev Implements an ERC20MintableDetailed token with a dividend distribution procedure for etehreum received
@@ -44,7 +45,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         require(address(this).balance >= amount, "Not enough funds.");
         int256 releasedDPT = amount.divd(this.totalSupply()).toInt();
         dividendsPerToken = dividendsPerToken.addd(releasedDPT);
-        claimedDPT[address(0)] = dividendsPerToken; // Hack to mint tokens at DPT
+        claimedDPT[address(0)] = dividendsPerToken; // Mint tokens at DPT
     }
 
     /// @dev Transfer owed dividends to its account.
@@ -84,75 +85,3 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
         }
     }
 }
-
-/*
-b1 100
-dpt1 1
-dpt2 2
-
-c1 = 100 * (2 - 1)
-
-t 100
-dptt 2
-
-w = 100/200 = 0.5
-ddpt = 2 - 1 = 1
-wd = 1 * 0.5 = 0.5
-dpt1 = 1 + 0.5
-
-c1 = 200 * (1 - 1.5) = 200 * 0.5 = 100 
-
--------------------
-
-b1 100
-dpt1 2
-dpt2 1
-
-c1 = 100 * (2 - 2)
-
-t 100
-dptt 1
-
-w = 100/200 = 0.5
-ddpt = 1 - 2 = -1
-wd = -1 * 0.5 = -0.5
-dpt1 = 2 - 0.5 = 1.5
-
-c1 = 200 * (2 - 1.5) = 200 * 0.5 = 100
-*/
-
-/*
-b1 100
-dpt1 1
-dpt2 2
-
-c1 = 100 * (2 - 1)
-
-t 300
-dptt 2
-
-w = 300/400 = 0.75
-ddpt = 2 - 1 = 1
-wd = 1 * 0.75 = 0.75
-dpt1 = 1 + 0.75
-
-c1 = 400 * (1 - 1.75) = 400 * 0.25 = 100 
-
--------------------
-
-b1 100
-dpt1 2
-dpt2 1
-
-c1 = 100 * (2 - 2)
-
-t 300
-dptt 1
-
-w = 300/400 = 0.75
-ddpt = 1 - 2 = -1
-wd = -1 * 0.75 = -0.75
-dpt1 = 2 - 0.75 = 1.25
-
-c1 = 400 * (2 - 1.25) = 400 * 0.75 = 300
-*/
