@@ -1,21 +1,11 @@
-# Roles
+# Access Control
 
-This is an Ethereum project that implements runtime configurable access control. It is expected to be used as a data layer for you to code your own permissioning rules on top. For this reason all transactional methods are internal.
-
-## Usage
-
-In `Roles.sol`:
-* function `roleExists(bytes32 roleId)`: Returns `true` if a role with id `roleId` exists.
-* function `hasRole(address account, bytes32 roleId)`: Returns `true` if `account` is a member of the role denoted by `roleId`, and `false` otherwise. Reverts if a role denoted by `roleId` doesn't exist.
-* function `enumerateMembers(bytes32 roleId)`: Returns all members from the role denoted by `roleId`.
-* function `_addRole(bytes32 roleId)`: Adds a new role with id `roleId` to the contract. There is no function to remove roles.
-* function `_addMember(address account, bytes32 roleId)`: Adds `account` as a member to the role denoted by `roleId`. 
-* function `_removeMember(address account, bytes32 roleId)`: Removes `account` as a member from the role denoted by `roleId`.
+This is an Ethereum project that implements different access control structures on top of OpenZeppelin's AccessControl.sol.
 
 
 # Community
 
-This is an Ethereum project extending `Roles.sol` that implements a single-group access control system.
+This is an Ethereum project extending `AccessControl.sol` that implements a single-group access control system.
 
 ## Usage
 
@@ -30,7 +20,7 @@ In `Community.sol`:
 
 # Administered
 
-This is an Ethereum project extending `Roles.sol` that implements a simple two-tier access control system.
+This is an Ethereum project extending `AccessControl.sol` that implements a simple two-tier access control system.
 
 ## Usage
 
@@ -48,7 +38,7 @@ In `Administered.sol`:
 
 # Hierarchy
 
-This is an Ethereum project extending `Roles.sol` that implements a hierarchy access control system.
+This is an Ethereum project extending `AccessControl.sol` that implements a hierarchy access control system.
 
 ## Usage
 
@@ -58,26 +48,3 @@ In `Hierarchy.sol`:
 
 * function `isMember(address account, bytes32 roleId)`: Returns `true` if `account` belongs to the admin role of `roleId`.
 * function `addRole(bytes32 roleId, bytes32 adminRoleId)`: Adds `roleId` with `adminRoleId` as the admin role.
-* function `addMember(address account, bytes32 roleId)`: Adds `account` as a member of `roleId`.
-* function `removeUser(address account, bytes32 roleId)`: Removes `account` from `roleId`.
-
-
-# Renounceable
-
-This is an Ethereum project extending `Roles.sol` that allows members to renounce from their roles.
-
-## Usage
-
-In `Renounceable.sol`:
-* function `renounceMembership(bytes32 roleId)`: Removes the member from the role denoted by `roleId`.
-
-
-# Transferrable
-
-This is an Ethereum project extending `Roles.sol` that allows members to renounce from their roles in favour of others.
-
-## Usage
-
-In `Transferrable.sol`:
-* function `transferMembership(address to, bytes32 roleId)`: Transfers the role denoted by `roleId` to account `to`. 
- 

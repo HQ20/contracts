@@ -1,6 +1,5 @@
 pragma solidity ^0.6.0;
-import "./Roles.sol";
-import "./Renounceable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
 /**
@@ -8,13 +7,13 @@ import "./Renounceable.sol";
  * @author Alberto Cuesta Canada
  * @notice Implements Admin and User roles.
  */
-contract Administered is Roles, Renounceable {
-    bytes32 public constant ADMIN_ROLE_ID = "ADMIN";
-    bytes32 public constant USER_ROLE_ID = "USER";
+contract Administered is AccessControl {
+    bytes32 public constant USER_ROLE = keccak256("USER");
 
-    /// @dev Create an admin and a user role, and add `root` to the admin role as a member.
+    /// @dev Add `root` to the admin role as a member.
     constructor (address root) public {
-        _addMember(root, ADMIN_ROLE_ID);
+        _grantRole(DEFAULT_ADMIN_ROLE, root);
+        _setRoleAdmin(USER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
     /// @dev Restricted to members of the admin role.
@@ -31,31 +30,31 @@ contract Administered is Roles, Renounceable {
 
     /// @dev Return `true` if the account belongs to the admin role.
     function isAdmin(address account) public virtual view returns (bool) {
-        return hasRole(account, ADMIN_ROLE_ID);
+        return hasRole(DEFAULT_ADMIN_ROLE, account);
     }
 
     /// @dev Return `true` if the account belongs to the user role.
     function isUser(address account) public virtual view returns (bool) {
-        return hasRole(account, USER_ROLE_ID);
+        return hasRole(USER_ROLE, account);
     }
 
     /// @dev Add an account to the user role. Restricted to admins.
     function addUser(address account) public virtual onlyAdmin {
-        _addMember(account, USER_ROLE_ID);
+        _grantRole(USER_ROLE, account);
     }
 
     /// @dev Add an account to the admin role. Restricted to admins.
     function addAdmin(address account) public virtual onlyAdmin {
-        _addMember(account, ADMIN_ROLE_ID);
+        _grantRole(DEFAULT_ADMIN_ROLE, account);
     }
 
     /// @dev Remove an account from the user role. Restricted to admins.
     function removeUser(address account) public virtual onlyAdmin {
-        _removeMember(account, USER_ROLE_ID);
+        _revokeRole(USER_ROLE, account);
     }
 
     /// @dev Remove oneself from the admin role.
     function renounceAdmin() public virtual {
-        renounceMembership(ADMIN_ROLE_ID);
+        _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }
