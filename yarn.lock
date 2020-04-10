@@ -176,6 +176,11 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
+"@solidity-parser/parser@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.5.2.tgz#4d74670ead39e4f4fdab605a393ba8ea2390a2c4"
+  integrity sha512-uRyvnvVYmgNmTBpWDbBsH/0kPESQhQpEc4KsvMRLVzFJ1o1s0uIv0Y6Y9IB5vI1Dwz2CbS4X/y4Wyw/75cTFnQ==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -6472,11 +6477,12 @@ soldoc@0.1.2:
   dependencies:
     "@hq20/solidity-parser-antlr" "0.4.12-alpha.0"
 
-solidity-coverage@0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/solidity-coverage/-/solidity-coverage-0.7.3.tgz#5366a8928fc284f55a59001d515f0b2758d4d877"
-  integrity sha512-8goF0xkbli2jI2IgVE3wXZkNAEPm1LjWCvHOR80x1PPS+pWcRBZxtHV0gXljiReHedGBeLcboPaz/amKExGmBg==
+solidity-coverage@0.7.4:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/solidity-coverage/-/solidity-coverage-0.7.4.tgz#5bff265016edfc609e981601d953b125cbd55aab"
+  integrity sha512-eaYjKLJK7n+uAN9Xrm2kDujXOkxxBbHfNrjK+ZabU1DR4QWSVQiwDDF2JLciN943kkZdd2JOzJGp32NxCbdCWA==
   dependencies:
+    "@solidity-parser/parser" "^0.5.2"
     "@truffle/provider" "^0.1.17"
     chalk "^2.4.2"
     death "^1.1.0"
@@ -6493,10 +6499,9 @@ solidity-coverage@0.7.3:
     recursive-readdir "^2.2.2"
     sc-istanbul "^0.4.5"
     shelljs "^0.8.3"
-    solidity-parser-diligence "^0.4.16"
     web3 "1.2.6"
 
-solidity-parser-diligence@^0.4.16, solidity-parser-diligence@^0.4.17:
+solidity-parser-diligence@^0.4.17:
   version "0.4.17"
   resolved "https://registry.yarnpkg.com/solidity-parser-diligence/-/solidity-parser-diligence-0.4.17.tgz#4f4c427b17b9bb0a5540ed26e71c51cfdea10228"
   integrity sha512-zEAwnzNytUVVPO+DqlYKQb2i+JiUq2OhQUlaGVYxxa4m2h9zcqQnKsQwmZRgsR7h1G2bc7YR56t5V55M9qlDzg==
