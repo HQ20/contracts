@@ -1,8 +1,7 @@
 pragma solidity ^0.6.0;
-import "./Roles.sol";
-import "./Renounceable.sol";
 import "./../voting/Democratic.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
 /**
@@ -10,18 +9,18 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @author Alberto Cuesta Canada
  * @notice Implements a voting-based structure for Roles
  */
-contract Democracy is Roles, Renounceable, Democratic {
+contract Democracy is AccessControl, Democratic {
     event Proposal(address proposal);
 
-    bytes32 public constant LEADER_ROLE_ID = "LEADER";
-    bytes32 public constant VOTER_ROLE_ID = "VOTER";
+    bytes32 public constant LEADER_ROLE = "LEADER";
+    bytes32 public constant VOTER_ROLE = "VOTER";
 
     /// @dev Create a leader and a voter roles, and add `root` to the voter role.
     constructor (address root, address votingToken, uint256 threshold)
         public
         Democratic(votingToken, threshold)
     {
-        _addMember(root, VOTER_ROLE_ID);
+        _grantRole(VOTER_ROLE, root);
     }
 
     /// @dev Restricted to members of the leader role.
@@ -38,42 +37,42 @@ contract Democracy is Roles, Renounceable, Democratic {
 
     /// @dev Return `true` if the account belongs to the leader role.
     function isLeader(address account) public virtual view returns (bool) {
-        return hasRole(account, LEADER_ROLE_ID);
+        return hasRole(LEADER_ROLE, account);
     }
 
     /// @dev Return `true` if the account belongs to the voter role.
     function isVoter(address account) public virtual view returns (bool) {
-        return hasRole(account, VOTER_ROLE_ID);
+        return hasRole(VOTER_ROLE, account);
     }
 
     /// @dev Add an account to the voter role. Restricted to proposals.
     function addVoter(address account) public virtual onlyProposal {
-        _addMember(account, VOTER_ROLE_ID);
+        _grantRole(VOTER_ROLE, account);
     }
 
     /// @dev Add an account to the leader role. Restricted to proposals.
     function addLeader(address account) public virtual onlyProposal {
-        _addMember(account, LEADER_ROLE_ID);
+        _grantRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove an account from the voter role. Restricted to proposals.
     function removeVoter(address account) public virtual onlyProposal {
-        _removeMember(account, VOTER_ROLE_ID);
+        _revokeRole(VOTER_ROLE, account);
     }
 
     /// @dev Remove an account from the leader role. Restricted to proposals.
     function removeLeader(address account) public virtual onlyProposal {
-        _removeMember(account, LEADER_ROLE_ID);
+        _revokeRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove oneself from the leader role.
     function renounceLeader() public virtual {
-        renounceMembership(LEADER_ROLE_ID);
+        _revokeRole(LEADER_ROLE, msg.sender);
     }
 
     /// @dev Remove oneself from the voter role.
     function renounceVoter() public virtual {
-        renounceMembership(VOTER_ROLE_ID);
+        _revokeRole(VOTER_ROLE, msg.sender);
     }
 
     /// @dev Propose a democratic action.

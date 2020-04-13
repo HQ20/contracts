@@ -6,7 +6,7 @@ import "../access/Administered.sol";
 
 /**
  * @title OneManOneVote
- * @dev Implements a simple voting process
+ * @dev Implements a simple voting process, using AccessControl.sol and Administered.sol to register electoral officers and voters.
  *
  * 1. Initialize the voting with:
  *       The address of the account that will be the initial electoral officer (admin).
@@ -88,7 +88,7 @@ contract OneManOneVote is Administered {
 
     /// @dev Number of votes needed to pass the proposal.
     function thresholdVotes() public virtual view returns (uint256) {
-        return countMembers(USER_ROLE_ID).muld(threshold, 4);
+        return getRoleMemberCount(USER_ROLE).muld(threshold, 4);
     }
 
     /// @dev Function to validate the threshold
