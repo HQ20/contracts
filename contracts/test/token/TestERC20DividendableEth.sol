@@ -15,4 +15,11 @@ contract TestERC20DividendableEth is ERC20DividendableEth, ERC20Burnable
     function testReleaseDividends(uint256 amount) public virtual {
         _releaseDividends(amount);
     }
+
+    /// @dev There is some bug. If you override a function you seem to need to override it in all derived contracts.
+    function _beforeTokenTransfer(address from, address to, uint256 amount)
+        internal override(ERC20, ERC20DividendableEth)
+    {
+        super._beforeTokenTransfer(from, to, amount);
+    }
 }

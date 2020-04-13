@@ -24,17 +24,14 @@ It is a contract that implements the `IERC20MintableDetailed` interface.
 
 It is a `ERC20` token contract that is endowed with some rather dividendable qualities. 
 
-1. Anyone can send `ether` to the contract at any time using `increasePool`. That amount of `ether` will be added to a dividend pool.
+1. Anyone can send `ether` to the contract at any time using the `receive` function. That amount of `ether` will be added to a dividend pool.
 
-2. Any token holder can draw their fair share of `ether` from the dividend pool according to the amount of tokens they hold. To do this they must call the `updateAccount` function.
+2. The contract has an internal `_releaseDividends` function that will earmark a portion of the `ether` in the contract to be claimed by token holders proportionally to their holdings.
 
-#### Notes 
-1. Changes in the token supply will affect any dividend distribution events. Any ongoing distribution events for which the contract has received the `ether` before the total supply change are unaffected.
+3. Any token holder can claim their share of `ether` dividends calling the `claimDividends` function.
 
-2. In order to be useful in practice, the contract has to be customized by inheriting from a mintable standard implementation, for example, openzeppelin's `ERC20Mintable` contract, in this way:
+4. A token holder can transfer tokens while having dividends available for claiming. In that case, only the recipient can claim the share of dividends related to the tokens transferred.
 
-```
-contract MyERC20DividendableEth is ERC20DividendableEth, ERC20Mintable {
-    // here goes your fantasy
-}
-```
+5. Minted tokens don't give any right to claim dividends from prior events.
+
+6. Burning tokens while having dividends available for claiming proportionally reduces the dividends that can be claimed.
