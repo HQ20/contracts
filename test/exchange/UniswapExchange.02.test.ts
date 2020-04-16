@@ -27,7 +27,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
     const swapper2 = accounts[4];
 
     beforeEach(async () => {
-        token = await ERC20Mintable.new('ERC20Mintable', 'TST', 18);
+        token = await ERC20Mintable.new('ERC20Mintable', 'TST');
         uniswapFactory = await UniswapFactory.new();
         uniswapExchange = await UniswapExchange.at(
             (await uniswapFactory.testLaunchExchange(token.address)).logs[0].args.exchange,
@@ -123,7 +123,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
      */
     it('Token to token out internal', async () => {
         // Initialize another exchange
-        const token2 = await ERC20Mintable.new('ERC20Mintable2', 'TST2', 18);
+        const token2 = await ERC20Mintable.new('ERC20Mintable2', 'TST2');
         const uniswapExchange2 = await UniswapExchange.at(
             (await uniswapFactory.launchExchange(token2.address)).logs[0].args.exchange,
         );
@@ -187,7 +187,7 @@ contract('UniswapExchange - Internal Trades', (accounts) => {
      * @test {UniswapExchange#tokenToTokenOut}
      */
     it('Token to token out internal with invalid exchange address reverts', async () => {
-        const token2 = await ERC20Mintable.new('ERC20Mintable2', 'TST2', 18);
+        const token2 = await ERC20Mintable.new('ERC20Mintable2', 'TST2');
         const timeout = Math.floor((new Date().getTime()) / 1000) + 3600;
         const tokenAmount = ether('0.5');
         const minEth = ether('0.2');

@@ -23,16 +23,16 @@ contract('Issuance', (accounts) => {
     const balance2 = ether('50');
     const investment1 = ether('50');
     const investment2 = ether('10');
-    const claimed1 = '1';
-    const claimed2 = '0.2';
+    const claimed1 = '10';
+    const claimed2 = '2';
 
     let issuance: IssuanceInstance;
     let currencyToken: ERC20MintableInstance;
     let issuanceToken: ERC20MintableInstance;
 
     beforeEach(async () => {
-        currencyToken = await ERC20Mintable.new('CurrencyToken', 'CURT', 18);
-        issuanceToken = await ERC20Mintable.new('IssuanceToken', 'ISST', 17);
+        currencyToken = await ERC20Mintable.new('CurrencyToken', 'CURT');
+        issuanceToken = await ERC20Mintable.new('IssuanceToken', 'ISST');
         issuance = await Issuance.new(
             issuanceToken.address,
             currencyToken.address,

@@ -21,14 +21,14 @@ contract('IssuanceEth', (accounts) => {
     const issuePrice = ether('0.05');
     const investment1 = ether('0.5');
     const investment2 = ether('0.1');
-    const claimed1 = ether('1');
-    const claimed2 = ether('0.2');
+    const claimed1 = ether('10');
+    const claimed2 = ether('2');
 
     let issuanceEth: IssuanceEthInstance;
     let issuanceToken: ERC20MintableInstance;
 
     beforeEach(async () => {
-        issuanceToken = await ERC20Mintable.new('IssuanceToken', 'ISST', 17);
+        issuanceToken = await ERC20Mintable.new('IssuanceToken', 'ISST');
         issuanceEth = await IssuanceEth.new(issuanceToken.address);
         await issuanceToken.addAdmin(issuanceEth.address);
     });

@@ -19,7 +19,7 @@ contract('UniswapFactory - launchExchange', (accounts) => {
      * @test {UniswapFactory#launchExchange}
      */
     it('Launch an exchange for test token.', async () => {
-        const token = await ERC20Mintable.new('ERC20Mintable', 'TST', 18);
+        const token = await ERC20Mintable.new('ERC20Mintable', 'TST');
         const uniswapFactory = await UniswapFactory.new();
         expectEvent(
             await uniswapFactory.launchExchange(token.address),
@@ -34,7 +34,7 @@ contract('UniswapFactory - launchExchange', (accounts) => {
      * @test {UniswapFactory#launchExchange}
      */
     it('Cannot launch an exchnage for an already existing token', async () => {
-        const token = await ERC20Mintable.new('ERC20Mintable', 'TST', 18);
+        const token = await ERC20Mintable.new('ERC20Mintable', 'TST');
         const uniswapFactory = await UniswapFactory.new();
         await uniswapFactory.launchExchange(token.address);
         await expectRevert(
@@ -62,7 +62,7 @@ contract('UniswapFactory - view methods', (accounts) => {
     let uniswapFactory: UniswapFactoryInstance;
 
     beforeEach(async () => {
-        token = await ERC20Mintable.new('ERC20Mintable', 'TST', 18);
+        token = await ERC20Mintable.new('ERC20Mintable', 'TST');
         uniswapFactory = await UniswapFactory.new();
         await uniswapFactory.launchExchange(token.address);
     });

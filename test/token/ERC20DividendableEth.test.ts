@@ -26,7 +26,7 @@ contract('ERC20DividendableEth', (accounts) => {
     let erc20dividendableEth: TestERC20DividendableEthInstance;
 
     beforeEach(async () => {
-        erc20dividendableEth = await TestERC20DividendableEth.new('DividendableToken', 'DTK', 18);
+        erc20dividendableEth = await TestERC20DividendableEth.new('DividendableToken', 'DTK');
         await erc20dividendableEth.mint(account1, balance1);
         await erc20dividendableEth.mint(account2, balance2);
     });
