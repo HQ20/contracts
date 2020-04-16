@@ -9,14 +9,11 @@ import "../access/Administered.sol";
  */
 contract ERC20Mintable is ERC20, Administered {
     constructor(string memory name, string memory symbol, uint8 decimals)
-        public ERC20(name, symbol, decimals) Administered(msg.sender)
+        public ERC20(name, symbol) Administered(msg.sender)
     {}
 
     function mint(address account, uint256 amount)
-        public
-        virtual
-        onlyAdmin
-        returns (bool)
+        public virtual onlyAdmin returns (bool)
     {
         _mint(account, amount);
         return true;
