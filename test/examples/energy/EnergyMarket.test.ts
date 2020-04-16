@@ -13,6 +13,8 @@ contract('EnergyMarket', (accounts) => {
 
     let energyMarket: EnergyMarketInstance;
 
+    const tokenName = 'Energy';
+    const tokenSymbol = 'POW';
     const initialSupply = 1000000;
     const basePrice = 10;
 
@@ -20,6 +22,8 @@ contract('EnergyMarket', (accounts) => {
 
     beforeEach(async () => {
         energyMarket = await EnergyMarket.new(
+            tokenName,
+            tokenSymbol,
             initialSupply,
             basePrice,
             { from: owner },
