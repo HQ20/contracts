@@ -3,7 +3,7 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../token/IERC20MintableDetailed.sol";
+import "../token/IERC20Mintable.sol";
 import "../state/StateMachine.sol";
 import "../math/DecimalMath.sol";
 
@@ -67,7 +67,7 @@ contract IssuanceEth is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
+        IERC20Mintable _issuanceToken = IERC20Mintable(
             issuanceToken
         );
         _issuanceToken.mint(

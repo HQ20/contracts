@@ -10,7 +10,7 @@ This issuance contract accepts investments using an accepted ERC20 token, and it
 
 The issuance is governed by the following parameters:
 * `currencyToken`: The token that is accepted in payment for investments. Must inherit from `ERC20Detailed`.
-* `issuanceToken`: The token that will be issued if conditions are met. Must inherit from `ERC20Detailed` and `ERC20Mintable`. Also, see `@hq20/contracts/token/ERC20MintableDetailed`.
+* `issuanceToken`: The token that will be issued if conditions are met. Must inherit from `ERC20Detailed` and `ERC20Mintable`. Also, see `@hq20/contracts/token/ERC20Mintable`.
 * `issuePrice`:  The amount of currency tokens that are required to buy one issued token.
 
 ```

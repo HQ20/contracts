@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { ERC20MintableDetailedInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
+import { ERC20MintableInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
 
 const Voting = artifacts.require('OneTokenOneVote') as Truffle.Contract<OneTokenOneVoteInstance>;
-const ERC20MintableDetailed = artifacts.require(
-        'ERC20MintableDetailed'
-    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
+const ERC20Mintable = artifacts.require(
+        'ERC20Mintable'
+    ) as Truffle.Contract<ERC20MintableInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -24,12 +24,12 @@ contract('OneTokenOneVote', (accounts) => {
     const votes2 = ether('4');
 
     let voting: OneTokenOneVoteInstance;
-    let votingToken: ERC20MintableDetailedInstance;
-    let votedToken: ERC20MintableDetailedInstance;
+    let votingToken: ERC20MintableInstance;
+    let votedToken: ERC20MintableInstance;
 
     beforeEach(async () => {
-        votingToken = await ERC20MintableDetailed.new('VotingToken', 'VOT', 18);
-        votedToken = await ERC20MintableDetailed.new('VotedToken', 'VTD', 18);
+        votingToken = await ERC20Mintable.new('VotingToken', 'VOT', 18);
+        votedToken = await ERC20Mintable.new('VotedToken', 'VTD', 18);
         voting = await Voting.new(
             votingToken.address,
             votedToken.address,

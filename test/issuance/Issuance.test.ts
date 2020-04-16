@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { ERC20MintableDetailedInstance, IssuanceInstance } from '../../types/truffle-contracts';
+import { ERC20MintableInstance, IssuanceInstance } from '../../types/truffle-contracts';
 
 const Issuance = artifacts.require('Issuance') as Truffle.Contract<IssuanceInstance>;
-const ERC20MintableDetailed = artifacts.require(
-        'ERC20MintableDetailed'
-    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
+const ERC20Mintable = artifacts.require(
+        'ERC20Mintable'
+    ) as Truffle.Contract<ERC20MintableInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -27,12 +27,12 @@ contract('Issuance', (accounts) => {
     const claimed2 = '0.2';
 
     let issuance: IssuanceInstance;
-    let currencyToken: ERC20MintableDetailedInstance;
-    let issuanceToken: ERC20MintableDetailedInstance;
+    let currencyToken: ERC20MintableInstance;
+    let issuanceToken: ERC20MintableInstance;
 
     beforeEach(async () => {
-        currencyToken = await ERC20MintableDetailed.new('CurrencyToken', 'CURT', 18);
-        issuanceToken = await ERC20MintableDetailed.new('IssuanceToken', 'ISST', 17);
+        currencyToken = await ERC20Mintable.new('CurrencyToken', 'CURT', 18);
+        issuanceToken = await ERC20Mintable.new('IssuanceToken', 'ISST', 17);
         issuance = await Issuance.new(
             issuanceToken.address,
             currencyToken.address,

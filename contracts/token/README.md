@@ -12,13 +12,13 @@ It is an interface that adds to the `IERC20` interface the `mint` function from 
 It is an interface that adds to the `IERC20` interface the `name`, `symbol` and `decimals` functions from the `ERC20Detailed` OpenZeppelin contract.
 
 
-## IERC20MintableDetailed
+## IERC20Mintable
 
 It is an interface that adds to the `IERC20` interface the `mint`, `name`, `symbol` and `decimals` functions from the `ERC20Mintable` and `ERC20Detailed` OpenZeppelin contracts.
 
-## ERC20MintableDetailed
+## ERC20Mintable
 
-It is a contract that implements the `IERC20MintableDetailed` interface.
+It is a contract that implements the `IERC20Mintable` interface.
 
 ## ERC20DividendableEth
 

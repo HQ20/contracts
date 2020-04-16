@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { ERC20MintableDetailedInstance, OneManOneVoteInstance } from '../../types/truffle-contracts';
+import { ERC20MintableInstance, OneManOneVoteInstance } from '../../types/truffle-contracts';
 
 const Voting = artifacts.require('OneManOneVote') as Truffle.Contract<OneManOneVoteInstance>;
-const ERC20MintableDetailed = artifacts.require(
-        'ERC20MintableDetailed'
-    ) as Truffle.Contract<ERC20MintableDetailedInstance>;
+const ERC20Mintable = artifacts.require(
+        'ERC20Mintable'
+    ) as Truffle.Contract<ERC20MintableInstance>;
 
 // tslint:disable-next-line:no-var-requires
 chai.use(require('chai-bn')(require('bn.js')));
@@ -21,10 +21,10 @@ contract('OneManOneVote', (accounts) => {
     const threshold = 5000;
 
     let voting: OneManOneVoteInstance;
-    let votedToken: ERC20MintableDetailedInstance;
+    let votedToken: ERC20MintableInstance;
 
     beforeEach(async () => {
-        votedToken = await ERC20MintableDetailed.new('VotedToken', 'VTD', 18);
+        votedToken = await ERC20Mintable.new('VotedToken', 'VTD', 18);
         voting = await Voting.new(
             officer,
             votedToken.address,

@@ -1,17 +1,17 @@
 import { should } from 'chai';
-import { DemocracyInstance, ERC20MintableDetailedInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
+import { DemocracyInstance, ERC20MintableInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
 // tslint:disable:no-var-requires
 const { expectRevert } = require('@openzeppelin/test-helpers');
 
 const Democracy = artifacts.require('Democracy') as Truffle.Contract<DemocracyInstance>;
-const Token = artifacts.require('ERC20MintableDetailed') as Truffle.Contract<ERC20MintableDetailedInstance>;
+const Token = artifacts.require('ERC20Mintable') as Truffle.Contract<ERC20MintableInstance>;
 const Voting = artifacts.require('OneTokenOneVote') as Truffle.Contract<OneTokenOneVoteInstance>;
 should();
 
 /** @test {Democracy} contract */
 contract('Democracy', (accounts) => {
     let democracy: DemocracyInstance;
-    let token: ERC20MintableDetailedInstance;
+    let token: ERC20MintableInstance;
     let voting: OneTokenOneVoteInstance;
     const root = accounts[0];
     const voter1 = accounts[1];

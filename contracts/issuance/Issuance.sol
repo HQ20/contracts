@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../token/IERC20Detailed.sol";
-import "../token/IERC20MintableDetailed.sol";
+import "../token/IERC20Mintable.sol";
 import "../state/StateMachine.sol";
 import "../math/DecimalMath.sol";
 
@@ -95,7 +95,7 @@ contract Issuance is Ownable, StateMachine, ReentrancyGuard {
         );
         uint256 amount = investments[msg.sender];
         investments[msg.sender] = 0;
-        IERC20MintableDetailed _issuanceToken = IERC20MintableDetailed(
+        IERC20Mintable _issuanceToken = IERC20Mintable(
             issuanceToken
         );
         _issuanceToken.mint(
