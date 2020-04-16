@@ -26,9 +26,8 @@ contract ERC20MultiDividendable is ERC20Mintable {
 
     constructor(
         string memory name,
-        string memory symbol,
-        uint8 decimals
-    ) ERC20Mintable(name, symbol, decimals) public {}
+        string memory symbol
+    ) ERC20Mintable(name, symbol) public {}
 
     /**
      * @notice Send dividendTokens to this function in orther to increase the dividends pool

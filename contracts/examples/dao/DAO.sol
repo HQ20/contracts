@@ -31,10 +31,9 @@ contract DAO is VentureEth, Democratic {
     constructor(
         string memory name,
         string memory symbol,
-        uint8 decimals,
         uint256 threshold
     )
-    VentureEth(name, symbol, decimals)
+    VentureEth(name, symbol)
     Democratic(address(this), threshold)
     public {
         _createTransition("LIVE", "SETUP");

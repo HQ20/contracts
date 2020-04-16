@@ -8,8 +8,7 @@ contract TestERC20MultiDividendable is ERC20MultiDividendable, ERC20Burnable {
 
     constructor(
         string memory name,
-        string memory symbol,
-        uint8 decimals
-    ) ERC20MultiDividendable(name, symbol, decimals) ERC20Burnable() public {}
+        string memory symbol
+    ) ERC20MultiDividendable(name, symbol) ERC20Burnable() public {}
 
 }

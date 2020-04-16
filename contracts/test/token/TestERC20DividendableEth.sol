@@ -6,8 +6,8 @@ import "../../token/ERC20DividendableEth.sol";
 
 contract TestERC20DividendableEth is ERC20DividendableEth, ERC20Burnable
 {
-    constructor(string memory name, string memory symbol, uint8 decimals)
-        ERC20DividendableEth(name, symbol, decimals)
+    constructor(string memory name, string memory symbol)
+        ERC20DividendableEth(name, symbol)
         ERC20Burnable()
         public
     {}

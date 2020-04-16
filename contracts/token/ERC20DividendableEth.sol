@@ -19,8 +19,8 @@ contract ERC20DividendableEth is ERC20Mintable {
     int256 public dividendsPerToken;
     mapping(address => int256) private claimedDPT;
 
-    constructor(string memory name, string memory symbol, uint8 decimals)
-        ERC20Mintable(name, symbol, decimals) public
+    constructor(string memory name, string memory symbol)
+        ERC20Mintable(name, symbol) public
     {}
 
     /// @dev Receive function

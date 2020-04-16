@@ -31,9 +31,9 @@ contract EnergyMarket is ERC20, Administered {
      * of the underlying currency token to fund the network load. Also sets the
      * maximum energy price, used for calculating prices.
      */
-    constructor (uint256 _initialSupply, uint128 _basePrice)
+    constructor (string memory name, string memory symbol, uint256 _initialSupply, uint128 _basePrice)
         public
-        ERC20()
+        ERC20(name, symbol)
         Administered(msg.sender)
     {
         _mint(address(this), _initialSupply);

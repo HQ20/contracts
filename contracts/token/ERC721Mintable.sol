@@ -8,7 +8,7 @@ import "../access/Administered.sol";
  * @dev Extension of {ERC721} that gives the owner permission to mint (create) new tokens as he sees fit.
  */
 contract ERC721Mintable is ERC721, Administered {
-    constructor(string memory name, string memory symbol, uint8 decimals)
+    constructor(string memory name, string memory symbol)
         public ERC721(name, symbol) Administered(msg.sender)
     {}
 

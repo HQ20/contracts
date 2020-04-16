@@ -27,9 +27,9 @@ contract VentureEth is
 ERC20DividendableEth,
 IssuanceEth {
 
-    constructor(string memory name, string memory symbol, uint8 decimals)
+    constructor(string memory name, string memory symbol)
     public
-    ERC20DividendableEth(name, symbol, decimals)
+    ERC20DividendableEth(name, symbol)
     IssuanceEth(address(this))
     {
         addAdmin(address(this));
