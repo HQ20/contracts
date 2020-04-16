@@ -61,7 +61,7 @@ contract DAO is VentureEth, Democratic {
     /** Venture investment */
 
     /**
-     * @notice Fund a venture proposal.
+     * @dev Fund a venture proposal.
      * @param venture The address of the VentureEth contract to invest in.
      * @param investment The ether to invest in the venture.
      */
@@ -75,7 +75,7 @@ contract DAO is VentureEth, Democratic {
     }
 
     /**
-     * @notice Retrieve tokens minted for the DAO after an investment.
+     * @dev Retrieve tokens minted for the DAO after an investment.
      * @param venture The address of the VentureEth contract to retrieve tokens from.
      */
     function retrieveVentureTokens(
@@ -85,7 +85,7 @@ contract DAO is VentureEth, Democratic {
     }
 
     /**
-     * @notice Cancel an investment of the DAO.
+     * @dev Cancel an investment of the DAO.
      * @param venture The address of the VentureEth contract from which to cancel the investment.
      */
     function cancelVenture(
@@ -96,7 +96,7 @@ contract DAO is VentureEth, Democratic {
     }
 
     /**
-     * @notice Instruct the DAO to claim dividends from a venture.
+     * @dev Instruct the DAO to claim dividends from a venture.
      * @param venture The venture to claim dividends from.
      */
     function claimDividendsFromVenture(
@@ -108,7 +108,7 @@ contract DAO is VentureEth, Democratic {
     /** Dividend distribution */
 
     /**
-     * @notice Hook for proposals to release dividends.
+     * @dev Hook for proposals to release dividends.
      * @param amount The ether amount to be released as dividends.
      */
     function releaseDividends(uint256 amount) public virtual onlyProposal {
@@ -118,7 +118,7 @@ contract DAO is VentureEth, Democratic {
     /** Restart investor round */
 
     /**
-     * @notice Hook for proposals to restart investor rounds.
+     * @dev Hook for proposals to restart investor rounds.
      */
     function restartInvestorRound(uint256 _issuePrice) public virtual onlyProposal {
         _transition("SETUP");
@@ -127,14 +127,14 @@ contract DAO is VentureEth, Democratic {
     }
 
     /**
-     * @notice Hook for proposals to start distribution in a non-initial investment round.
+     * @dev Hook for proposals to start distribution in a non-initial investment round.
      */
     function restartDistribution() public virtual onlyProposal {
         _transition("LIVE");
     }
 
     /**
-     * @notice Hook for proposals to cancel all new investments in a non-initial investment round.
+     * @dev Hook for proposals to cancel all new investments in a non-initial investment round.
      */
     function cancelInvestmentRound() public virtual onlyProposal {
         this.cancelAllInvestments();
@@ -143,9 +143,10 @@ contract DAO is VentureEth, Democratic {
     /** Enumerators */
 
     /**
-     * @notice Returns the invested ventures.
+     * @dev Returns the invested ventures.
+     * @notice `enumerate()` is disabled until further notice from EnumerableSet
      */
-    function enumerateVentures() public virtual view returns (address[] memory) {
+    /* function enumerateVentures() public virtual view returns (address[] memory) {
         return ventures.enumerate();
-    }
+    } */
 }

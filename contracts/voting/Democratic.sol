@@ -32,14 +32,13 @@ contract Democratic {
         proposals.remove(msg.sender);
     }
 
-    /**
-     * @notice Returns the voting proposals.
-     */
-    function enumerateProposals()
+    /// @dev Returns the voting proposals.
+    /// @notice `enumerate()` is disabled until further notice from EnumerableSet
+    /* function enumerateProposals()
         public virtual view returns (address[] memory)
     {
         return proposals.enumerate();
-    }
+    } */
 
     /// @dev Propose a democratic action.
     /// @param proposalData The abi encoding of the proposal, as one function of this contract and any parameters.
