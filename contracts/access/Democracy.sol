@@ -20,7 +20,7 @@ contract Democracy is AccessControl, Democratic {
         public
         Democratic(votingToken, threshold)
     {
-        _grantRole(VOTER_ROLE, root);
+        _setupRole(VOTER_ROLE, root);
     }
 
     /// @dev Restricted to members of the leader role.
@@ -47,32 +47,32 @@ contract Democracy is AccessControl, Democratic {
 
     /// @dev Add an account to the voter role. Restricted to proposals.
     function addVoter(address account) public virtual onlyProposal {
-        _grantRole(VOTER_ROLE, account);
+        grantRole(VOTER_ROLE, account);
     }
 
     /// @dev Add an account to the leader role. Restricted to proposals.
     function addLeader(address account) public virtual onlyProposal {
-        _grantRole(LEADER_ROLE, account);
+        grantRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove an account from the voter role. Restricted to proposals.
     function removeVoter(address account) public virtual onlyProposal {
-        _revokeRole(VOTER_ROLE, account);
+        revokeRole(VOTER_ROLE, account);
     }
 
     /// @dev Remove an account from the leader role. Restricted to proposals.
     function removeLeader(address account) public virtual onlyProposal {
-        _revokeRole(LEADER_ROLE, account);
+        revokeRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove oneself from the leader role.
     function renounceLeader() public virtual {
-        _revokeRole(LEADER_ROLE, msg.sender);
+        renounceRole(LEADER_ROLE);
     }
 
     /// @dev Remove oneself from the voter role.
     function renounceVoter() public virtual {
-        _revokeRole(VOTER_ROLE, msg.sender);
+        renounceRole(VOTER_ROLE);
     }
 
     /// @dev Propose a democratic action.

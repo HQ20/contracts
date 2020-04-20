@@ -11,7 +11,7 @@ contract Community is AccessControl {
 
     /// @dev Create the community role, with `root` as a member.
     constructor (address root) public {
-        _grantRole(DEFAULT_ADMIN_ROLE, root);
+        _setupRole(DEFAULT_ADMIN_ROLE, root);
     }
 
     /// @dev Restricted to members of the community.
@@ -27,11 +27,11 @@ contract Community is AccessControl {
 
     /// @dev Add a member of the community. Caller must already belong to the community.
     function addMember(address account) public virtual onlyMember {
-        _grantRole(DEFAULT_ADMIN_ROLE, account);
+        grantRole(DEFAULT_ADMIN_ROLE, account);
     }
 
     /// @dev Remove oneself as a member of the community.
     function leaveCommunity() public virtual { // Roles will check membership.
-        _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        renounceRole(DEFAULT_ADMIN_ROLE);
     }
 }

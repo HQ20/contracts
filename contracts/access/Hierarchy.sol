@@ -12,7 +12,7 @@ contract Hierarchy is AccessControl {
 
     /// @dev Add `root` as a member of the root role.
     constructor (address root) public {
-        _grantRole(DEFAULT_ADMIN_ROLE, root);
+        _setupRole(DEFAULT_ADMIN_ROLE, root);
     }
 
     /// @dev Restricted to members of the role passed as a parameter.
