@@ -35,11 +35,11 @@ contract Democratic {
     /**
      * @notice Returns the voting proposals.
      */
-    function enumerateProposals()
+    /* function enumerateProposals()
         public virtual view returns (address[] memory)
     {
         return proposals.enumerate();
-    }
+    }*/ // Disabled until fixed by OpenZeppelin
 
     /// @dev Propose a democratic action.
     /// @param proposalData The abi encoding of the proposal, as one function of this contract and any parameters.
