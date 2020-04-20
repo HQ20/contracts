@@ -33,7 +33,7 @@ contract EnergyMarket is ERC20, Administered {
      */
     constructor (uint256 _initialSupply, uint128 _basePrice)
         public
-        ERC20()
+        ERC20("Energy", "POW")
         Administered(msg.sender)
     {
         _mint(address(this), _initialSupply);
