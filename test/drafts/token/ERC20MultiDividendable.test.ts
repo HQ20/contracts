@@ -26,8 +26,8 @@ contract('ERC20DividendableToken', (accounts) => {
 
     beforeEach(async () => {
         dividendable = await TestERC20MultiDividendable.new('MultiDividendableToken', 'MDT', 19);
-        mintable1 = await ERC20Mintable.new();
-        mintable2 = await ERC20Mintable.new();
+        mintable1 = await ERC20Mintable.new('Name', 'Symbol');
+        mintable2 = await ERC20Mintable.new('Name', 'Symbol');
         await mintable1.mint(user1, ether('100'));
         await mintable2.mint(user2, ether('100'));
         await dividendable.mint(account1, ether('40'));
