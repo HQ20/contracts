@@ -11,7 +11,7 @@ contract ERC20Mintable is ERC20, Administered {
     constructor(string memory name_, string memory symbol_, uint8 decimals_)
         public ERC20(name_, symbol_) Administered(msg.sender)
     {
-        _decimals = decimals_;
+        _setupDecimals(decimals_);
     }
 
     function mint(address account, uint256 amount)
