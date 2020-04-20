@@ -30,7 +30,7 @@ contract('Classifieds', (accounts) => {
 
     beforeEach(async () => {
         snapshot = await time.latest();
-        erc20token = await ERC20Mintable.new('Name', 'Symbol');
+        erc20token = await ERC20Mintable.new('Name', 'Symbol', 18);
         erc721token = await ERC721Mintable.new('Name', 'Symbol');
         classifieds = await Classifieds.new(erc20token.address, erc721token.address);
     });
