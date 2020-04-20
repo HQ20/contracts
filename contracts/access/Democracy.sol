@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 import "./../voting/Democratic.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./AccessControlBasic.sol";
 
 
 /**
@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * @author Alberto Cuesta Canada
  * @notice Implements a voting-based structure for Roles
  */
-contract Democracy is AccessControl, Democratic {
+contract Democracy is AccessControlBasic, Democratic {
     event Proposal(address proposal);
 
     bytes32 public constant LEADER_ROLE = "LEADER";
@@ -20,7 +20,7 @@ contract Democracy is AccessControl, Democratic {
         public
         Democratic(votingToken, threshold)
     {
-        _setupRole(VOTER_ROLE, root);
+        _grantRole(VOTER_ROLE, root);
     }
 
     /// @dev Restricted to members of the leader role.
@@ -47,32 +47,32 @@ contract Democracy is AccessControl, Democratic {
 
     /// @dev Add an account to the voter role. Restricted to proposals.
     function addVoter(address account) public virtual onlyProposal {
-        grantRole(VOTER_ROLE, account);
+        _grantRole(VOTER_ROLE, account);
     }
 
     /// @dev Add an account to the leader role. Restricted to proposals.
     function addLeader(address account) public virtual onlyProposal {
-        grantRole(LEADER_ROLE, account);
+        _grantRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove an account from the voter role. Restricted to proposals.
     function removeVoter(address account) public virtual onlyProposal {
-        revokeRole(VOTER_ROLE, account);
+        _revokeRole(VOTER_ROLE, account);
     }
 
     /// @dev Remove an account from the leader role. Restricted to proposals.
     function removeLeader(address account) public virtual onlyProposal {
-        revokeRole(LEADER_ROLE, account);
+        _revokeRole(LEADER_ROLE, account);
     }
 
     /// @dev Remove oneself from the leader role.
     function renounceLeader() public virtual {
-        renounceRole(LEADER_ROLE, msg.sender);
+        _revokeRole(LEADER_ROLE, msg.sender);
     }
 
     /// @dev Remove oneself from the voter role.
     function renounceVoter() public virtual {
-        renounceRole(VOTER_ROLE, msg.sender);
+        _revokeRole(VOTER_ROLE, msg.sender);
     }
 
     /// @dev Propose a democratic action.

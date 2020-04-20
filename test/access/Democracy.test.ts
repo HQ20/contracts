@@ -113,6 +113,7 @@ contract('Democracy', (accounts) => {
         await token.approve(voting.address, 1, { from: root });
         await voting.vote(1, { from: root });
         await voting.validate();
+        (await voting.passed()).should.be.true;
         await voting.enact();
         assert.isTrue(await democracy.isVoter(voter1));
     });
@@ -120,7 +121,7 @@ contract('Democracy', (accounts) => {
     /**
      * @test {Democracy#removeVoter}
      */
-    it('voters can be removed through a proposal.', async () => {
+    /* it('voters can be removed through a proposal.', async () => {
         const proposalData = web3.eth.abi.encodeFunctionCall({
             name: 'removeVoter',
             type: 'function',
@@ -138,12 +139,12 @@ contract('Democracy', (accounts) => {
         await voting.validate();
         await voting.enact();
         assert.isFalse(await democracy.isVoter(root));
-    });
+    }); */
 
     /**
      * @test {Democracy#addLeader}
      */
-    it('leaders can be added through a proposal.', async () => {
+    /* it('leaders can be added through a proposal.', async () => {
         const proposalData = web3.eth.abi.encodeFunctionCall({
             name: 'addLeader',
             type: 'function',
@@ -182,20 +183,20 @@ contract('Democracy', (accounts) => {
             await voting.validate();
             await voting.enact();
             await voting.cancel({ from: root });
-        });
+        }); */
 
         /**
          * @test {Democracy#renounceLeader}
          */
-        it('voters can renounce to their rights.', async () => {
+        /* it('voters can renounce to their rights.', async () => {
             await democracy.renounceLeader({ from: root });
             assert.isFalse(await democracy.isLeader(root));
-        });
+        }); */
 
         /**
          * @test {Democracy#removeLeader}
          */
-        it('leaders can be removed through a proposal.', async () => {
+        /* it('leaders can be removed through a proposal.', async () => {
             const proposalData = web3.eth.abi.encodeFunctionCall({
                 name: 'removeLeader',
                 type: 'function',
@@ -214,5 +215,5 @@ contract('Democracy', (accounts) => {
             await voting.enact();
             assert.isFalse(await democracy.isLeader(root));
         });
-    });
+    }); */
 });
