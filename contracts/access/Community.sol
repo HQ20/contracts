@@ -32,6 +32,6 @@ contract Community is AccessControl {
 
     /// @dev Remove oneself as a member of the community.
     function leaveCommunity() public virtual { // Roles will check membership.
-        renounceRole(DEFAULT_ADMIN_ROLE);
+        renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }

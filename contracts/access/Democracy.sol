@@ -67,12 +67,12 @@ contract Democracy is AccessControl, Democratic {
 
     /// @dev Remove oneself from the leader role.
     function renounceLeader() public virtual {
-        renounceRole(LEADER_ROLE);
+        renounceRole(LEADER_ROLE, msg.sender);
     }
 
     /// @dev Remove oneself from the voter role.
     function renounceVoter() public virtual {
-        renounceRole(VOTER_ROLE);
+        renounceRole(VOTER_ROLE, msg.sender);
     }
 
     /// @dev Propose a democratic action.

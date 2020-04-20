@@ -55,6 +55,6 @@ contract Administered is AccessControl {
 
     /// @dev Remove oneself from the admin role.
     function renounceAdmin() public virtual {
-        renounceRole(DEFAULT_ADMIN_ROLE);
+        renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }
