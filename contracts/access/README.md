@@ -48,3 +48,31 @@ In `Hierarchy.sol`:
 
 * function `isMember(address account, bytes32 roleId)`: Returns `true` if `account` belongs to the admin role of `roleId`.
 * function `addRole(bytes32 roleId, bytes32 adminRoleId)`: Adds `roleId` with `adminRoleId` as the admin role.
+
+# Democracy
+
+This is version of `Administered.sol` where roles are granted or revoked only through a vote, initiated by calling the `propose()` function. The call to `propose()` emits an event with the address of the voting, which can be used to `vote`, `validate` and `enact` the proposal.
+
+## Usage
+```
+const proposalData = web3.eth.abi.encodeFunctionCall({
+    name: 'addLeader',
+    type: 'function',
+    inputs: [{
+        type: 'address',
+        name: 'account',
+    }]
+}, [root]);
+const votingAddress = (
+    await democracy.propose(proposalData, { from: root })
+).logs[0].args.proposal;
+voting = await Voting.at(votingAddress);
+await token.approve(voting.address, 1, { from: root });
+await voting.vote(1, { from: root });
+await voting.validate();
+await voting.enact();
+```
+
+# AuthorizedAccess
+
+AuthorizedAccess allows to define simple access control for multiple authorized users. Think of it as a simple two tiered access control contract. It has an owner which can execute functions with the `onlyOwner` modifier, and the owner can give access to other addresses which then can execute functions with the `onlyAuthorized` modifier.
