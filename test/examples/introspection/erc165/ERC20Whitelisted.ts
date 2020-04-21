@@ -32,7 +32,7 @@ contract('ERC20Whitelisted', (accounts) => {
     itShouldThrow(
         'constructor throws if called with an address not implementing IWhitelist.',
         async () => {
-            await ERC20Whitelisted.new(root, { from: root });
+            await ERC20Whitelisted.new('name', 'symbol', root, { from: root });
         },
         'Address is not IWhitelist.',
     );
@@ -42,7 +42,7 @@ contract('ERC20Whitelisted', (accounts) => {
      */
     it('constructor succeeds if called with an address implementing IWhitelist.', async () => {
         whitelist = await Whitelist.new();
-        erc20Whitelisted = await ERC20Whitelisted.new(whitelist.address);
+        erc20Whitelisted = await ERC20Whitelisted.new('name', 'symbol', whitelist.address);
     });
 });
 
@@ -56,7 +56,7 @@ contract('ERC20Whitelisted', (accounts) => {
 
     beforeEach(async () => {
         whitelist = await Whitelist.new();
-        erc20Whitelisted = await ERC20WhitelistedMock.new(whitelist.address);
+        erc20Whitelisted = await ERC20WhitelistedMock.new('name', 'symbol', whitelist.address);
     });
 
     /**
@@ -106,7 +106,7 @@ contract('ERC20Whitelisted', (accounts) => {
 
     beforeEach(async () => {
         whitelist = await Whitelist.new();
-        erc20Whitelisted = await ERC20WhitelistedMock.new(whitelist.address);
+        erc20Whitelisted = await ERC20WhitelistedMock.new('name', 'symbol', whitelist.address);
         await whitelist.addMember(whitelistedUser1, { from: root });
         await whitelist.addMember(whitelistedUser2, { from: root });
         await erc20Whitelisted.mint(whitelistedUser1, mintedAmount, { from: root });

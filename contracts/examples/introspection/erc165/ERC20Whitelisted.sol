@@ -8,19 +8,22 @@ import "./WhitelistInterfaceId.sol";
 contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
     IWhitelist whitelist;
 
-    constructor (address whitelistAddress) public {
+    constructor (
+        string memory name,
+        string memory symbol,
+        address whitelistAddress
+    )
+        public ERC20(name, symbol)
+    {
         require(
-            ERC165Checker._supportsInterface(whitelistAddress, IWHITELIST_ID),
+            ERC165Checker.supportsInterface(whitelistAddress, IWHITELIST_ID),
             "Address is not IWhitelist."
         );
         whitelist = IWhitelist(whitelistAddress);
     }
 
     function transfer(address recipient, uint256 amount)
-        public
-        virtual
-        override
-        returns(bool)
+        public virtual override returns(bool)
     {
         require(
             whitelist.isMember(recipient),
@@ -30,10 +33,7 @@ contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
     }
 
     function transferFrom(address sender, address recipient, uint256 amount)
-        public
-        virtual
-        override
-        returns(bool)
+        public virtual override returns(bool)
     {
         require(
             whitelist.isMember(recipient),
@@ -43,8 +43,7 @@ contract ERC20Whitelisted is ERC20, WhitelistInterfaceId {
     }
 
     function _mint(address account, uint256 amount)
-        internal
-        override
+        internal override
     {
         require(
             whitelist.isMember(account),
