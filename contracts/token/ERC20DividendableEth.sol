@@ -1,16 +1,16 @@
 pragma solidity ^0.6.0;
 
-import "./ERC20MintableDetailed.sol";
+import "./ERC20Mintable.sol";
 import "../math/DecimalMath.sol";
 import "../utils/SafeCast.sol";
 
 
 /**
  * @title ERC20DividendableEth
- * @dev Implements an ERC20MintableDetailed token with a dividend distribution procedure for etehreum received
+ * @dev Implements an ERC20Mintable token with a dividend distribution procedure for etehreum received
  * @notice This contract was implemented from algorithms proposed by Nick Johnson here: https://medium.com/@weka/dividend-bearing-tokens-on-ethereum-42d01c710657
  */
-contract ERC20DividendableEth is ERC20MintableDetailed {
+contract ERC20DividendableEth is ERC20Mintable {
     using DecimalMath for int256;
     using DecimalMath for uint256;
     using SafeCast for int256;
@@ -20,7 +20,7 @@ contract ERC20DividendableEth is ERC20MintableDetailed {
     mapping(address => int256) private claimedDPT;
 
     constructor(string memory name, string memory symbol, uint8 decimals)
-        ERC20MintableDetailed(name, symbol, decimals) public
+        ERC20Mintable(name, symbol, decimals) public
     {}
 
     /// @dev Receive function

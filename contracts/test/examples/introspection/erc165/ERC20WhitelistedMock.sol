@@ -5,17 +5,18 @@ import "./../../../../examples/introspection/erc165/ERC20Whitelisted.sol";
 
 contract ERC20WhitelistedMock is ERC20Whitelisted, Ownable {
 
-    constructor (address whitelistAddress)
-        public
-        ERC20Whitelisted(whitelistAddress)
-        Ownable()
+    constructor (
+        string memory name,
+        string memory symbol,
+        address whitelistAddress
+    )
+        public ERC20Whitelisted(name, symbol, whitelistAddress) Ownable()
     {
 
     }
 
     function mint(address account, uint256 amount)
-        public
-        onlyOwner
+        public onlyOwner
     {
         return super._mint(account, amount);
     }

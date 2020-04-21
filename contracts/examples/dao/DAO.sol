@@ -145,7 +145,7 @@ contract DAO is VentureEth, Democratic {
     /**
      * @notice Returns the invested ventures.
      */
-    function enumerateVentures() public virtual view returns (address[] memory) {
+    /* function enumerateVentures() public virtual view returns (address[] memory) {
         return ventures.enumerate();
-    }
+    } */ // Disabled until fixed by OpenZeppelin
 }

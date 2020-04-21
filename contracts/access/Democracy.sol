@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 import "./../voting/Democratic.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./AccessControlBasic.sol";
 
 
 /**
@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * @author Alberto Cuesta Canada
  * @notice Implements a voting-based structure for Roles
  */
-contract Democracy is AccessControl, Democratic {
+contract Democracy is AccessControlBasic, Democratic {
     event Proposal(address proposal);
 
     bytes32 public constant LEADER_ROLE = "LEADER";

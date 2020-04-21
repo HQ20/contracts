@@ -12,7 +12,7 @@ contract Administered is AccessControl {
 
     /// @dev Add `root` to the admin role as a member.
     constructor (address root) public {
-        _grantRole(DEFAULT_ADMIN_ROLE, root);
+        _setupRole(DEFAULT_ADMIN_ROLE, root);
         _setRoleAdmin(USER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
@@ -40,21 +40,21 @@ contract Administered is AccessControl {
 
     /// @dev Add an account to the user role. Restricted to admins.
     function addUser(address account) public virtual onlyAdmin {
-        _grantRole(USER_ROLE, account);
+        grantRole(USER_ROLE, account);
     }
 
     /// @dev Add an account to the admin role. Restricted to admins.
     function addAdmin(address account) public virtual onlyAdmin {
-        _grantRole(DEFAULT_ADMIN_ROLE, account);
+        grantRole(DEFAULT_ADMIN_ROLE, account);
     }
 
     /// @dev Remove an account from the user role. Restricted to admins.
     function removeUser(address account) public virtual onlyAdmin {
-        _revokeRole(USER_ROLE, account);
+        revokeRole(USER_ROLE, account);
     }
 
     /// @dev Remove oneself from the admin role.
     function renounceAdmin() public virtual {
-        _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }
