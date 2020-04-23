@@ -1,6 +1,6 @@
 {
     "name": "@hq20/contracts",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "description": "A set of reusable smart contracts from HQ20",
     "license": "Apache-2.0",
     "author": {
