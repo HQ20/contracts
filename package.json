@@ -50,7 +50,7 @@
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.1",
-        "coveralls": "3.0.13",
+        "coveralls": "3.0.14",
         "cross-env": "7.0.2",
         "directory-tree": "2.2.4",
         "eth-gas-reporter": "0.2.17",
