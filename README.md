@@ -17,7 +17,9 @@
     </div>
 </div>
 
-> HQ20/contracts is a Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world. The contracts are expected to be used as smart contract patterns for you to draw inspiration from, and for that purpose they have ben kept deliberately simple. If you decide to reuse the contracts, or to copy and paste code in them, make sure that you look for and close the vulnerabilities. If you plan to go to the mainnet, please get a third party audit done.
+> HQ20/contracts is a Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world.
+
+**Disclaimer:** The contracts are expected to be used as smart contract patterns for you to draw inspiration from, and for them to be easy to understand they have been kept deliberately simple. If you decide to reuse the contracts, or to copy and paste code in them, make sure that you look for and close the vulnerabilities. If you plan to go to the mainnet, please get a third party audit done.
 
 ## In a Nutshell
 
