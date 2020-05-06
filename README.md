@@ -29,7 +29,6 @@ At the time of this writing (`May 2020`), this are the contents of this reposito
 contracts ──┬─── access        - Access Control Contracts, some of them built on top of `AccessControl.sol`
             ├─── classifieds   - Example of a decentralized classifieds market for ERC721
             ├─── dao           - Example of building a decentralized venture capital fund
-            ├─── drafts        - Stuff not yet ready for prime-time
             ├─── energy        - Example of building a decentralized market for energy distribution
             ├─── exchange      - The Uniswap decentralized market contracts, with solidity tests
             ├─── introspection - Example of using ERC165 to verify contract types before casting
@@ -37,7 +36,6 @@ contracts ──┬─── access        - Access Control Contracts, some of t
             ├─── lists         - Reusable implementations of different types of linked lists
             ├─── math          - Reusable implementation of a lightweight fixed point math library
             ├─── state         - Reusable implementation of a fully-featured state machine
-            ├─── test          - Implementations of contracts for testing of interanl functions
             ├─── token         - Token implementations, including a reusable dividend-bearing ERC20
             ├─── utils         - Reusable library to cast between `uint` and `int`.
             └─── voting        - Example implementations of token-based and address-based votings
@@ -72,8 +70,6 @@ Contracts go in `contracts`, test files go in `test`.
 Inside the contracts folder the files are organized by topic and by type.
 
 At the root of `contracts` are directories for each one of the topics, containing the simplest implementations that are in a mature state.
-
-For contracts that are used as example implementations there is a `contracts/examples` directory with the appropriate topic folders inside.
 
 For contracts that are under development there is a `contracts/drafts` directory with the appropriate topic folders inside.
 
