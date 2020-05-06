@@ -1,6 +1,9 @@
 # EnergyMarket
 
-This is an Ethereum project that implements an Energy Market
+This is an Ethereum project that implements an Energy Market.
+
+For a longer explanation of the contracts here, [please read this article](https://medium.com/coinmonks/how-to-build-an-energy-market-on-a-blockchain-c43b0cfc2d12?source=friends_link&sk=75fd59c0488c354782985321aa2919cb).
+
 
 ## Usage
 

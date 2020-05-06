@@ -17,7 +17,29 @@
     </div>
 </div>
 
-> HQ20/contracts is a Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world.
+> HQ20/contracts is a Solidity project with contracts, libraries and examples to help you build fully-featured distributed applications for the real world. The contracts are expected to be used as smart contract patterns for you to draw inspiration from, and for that purpose they have ben kept deliberately simple. If you decide to reuse the contracts, or to copy and paste code in them, make sure that you look for and close the vulnerabilities. If you plan to go to the mainnet, please get a third party audit done.
+
+## In a Nutshell
+
+At the time of this writing (`May 2020`), this are the contents of this repository:
+
+```
+contracts ──┬─── access        - Access Control Contracts, some of them built on top of `AccessControl.sol`
+            ├─── classifieds   - Example of a decentralized classifieds market for ERC721
+            ├─── dao           - Example of building a decentralized venture capital fund
+            ├─── drafts        - Stuff not yet ready for prime-time
+            ├─── energy        - Example of building a decentralized market for energy distribution
+            ├─── exchange      - The Uniswap decentralized market contracts, with solidity tests
+            ├─── introspection - Example of using ERC165 to verify contract types before casting
+            ├─── issuance      - Example of an ICO, can be used as well for share issuances
+            ├─── lists         - Reusable implementations of different types of linked lists
+            ├─── math          - Reusable implementation of a lightweight fixed point math library
+            ├─── state         - Reusable implementation of a fully-featured state machine
+            ├─── test          - Implementations of contracts for testing of interanl functions
+            ├─── token         - Token implementations, including a reusable dividend-bearing ERC20
+            ├─── utils         - Reusable library to cast between `uint` and `int`.
+            └─── voting        - Example implementations of token-based and address-based votings
+```
 
 ## Installation
 
@@ -56,34 +78,6 @@ For contracts that are under development there is a `contracts/drafts` directory
 For contracts that are used for testing of libraries or internal methods there is a `contracts/test` directory with the appropriate topic folders inside.
 
 The `test` directory replicates the structure of the `contracts` directory.
-
-At the time of this writing (`Feb 2020`), this is the directory structure:
-
-```
-contracts ──┬─── access
-            │
-            ├─── classifieds
-            │
-            ├─── drafts ───────┬─── classifieds
-            │                  ├─── issuance
-            |                  ├─── lists ──────────── mocks
-            |                  ├─── strings
-            |                  ├─── token
-            |                  └─── voting
-            │
-            ├─── examples ─────┬─── access
-            │                  ├─── dao
-            │                  ├─── energy
-            │                  └─── introspection
-            │
-            ├─── exchange
-            ├─── issuance
-            ├─── lists 
-            ├─── state
-            ├─── test
-            ├─── token
-            └─── utils
-```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

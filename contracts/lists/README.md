@@ -2,6 +2,8 @@
 
 This is an Ethereum project that implements singly and doubly linked lists (https://en.wikipedia.org/wiki/Linked_list).
 
+For a longer explanation of some of the contracts here, [please read this article](https://medium.com/coinmonks/a-linked-list-implementation-for-ethereum-a2915bf8122f?source=friends_link&sk=be8889a651eed8193b1c4421a50484dd).
+
 # Terminology
 Object: Objects are linked to each other and together they are a Linked List
 Head: The first object in the list. No other object points to the head.
