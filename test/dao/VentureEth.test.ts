@@ -3,7 +3,7 @@ import { should } from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert, send } = require('@openzeppelin/test-helpers');
 
-import { VentureEthInstance } from '../../../types/truffle-contracts';
+import { VentureEthInstance } from '../../types/truffle-contracts';
 
 const VentureEth = artifacts.require(
     'VentureEth.sol',

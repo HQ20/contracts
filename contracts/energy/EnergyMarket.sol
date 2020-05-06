@@ -1,8 +1,7 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// import "@hq20/contracts/contracts/access/Whitelist.sol";
-import "../../access/Administered.sol";
+import "../access/Administered.sol";
 
 
 /**

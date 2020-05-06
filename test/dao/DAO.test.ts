@@ -3,7 +3,7 @@ import * as chai from 'chai';
 // tslint:disable-next-line:no-var-requires
 const { balance, BN, constants, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
-import { DAOInstance, VentureEthInstance, OneTokenOneVoteInstance } from '../../../types/truffle-contracts';
+import { DAOInstance, VentureEthInstance, OneTokenOneVoteInstance } from '../../types/truffle-contracts';
 
 const DAO = artifacts.require(
     'DAO',

@@ -1,5 +1,5 @@
 import { should } from 'chai';
-import { WhitelistInterfaceIdInstance } from '../../../../types/truffle-contracts';
+import { WhitelistInterfaceIdInstance } from '../../../types/truffle-contracts';
 
 const WhitelistInterfaceId = artifacts.require(
     './examples/introspection/erc165/WhitelistInterfaceId.sol',
@@ -8,7 +8,7 @@ const WhitelistInterfaceId = artifacts.require(
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../../utils');
+const { itShouldThrow } = require('./../../utils');
 
 /** @test {WhitelistInterfaceId} contract */
 contract('WhitelistInterfaceId', (accounts) => {
