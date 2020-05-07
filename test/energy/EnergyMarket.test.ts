@@ -1,7 +1,7 @@
 // tslint:disable:no-var-requires
 import * as chai from 'chai';
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-import { EnergyMarketInstance } from '../../../types/truffle-contracts';
+import { EnergyMarketInstance } from '../../types/truffle-contracts';
 
 const EnergyMarket = artifacts.require('EnergyMarket') as Truffle.Contract<EnergyMarketInstance>;
 

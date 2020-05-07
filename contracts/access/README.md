@@ -2,6 +2,8 @@
 
 This is an Ethereum project that implements different access control structures on top of OpenZeppelin's AccessControl.sol.
 
+For a longer explanation of some of the contracts here, [please read this article](https://medium.com/coinmonks/how-to-use-accesscontrol-sol-9ea3a57f4b15?source=friends_link&sk=c274faededcbb71c6a211f33de4cf5c9).
+
 
 # Community
 

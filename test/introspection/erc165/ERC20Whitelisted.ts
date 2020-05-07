@@ -1,7 +1,7 @@
 import { should } from 'chai';
-import { WhitelistERC165Instance } from '../../../../types/truffle-contracts';
-import { ERC20WhitelistedInstance } from '../../../../types/truffle-contracts';
-import { ERC20WhitelistedMockInstance } from '../../../../types/truffle-contracts';
+import { WhitelistERC165Instance } from '../../../types/truffle-contracts';
+import { ERC20WhitelistedInstance } from '../../../types/truffle-contracts';
+import { ERC20WhitelistedMockInstance } from '../../../types/truffle-contracts';
 
 const Whitelist = artifacts.require(
     './examples/introspection/erc165/WhitelistERC165.sol',
@@ -15,7 +15,7 @@ const ERC20WhitelistedMock = artifacts.require(
 should();
 
 // tslint:disable-next-line no-var-requires
-const { itShouldThrow } = require('./../../../utils');
+const { itShouldThrow } = require('./../../utils');
 
 /** @test {ERC20Whitelisted} contract */
 contract('ERC20Whitelisted', (accounts) => {
