@@ -1613,6 +1613,11 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
+camelcase@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.0.0.tgz#5259f7c30e35e278f1bdc2a4d91230b37cad981e"
+  integrity sha512-8KMDF1Vz2gzOq54ONPJS65IvTUaB1cHJ2DMM7MbPmLZljDH1qpzzLsWdiN9pHh6qvkRVDTi/07+eNGch/oLU4w==
+
 caniuse-lite@^1.0.30000844:
   version "1.0.30001023"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001023.tgz#b82155827f3f5009077bdd2df3d8968bcbcc6fc4"
@@ -4735,13 +4740,14 @@ memdown@^1.0.0:
     ltgt "~2.2.0"
     safe-buffer "~5.1.1"
 
-meow@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/meow/-/meow-7.0.0.tgz#2d21adc6df0e1b4659b2b2ce63852d954e5c440a"
-  integrity sha512-He6nRo6zYQtzdm0rUKRjpc+V2uvfUnz76i2zxosiLrAvKhk9dSRqWabL/3fNZv9hpb3PQIJNym0M0pzPZa0pvw==
+meow@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/meow/-/meow-7.0.1.tgz#1ed4a0a50b3844b451369c48362eb0515f04c1dc"
+  integrity sha512-tBKIQqVrAHqwit0vfuFPY3LlzJYkEOFyKa3bPgxzNl6q/RtN8KQ+ALYEASYuFayzSAsjlhXj/JZ10rH85Q6TUw==
   dependencies:
     "@types/minimist" "^1.2.0"
     arrify "^2.0.1"
+    camelcase "^6.0.0"
     camelcase-keys "^6.2.2"
     decamelize-keys "^1.1.0"
     hard-rejection "^2.1.0"
