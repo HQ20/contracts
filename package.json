@@ -74,5 +74,12 @@
         "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
         "typescript": "3.9.3"
+    },
+    "resolutions": {
+        "mem": "^4.0.0",
+        "yargs-parser": "^18.1.2",
+        "braces": "^2.3.1",
+        "decompress": "^4.2.1",
+        "minimist": "^0.2.1"
     }
 }
