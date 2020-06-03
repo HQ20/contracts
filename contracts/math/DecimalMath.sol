@@ -82,4 +82,37 @@ library DecimalMath {
     {
         return x.mul(int(unit(decimals))).div(y);
     }
+
+    /// @dev Divides x between y, rounding to the closes representable number.
+    /// Assumes x and y are both fixed point with 18 digits.
+    function divdr(uint256 x, uint256 y) internal pure returns (uint256) {
+        return divdr(x, y, 18);
+    }
+
+    /// @dev Divides x between y, rounding to the closes representable number.
+    /// Assumes x and y are both fixed point with 18 digits.
+    function divdr(int256 x, int256 y) internal pure returns (int256) {
+        return divdr(x, y, 18);
+    }
+
+    /// @dev Divides x between y, rounding to the closes representable number.
+    /// Assumes x and y are both fixed point with `decimals` digits.
+    function divdr(uint256 x, uint256 y, uint8 decimals)
+        internal pure returns (uint256)
+    {
+        uint256 z = x.mul(unit(decimals + 1)).div(y);
+        if (z % 10 > 5) return z / 10 + 1;
+        else return z / 10;
+    }
+
+    /// @dev Divides x between y, rounding to the closes representable number.
+    /// Assumes x and y are both fixed point with `decimals` digits.
+    function divdr(int256 x, int256 y, uint8 decimals)
+        internal pure returns (int256)
+    {
+        int256 z = x.mul(int(unit(decimals + 1))).div(y);
+        if (z % 10 > 5) return z / 10 + 1;
+        else if (z % 10 < -5) return z / 10 - 1;
+        else return z / 10;
+    }
 }

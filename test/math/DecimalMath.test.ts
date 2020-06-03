@@ -18,6 +18,7 @@ contract('DecimalMath', () => {
     let decimal1_18: BN;
     let decimal2_18: BN;
     let decimal3_18: BN;
+    let decimal4_18: BN;
     let decimal6_18: BN;
     let decimal1_16: BN;
     let decimal2_16: BN;
@@ -30,6 +31,7 @@ contract('DecimalMath', () => {
         decimal1_18 = new BN(await tokenMath.unit(decimals18.toString()));
         decimal2_18 = decimal1_18.mul(new BN('2'));
         decimal3_18 = decimal1_18.mul(new BN('3'));
+        decimal4_18 = decimal1_18.mul(new BN('4'));
         decimal6_18 = decimal1_18.mul(new BN('6'));
         decimal1_16 = new BN(await tokenMath.unit(decimals16.toString()));
         decimal2_16 = decimal1_16.mul(new BN('2'));
@@ -127,5 +129,41 @@ contract('DecimalMath', () => {
             decimal3_18.toString(),
             decimals16.toString(),
         )).should.be.bignumber.equal(decimal2_16.mul(minus1));
+    });
+
+    /**
+     * @test {DecimalMath#divdr()}
+     */
+    it('divides decimal values, rounding away from zero.', async () => {
+        BN(await tokenMath.divdr(
+            decimal4_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('666666666666666667'));
+        BN(await tokenMath.divdrInt(
+            decimal4_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('666666666666666667'));
+        BN(await tokenMath.divdrInt(
+            decimal4_18.mul(minus1).toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal((new BN('666666666666666667')).mul(minus1));
+    });
+
+    /**
+     * @test {DecimalMath#divdr()}
+     */
+    it('divides decimal values, rounding towards zero.', async () => {
+        BN(await tokenMath.divdr(
+            decimal2_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('333333333333333333'));
+        BN(await tokenMath.divdrInt(
+            decimal2_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('333333333333333333'));
+        BN(await tokenMath.divdrInt(
+            decimal2_18.mul(minus1).toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal((new BN('333333333333333333')).mul(minus1));
     });
 });
