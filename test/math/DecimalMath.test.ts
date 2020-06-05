@@ -134,7 +134,7 @@ contract('DecimalMath', () => {
     /**
      * @test {DecimalMath#divdr()}
      */
-    it('divides decimal values, rounding away from zero.', async () => {
+    it('divides decimal values, rounding away from zero to the closest representable number.', async () => {
         BN(await tokenMath.divdr(
             decimal4_18.toString(),
             decimal6_18.toString(),
@@ -152,7 +152,7 @@ contract('DecimalMath', () => {
     /**
      * @test {DecimalMath#divdr()}
      */
-    it('divides decimal values, rounding towards zero.', async () => {
+    it('divides decimal values, rounding towards zero to the closest representable number.', async () => {
         BN(await tokenMath.divdr(
             decimal2_18.toString(),
             decimal6_18.toString(),
@@ -165,5 +165,23 @@ contract('DecimalMath', () => {
             decimal2_18.mul(minus1).toString(),
             decimal6_18.toString(),
         )).should.be.bignumber.equal((new BN('333333333333333333')).mul(minus1));
+    });
+
+    /**
+     * @test {DecimalMath#divdr()}
+     */
+    it('divides decimal values, rounding towards zero to the closest representable number.', async () => {
+        BN(await tokenMath.divdrup(
+            decimal2_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('333333333333333334'));
+        BN(await tokenMath.divdrupInt(
+            decimal2_18.toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal(new BN('333333333333333334'));
+        BN(await tokenMath.divdrupInt(
+            decimal2_18.mul(minus1).toString(),
+            decimal6_18.toString(),
+        )).should.be.bignumber.equal((new BN('333333333333333334')).mul(minus1));
     });
 });
