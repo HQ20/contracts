@@ -2,6 +2,8 @@
 
 This is an Ethereum project which implements a classifieds board.
 
+For a longer explanation of the contracts here, [please read this article](https://medium.com/coinmonks/how-to-implement-an-erc721-market-f805959ddcf?source=friends_link&sk=5a9c2bb92a2bb92403a32e389e933613).
+
 ## Description
 
 A classifieds board can be used to open and close trades between ERC20 and ERC721 tokens.

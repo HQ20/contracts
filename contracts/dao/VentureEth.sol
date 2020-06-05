@@ -1,9 +1,9 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../../issuance/IssuanceEth.sol";
-import "../../token/ERC20DividendableEth.sol";
-import "../../token/ERC20Mintable.sol";
+import "../issuance/IssuanceEth.sol";
+import "../token/ERC20DividendableEth.sol";
+import "../token/ERC20Mintable.sol";
 
 
 /**
