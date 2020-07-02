@@ -73,7 +73,7 @@
         "ts-node": "8.10.2",
         "typechain": "1.0.5",
         "typechain-target-truffle": "1.0.2",
-        "typescript": "3.9.5"
+        "typescript": "3.9.6"
     },
     "resolutions": {
         "mem": "^4.0.0",
