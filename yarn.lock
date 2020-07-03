@@ -281,12 +281,12 @@
   resolved "https://registry.yarnpkg.com/@truffle/error/-/error-0.0.8.tgz#dc94ca36393403449d4b7461bf9452c241e53ec1"
   integrity sha512-x55rtRuNfRO1azmZ30iR0pf0OJ6flQqbax1hJz+Avk1K5fdmOv5cr22s9qFnwTWnS6Bw0jvJEoR0ITsM7cPKtQ==
 
-"@truffle/hdwallet-provider@1.0.36":
-  version "1.0.36"
-  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.36.tgz#d8f2abec2004a3174c0c62f5d5e01a792c894fdc"
-  integrity sha512-wR5MDkaKL65Nt1GMUFVHGNU3KR+KT/X9vtB7YPhPAKgWsFjD5VOALcbEUuFKfSyWJUvSjtvBd3N/dEAetGV+9w==
+"@truffle/hdwallet-provider@1.0.37":
+  version "1.0.37"
+  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.0.37.tgz#ff514ab0c17aea91505207b5faa23fe602333794"
+  integrity sha512-LPsMNaBxwpCpDrTgvMGvNtk4c/pDDpZ5AXLrugzK1lVT3SW/DCpjPDgcUckOCNNAx8ktG0PzJbiVFM6Ami92nQ==
   dependencies:
-    "@trufflesuite/web3-provider-engine" "14.0.6"
+    "@trufflesuite/web3-provider-engine" "14.0.7"
     any-promise "^1.3.0"
     bindings "^1.5.0"
     bip39 "^2.4.2"
@@ -326,10 +326,10 @@
     "@truffle/interface-adapter" "^0.3.0"
     web3 "1.2.1"
 
-"@trufflesuite/web3-provider-engine@14.0.6":
-  version "14.0.6"
-  resolved "https://registry.yarnpkg.com/@trufflesuite/web3-provider-engine/-/web3-provider-engine-14.0.6.tgz#024d192cde9534a778e5d2436be1caf3c553a2e0"
-  integrity sha512-nBLwJYCmEDtABIDib9VpwbtwsNRlDZ3Slsu0F2HsOf8MnFUXF4/7ysSH/Q9SXLeAyp0HvsMv4v123PpPwrv4Hg==
+"@trufflesuite/web3-provider-engine@14.0.7":
+  version "14.0.7"
+  resolved "https://registry.yarnpkg.com/@trufflesuite/web3-provider-engine/-/web3-provider-engine-14.0.7.tgz#8ffa31148d68cfdd4da067e5df30e03871ec8a74"
+  integrity sha512-+OCKZOF1aVCOW9gWIXdK1l/SQnRPVcve56LpSGZQ+LZ6OKT6xVoLNNF+wKVvFxIis1JAZvnVKJFbUYbKEZ5aPQ==
   dependencies:
     async "^2.5.0"
     backoff "^2.5.0"
