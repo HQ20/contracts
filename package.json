@@ -46,7 +46,7 @@
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.11",
         "@types/mocha": "7.0.2",
-        "@types/node": "14.0.14",
+        "@types/node": "14.0.18",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
         "chai-bn": "0.2.1",
