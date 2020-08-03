@@ -45,7 +45,7 @@
         "@truffle/hdwallet-provider": "1.0.40",
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.12",
-        "@types/mocha": "8.0.0",
+        "@types/mocha": "8.0.1",
         "@types/node": "14.0.27",
         "bignumber.js": "9.0.0",
         "chai": "4.2.0",
