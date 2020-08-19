@@ -224,10 +224,10 @@
   resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.5.2.tgz#4d74670ead39e4f4fdab605a393ba8ea2390a2c4"
   integrity sha512-uRyvnvVYmgNmTBpWDbBsH/0kPESQhQpEc4KsvMRLVzFJ1o1s0uIv0Y6Y9IB5vI1Dwz2CbS4X/y4Wyw/75cTFnQ==
 
-"@solidity-parser/parser@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.6.0.tgz#deb964a4dbb8c21a342ee35b4acefb505fd04ea1"
-  integrity sha512-RiJXfS22frulogcfQCFhbKrd5ATu6P4tYUv/daChiIh6VHyKQ1kkVZVfX6aP7c2YGU/Bf9RwGNKdwLjfpaoqYQ==
+"@solidity-parser/parser@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.7.0.tgz#b8c69c408c729413c090de6bc4f92bb73442ea68"
+  integrity sha512-YJ333ezgd9slnwCpFQVfsBcYsTcLWZRpVswlKgS82YDZPzzNtVnkEs5DX5+jMsu8PNnVxwZuxC6ucukima9x6w==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -6736,12 +6736,12 @@ soldoc@0.1.3-beta.2:
     "@hq20/solidity-parser-antlr" "0.4.12-alpha.0"
     "@typescript-eslint/typescript-estree" "2.32.0"
 
-solidity-coverage@0.7.9:
-  version "0.7.9"
-  resolved "https://registry.yarnpkg.com/solidity-coverage/-/solidity-coverage-0.7.9.tgz#6d1c40639066b93c67b21da48f4bc27ae01f0e58"
-  integrity sha512-UWkl0iNmpjuVanPWvZzF6eCAKwbEmmolmzwbN8nU+MexOKO3eW6kVbxBkfEjVa8TuQcLb0F2wdgXJZBRbjpjnA==
+solidity-coverage@0.7.10:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/solidity-coverage/-/solidity-coverage-0.7.10.tgz#ab183c11d0742478d3f4f7a025a8c813ded24ca9"
+  integrity sha512-F98rYoD3bscB9qIJJrqkk+o93GbOWTT54VgfO97PrcWAenOFIC1EI5DzGJSrMvmFFfr8fsMPR89on6JR0Xf/Ig==
   dependencies:
-    "@solidity-parser/parser" "^0.6.0"
+    "@solidity-parser/parser" "^0.7.0"
     "@truffle/provider" "^0.1.17"
     chalk "^2.4.2"
     death "^1.1.0"
