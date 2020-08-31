@@ -42,7 +42,7 @@
     "devDependencies": {
         "@openzeppelin/contracts": "3.1.0",
         "@openzeppelin/test-helpers": "0.5.6",
-        "@truffle/hdwallet-provider": "1.0.42",
+        "@truffle/hdwallet-provider": "1.0.43",
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.12",
         "@types/mocha": "8.0.3",
