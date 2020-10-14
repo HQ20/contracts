@@ -219,15 +219,15 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@solidity-parser/parser@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.5.2.tgz#4d74670ead39e4f4fdab605a393ba8ea2390a2c4"
-  integrity sha512-uRyvnvVYmgNmTBpWDbBsH/0kPESQhQpEc4KsvMRLVzFJ1o1s0uIv0Y6Y9IB5vI1Dwz2CbS4X/y4Wyw/75cTFnQ==
-
 "@solidity-parser/parser@^0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.7.0.tgz#b8c69c408c729413c090de6bc4f92bb73442ea68"
   integrity sha512-YJ333ezgd9slnwCpFQVfsBcYsTcLWZRpVswlKgS82YDZPzzNtVnkEs5DX5+jMsu8PNnVxwZuxC6ucukima9x6w==
+
+"@solidity-parser/parser@^0.8.0":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@solidity-parser/parser/-/parser-0.8.1.tgz#1b606578af86b9ad10755409804a6ba83f9ce8a4"
+  integrity sha512-DF7H6T8I4lo2IZOE2NZwt3631T8j1gjpQLjmvY2xBNK50c4ltslR4XPKwT6RkeSd4+xCAK0GHC/k7sbRDBE4Yw==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -2430,13 +2430,13 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@0.2.17:
-  version "0.2.17"
-  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.17.tgz#3ff12ae0235d97b429bcad3a1b05ce4d1a91d9be"
-  integrity sha512-MsrUqeXTAFU9QEdAIdaVu+QeU1XwFsKvPDEC68iheppVR5xUP11h4SyPhSRZiGfOzXr1CfTtPM/B6wPGtt7/LA==
+eth-gas-reporter@0.2.18:
+  version "0.2.18"
+  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.18.tgz#6b7dd40628d073109ea6439f652a8d41b259ce7d"
+  integrity sha512-P6LQ1QmU9bqU4zmd01Ws/b2EWAD5rT771U0wyJ/c+fKE6RdE9ks8KzjdR1zjosV2uilMfqVTtrBrXveCOnaTyQ==
   dependencies:
     "@ethersproject/abi" "^5.0.0-beta.146"
-    "@solidity-parser/parser" "^0.5.2"
+    "@solidity-parser/parser" "^0.8.0"
     cli-table3 "^0.5.0"
     colors "^1.1.2"
     ethereumjs-util "6.2.0"
