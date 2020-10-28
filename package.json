@@ -41,7 +41,7 @@
     },
     "devDependencies": {
         "@openzeppelin/contracts": "3.2.0",
-        "@openzeppelin/test-helpers": "0.5.6",
+        "@openzeppelin/test-helpers": "0.5.9",
         "@truffle/hdwallet-provider": "1.1.1",
         "@types/bignumber.js": "5.0.0",
         "@types/chai": "4.2.14",
